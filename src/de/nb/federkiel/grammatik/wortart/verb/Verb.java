@@ -12,12 +12,11 @@ package de.nb.federkiel.grammatik.wortart.verb;
 
 import javax.annotation.Nullable;
 
-import de.nb.federkiel.grammatik.kategorie.Aufzaehlbar;
-import de.nb.federkiel.grammatik.kategorie.Flexionstyp;
-import de.nb.federkiel.grammatik.kategorie.Genus;
-import de.nb.federkiel.grammatik.kategorie.Kasus;
-import de.nb.federkiel.grammatik.kategorie.Numerus;
-import de.nb.federkiel.grammatik.kategorie.VerbFlexionstyp;
+import de.nb.federkiel.deutsch.grammatik.kategorie.Genus;
+import de.nb.federkiel.deutsch.grammatik.kategorie.Kasus;
+import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
+import de.nb.federkiel.deutsch.grammatik.phrase.Flexionstyp;
+import de.nb.federkiel.deutsch.grammatik.wortart.substantiv.Aufzaehlbar;
 import de.nb.federkiel.string.StringUtil;
 
 /**
