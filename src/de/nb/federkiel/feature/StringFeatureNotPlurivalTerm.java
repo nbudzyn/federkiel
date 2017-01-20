@@ -24,7 +24,7 @@ StringFeatureValue, FeatureAssignment> {
 		return Plurival.of(
 				StringFeatureValue.of(
 						StringFeatureLogicUtil.booleanToString(
-								! StringFeatureLogicUtil.stringToBoolean(input.getString()))));
+                !FeatureStructure.toBoolean(input))));
 	}
 
 	@Override

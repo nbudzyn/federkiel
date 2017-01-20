@@ -27,8 +27,7 @@ StringFeatureValue, StringFeatureValue, FeatureAssignment> {
 		// in the super class - but in typical cases, this won't buy
 		// us anything.
 
-		if (StringFeatureLogicUtil.stringToBoolean(first.getString()) ||
-				StringFeatureLogicUtil.stringToBoolean(second.getString())) {
+    if (FeatureStructure.toBoolean(first) || FeatureStructure.toBoolean(second)) {
 			return Plurival.of(StringFeatureValue.J);
 		}
 

@@ -1,5 +1,7 @@
 package de.nb.federkiel.feature;
 
+import javax.annotation.Nullable;
+
 /**
  * Utility class for logical reasoning with String features
  *
@@ -13,7 +15,7 @@ public final class StringFeatureLogicUtil {
 		super();
 	}
 
-	public static boolean stringToBoolean(final String string) {
+  public static @Nullable boolean stringToBoolean(final String string) {
 		if (string.equals(TRUE)) {
 			return true;
 		}

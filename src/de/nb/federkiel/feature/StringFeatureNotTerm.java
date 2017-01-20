@@ -24,8 +24,7 @@ StringFeatureValue, FeatureAssignment> {
 	throws UnassignedVariableException {
 		return StringFeatureValue.of(
 				StringFeatureLogicUtil.booleanToString(
-						! StringFeatureLogicUtil.stringToBoolean(
-								getSubTerm().evaluate(variableAssignment).getString())));
+            !FeatureStructure.toBoolean(getSubTerm().evaluate(variableAssignment))));
 	}
 
 	@Override

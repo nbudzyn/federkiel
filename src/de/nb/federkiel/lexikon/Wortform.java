@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import de.nb.federkiel.feature.FeatureStructure;
+import de.nb.federkiel.feature.StringFeatureLogicUtil;
 import de.nb.federkiel.interfaces.IFeatureValue;
 import de.nb.federkiel.interfaces.ILexeme;
 import de.nb.federkiel.interfaces.ILexemeType;
@@ -260,8 +261,8 @@ public class Wortform implements IWordForm {
 
 	private FeatureStructure buildCaseFeatures(final boolean amSatzanfangMgl, final boolean imSatzMgl) {
 		return FeatureStructure.fromStringValues(ImmutableMap.<String,String>builder().
-					put(AM_SATZANFANG_MGL_KEY, amSatzanfangMgl ? "j" : "n").
-					put(IM_SATZ_MGL_KEY, imSatzMgl ? "j" : "n").
+        put(AM_SATZANFANG_MGL_KEY, StringFeatureLogicUtil.booleanToString(amSatzanfangMgl)).
+        put(IM_SATZ_MGL_KEY, StringFeatureLogicUtil.booleanToString(imSatzMgl)).
 					build());
 	}
 

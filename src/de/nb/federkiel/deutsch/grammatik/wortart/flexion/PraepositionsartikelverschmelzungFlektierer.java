@@ -42,21 +42,13 @@ public class PraepositionsartikelverschmelzungFlektierer implements IFlektierer 
   public ImmutableCollection<IWordForm> anAkkVerschmelzung(final String pos) {
     final Lexeme lexeme = buildAPPARTLexem("an", AKKUSATIV);
 
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
-
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "ans"));
-
-    return res.build();
+    return ImmutableList.of(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "ans"));
   }
 
   public ImmutableCollection<IWordForm> aufAkkVerschmelzung(final String pos) {
     final Lexeme lexeme = buildAPPARTLexem("auf", AKKUSATIV);
 
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
-
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "aufs"));
-
-    return res.build();
+    return ImmutableList.of(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "aufs"));
   }
 
   public ImmutableCollection<IWordForm> beiDatVerschmelzung(final String pos) {
@@ -73,11 +65,7 @@ public class PraepositionsartikelverschmelzungFlektierer implements IFlektierer 
   public ImmutableCollection<IWordForm> durchVerschmelzung(final String pos) {
     final Lexeme lexeme = buildAPPARTLexem("durch", AKKUSATIV);
 
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
-
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "durchs"));
-
-    return res.build();
+    return ImmutableList.of(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "durchs"));
   }
 
   public ImmutableCollection<IWordForm> fuerVerschmelzung(final String pos) {
@@ -127,21 +115,13 @@ public class PraepositionsartikelverschmelzungFlektierer implements IFlektierer 
   public ImmutableCollection<IWordForm> inAkkVerschmelzung(final String pos) {
     final Lexeme lexeme = buildAPPARTLexem("in", AKKUSATIV);
 
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
-
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "ins"));
-
-    return res.build();
+    return ImmutableList.of(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "ins"));
   }
 
   public ImmutableCollection<IWordForm> umAkkVerschmelzung(final String pos) {
     final Lexeme lexeme = buildAPPARTLexem("um", DATIV);
 
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
-
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "ums"));
-
-    return res.build();
+    return ImmutableList.of(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "ums"));
   }
 
   public ImmutableCollection<IWordForm> unterDatVerschmelzung(final String pos) {

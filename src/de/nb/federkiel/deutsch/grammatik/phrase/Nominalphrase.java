@@ -18,12 +18,10 @@ import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 
 import de.nb.federkiel.deutsch.grammatik.kategorie.Genus;
-import de.nb.federkiel.deutsch.grammatik.kategorie.IDeterminativ;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Kasus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.deutsch.grammatik.wortart.adjektiv.Adjektiv;
 import de.nb.federkiel.deutsch.grammatik.wortart.artikelwort.Artikel;
-import de.nb.federkiel.deutsch.grammatik.wortart.artikelwort.ArtikelTyp;
 import de.nb.federkiel.deutsch.grammatik.wortart.substantiv.Substantiv;
 
 /**
@@ -181,6 +179,9 @@ public class Nominalphrase implements Cloneable {
     return getFlektiert(Kasus.NOMINATIV);
   }
 
+  /**
+   * Ohne Artikel (&quot;freundlicher Ork (zu verkaufen)&quot;)
+   */
   public String getFlektiert(final Kasus kasus) {
     return getFlektiert(kasus, Numerus.SINGULAR);
   }
@@ -189,7 +190,7 @@ public class Nominalphrase implements Cloneable {
    * Ohne Artikel (&quot;freundlicher Ork (zu verkaufen)&quot;)
    */
   public String getFlektiert(final Kasus kasus, final Numerus numerus) {
-    return getFlektiertMitDeterminativ(kasus, numerus, null);
+    return getFlektiertMitArtikel(kasus, numerus, null);
   }
 
   public String getFlektiertMitArtikel(final Kasus kasus) {
@@ -197,29 +198,25 @@ public class Nominalphrase implements Cloneable {
   }
 
   public String getFlektiertMitArtikel(final Kasus kasus, final Numerus numerus) {
-    return getFlektiertMitDeterminativ(kasus, numerus, Artikel.BESTIMMT);
+    return getFlektiertMitArtikel(kasus, numerus, Artikel.BESTIMMT);
   }
 
-  public String getFlektiertMitArtikel(final Kasus kasus,
-      final ArtikelTyp artikelTyp) {
-    return getFlektiertMitDeterminativ(kasus, Numerus.SINGULAR,
-        Artikel.fuerTyp(artikelTyp));
+  public String getFlektiertMitArtikel(final Kasus kasus, final @Nullable Artikel artikel) {
+    return getFlektiertMitArtikel(kasus, Numerus.SINGULAR, artikel);
   }
 
   /**
-   * Gibt die flektierte Form zurück, ggf. mit Determinativum.
+   * Gibt die flektierte Form zurück, ggf. mit Artikel.
    */
-  public String getFlektiertMitDeterminativ(final Kasus kasus,
-      final Numerus numerus, final @Nullable IDeterminativ determinativ) {
+  public String getFlektiertMitArtikel(final Kasus kasus, final Numerus numerus,
+      final @Nullable Artikel artikel) {
     // FIXME: von großen Orks mit einem grimmigen Lächeln does not work?!
-    String res = determinativ != null ? determinativ
-        .getFlektiertAlsDeterminativFuer(kasus, numerus, getGenus(),
+    String res = artikel != null
+        ? artikel.getFlektiertAlsDeterminativFuer(kasus, numerus, getGenus(),
             isNegiert()) : "";
 
-
-
     final Flexionstyp flexionstypAdjektivphrasen =
-        determinativ != null && determinativ.hatFlexionsendung(kasus, numerus, getGenus())
+        artikel != null && artikel.hatFlexionsendung(kasus, numerus, getGenus())
             ? Flexionstyp.SCHWACHE_FLEXION
             : Flexionstyp.STARKE_FLEXION;
 
@@ -262,8 +259,10 @@ public class Nominalphrase implements Cloneable {
    * Gibt das Relativpronomen für diese Phrase zurück: der, den, die o.Ä.
    */
   public String getRelativpronomen(final Kasus kasus, final Numerus numerus) {
-    return ArtikelTyp.getArtikel(ArtikelTyp.BESTIMMTER_ARTIKEL, kasus, numerus,
-        getGenus(), false); // nicht negiert
+    // FIXME das stimmt nicht ganz: den Menschen, DENEN! Vgl. PRELS-Recognizer (nur rudimentär)
+
+    return Artikel.BESTIMMT.getFlektiertAlsDeterminativFuer(kasus, numerus, getGenus(), false); // nicht
+                                                                                                // negiert
   }
 
   public AdjektivphrasenAufzaehlung getAdjektivphrasen() {

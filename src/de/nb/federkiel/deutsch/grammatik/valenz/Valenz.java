@@ -18,16 +18,13 @@ import de.nb.federkiel.feature.RoleFrameSlot;
 import de.nb.federkiel.reflection.ReflectionUtil;
 
 /**
- * Valenz eines Verbs - ist es transitiv, intransitiv, erfordert es zwei
- * Akkusative...
+ * Valenz eines Verbs - ist es transitiv, intransitiv, erfordert es zwei Akkusative...
  * <p>
- * Präpositionalobjekte und adverbiale Ergänzungen werden nicht berücksichtig,
- * sondern mit den adverbialen Angaben zusammengefasst (die jederzeit möglich
- * sind).
+ * Präpositionalobjekte und adverbiale Ergänzungen werden nicht berücksichtig, sondern mit den
+ * adverbialen Angaben zusammengefasst (die jederzeit möglich sind).
  * <p>
- * Valenzen lassen sich ähnlich auch bei Adjektiven beobachtenm (<i>des Lärms
- * schon lange überdrüssigen</i>) - in diesem Fall ist das "Subjekt" jeweils
- * implizit gegeben.
+ * Valenzen lassen sich ähnlich auch bei Adjektiven beobachten (<i>des Lärms schon lange
+ * überdrüssigen</i>) - in diesem Fall ist das "Subjekt" jeweils implizit gegeben.
  *
  * @author nbudzyn 2011
  */
@@ -267,10 +264,20 @@ public final class Valenz {
   }
 
   /**
-   * Erzeugt aus dieser Valenz eine weitere, die davon ausgeht, dass das gewisse
-   * Ergänzungen IMPLIZIT gegeben ist. Diese Ergänzungen werden aus der Valenz
-   * entfernt. Sollte eine oder mehrere dieser Ergänzungen gar nicht vorgesehen
-   * sein, wird <code>null</code> zurückgegeben.
+   * Erzeugt aus dieser Valenz eine weitere, die davon ausgeht, dass das gewisse Ergänzungen
+   * IMPLIZIT gegeben ist. Diese Ergänzungen werden aus der Valenz entfernt. Sollte eine oder
+   * mehrere dieser Ergänzungen gar nicht vorgesehen sein, wird <code>null</code> zurückgegeben.
+   * <p>
+   * Für adverbiale Akkkusative und adverbiale Genitive gibt es einige Einschränkungen gegebenüber
+   * der ursprünglichen Valenz. (
+   * <p>
+   * Diese (Woche) haben wir Peter gefeiert.
+   * </p>
+   * , aber nicht
+   * <p>
+   * *Den diese gefeierten Peter.
+   * </p>
+   * )
    */
   public Valenz beiDiesenImplizitenErgaenzungen(
       final AbstractErgaenzungsOderAngabenTyp... impliziteAngabenOderErgaenzungstypen) {
@@ -296,7 +303,7 @@ public final class Valenz {
       }
 
       if (!sollDieserTypEntferntWerden) {
-        res.add(ergaenzungstyp);
+          res.add(ergaenzungstyp);
       }
     }
 
@@ -340,7 +347,7 @@ public final class Valenz {
       final @Nullable String personDesSubjekts,
       final @Nullable Genus genusDesSubjekts,
       final @Nullable Numerus numerusDesSubjekts,
-      final @Nullable String hoeflichkeitsformDesSubjekts) {
+      final @Nullable String hoeflichkeitsformDesSubjekts, final boolean fuerAdjektivischeForm) {
     final ImmutableList.Builder<RoleFrameSlot> res = ImmutableList.builder();
 
     for (final AbstractErgaenzungsOderAngabenTyp ergaenzungstyp : ergaenzungstypen) {
@@ -349,7 +356,7 @@ public final class Valenz {
     }
 
     res.addAll(ErgaenzungsOderAngabeTypen.buildAngabenSlots(personDesSubjekts,
-        genusDesSubjekts, numerusDesSubjekts, hoeflichkeitsformDesSubjekts));
+        genusDesSubjekts, numerusDesSubjekts, hoeflichkeitsformDesSubjekts, fuerAdjektivischeForm));
 
     return res.build();
   }

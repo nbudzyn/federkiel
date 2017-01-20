@@ -10,6 +10,7 @@ import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.deutsch.grammatik.wortart.flexion.FeatureStringConverter;
 import de.nb.federkiel.feature.FeatureAssignment;
 import de.nb.federkiel.feature.RoleFrameSlot;
+import de.nb.federkiel.feature.StringFeatureLogicUtil;
 import de.nb.federkiel.feature.ThreeStateFeatureEqualityFormula;
 import de.nb.federkiel.feature.UnspecifiedFeatureValue;
 import de.nb.federkiel.logic.FormulaUtil;
@@ -135,7 +136,7 @@ abstract public class AbstractErgaenzungsOderAngabenTyp {
 			}
     } else if ("3".equals(personDesSubjekts)
         && numerusDesSubjekts == Numerus.PLURAL
-				&& "j".equals(hoeflichkeitsformDesSubjekts)) {
+        && StringFeatureLogicUtil.stringToBoolean(hoeflichkeitsformDesSubjekts)) {
 			// "Sie"-Form
 			// "Ihrer", "Ihnen", "Sie"
 			featureName = "enthaeltIrreflPersonalpronomen3PlHoefl";
@@ -149,7 +150,7 @@ abstract public class AbstractErgaenzungsOderAngabenTyp {
 		// Bei "Ich denke über mich nach." muss die Interpretation, in der die
 		// Nominalphrase "mich" ein PPER enthält, AUSGESCHLOSSEN werden!
 		return ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
-				featureName, "n");
+        featureName, StringFeatureLogicUtil.FALSE);
 	}
 
   @Override

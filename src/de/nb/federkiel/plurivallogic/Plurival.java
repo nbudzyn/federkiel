@@ -1,6 +1,7 @@
 package de.nb.federkiel.plurivallogic;
 
 import java.util.Iterator;
+import java.util.stream.Stream;
 
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
@@ -16,113 +17,124 @@ import de.nb.federkiel.cache.WeakCache;
 @Immutable
 @ThreadSafe
 public class Plurival<T extends Object> implements Iterable<T> {
-	final private static WeakCache<Plurival<?>> cache =
-			new WeakCache<>();
+  final private static WeakCache<Plurival<?>> cache = new WeakCache<>();
 
-	private final ImmutableCollection<T> values;
+  private final ImmutableCollection<T> values;
 
-	/**
-	 * Cached hash code
-	 */
-	private int hashCode;
+  /**
+   * Cached hash code
+   */
+  private int hashCode;
 
-	@SuppressWarnings("unchecked")
-	public static <T> Plurival<T> of(final T... values) {
-		return cache.findOrInsert(new Plurival<>(values));
-	}
+  @SuppressWarnings("unchecked")
+  public static <T> Plurival<T> of(final T... values) {
+    return cache.findOrInsert(new Plurival<>(values));
+  }
 
-	@SuppressWarnings("unchecked")
-	public static <T> Plurival<T> of(final ImmutableCollection<T> values) {
-		return cache.findOrInsert(new Plurival<>(values));
-	}
+  public static <T> Plurival<T> of(final Stream<T> stream) {
+    return cache.findOrInsert(new Plurival<>(stream));
+  }
 
-	@SuppressWarnings("unchecked")
-	public static <T> Plurival<T> empty() {
-		return of();
-	}
+  public static <T> Plurival<T> of(final ImmutableCollection<T> values) {
+    return cache.findOrInsert(new Plurival<>(values));
+  }
 
-	private Plurival(final T... values) {
-		this(ImmutableList.copyOf(values));
-	}
+  @SuppressWarnings("unchecked")
+  public static <T> Plurival<T> empty() {
+    return of();
+  }
 
-	private Plurival(final ImmutableCollection<T> values) {
-		this.values = values;
-		this.hashCode = calcHash();
-	}
+  private Plurival(final T... values) {
+    this(ImmutableList.copyOf(values));
+  }
 
-	public boolean isEmpty() {
-		return this.values.isEmpty();
-	}
+  private Plurival(final Stream<T> stream) {
+    this.values = stream.collect(ImmutableList.toImmutableList());
+    this.hashCode = calcHash();
+  }
 
-	@Override
-	public Iterator<T> iterator() {
-		return this.values.iterator();
-	}
+  private Plurival(final ImmutableCollection<T> values) {
+    this.values = values;
+    this.hashCode = calcHash();
+  }
 
-	public int size() {
-		return this.values.size();
-	}
+  public boolean isEmpty() {
+    return this.values.isEmpty();
+  }
 
-	private final int calcHash() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((this.values == null) ? 0 : this.values.hashCode());
-		return result;
-	}
+  @Override
+  public Iterator<T> iterator() {
+    return this.values.iterator();
+  }
 
-	@Override
-	public int hashCode() {
-		return this.hashCode;
-	}
+  public Stream<T> stream() {
+    return this.values.stream();
+  }
 
-	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
+  public int size() {
+    return this.values.size();
+  }
 
-		final Plurival<?> other = (Plurival<?>) obj;
+  private final int calcHash() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((this.values == null) ? 0 : this.values.hashCode());
+    return result;
+  }
 
-		if (this.hashCode != other.hashCode) {
-			return false;
-		}
+  @Override
+  public int hashCode() {
+    return this.hashCode;
+  }
 
-		if (!this.values.equals(other.values)) {
-			return false;
-		}
+  @Override
+  public boolean equals(final Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
 
-		return true;
-	}
+    final Plurival<?> other = (Plurival<?>) obj;
 
-	@Override
-	public String toString() {
-		if (this.size() == 1) {
-			return this.values.iterator().next().toString();
-		}
+    if (this.hashCode != other.hashCode) {
+      return false;
+    }
 
-		final StringBuilder res = new StringBuilder();
-		res.append("{ ");
+    if (!this.values.equals(other.values)) {
+      return false;
+    }
 
-		boolean first = true;
+    return true;
+  }
 
-		for (final T value : this.values) {
-			if (first) {
-				first = false;
-			} else {
-				res.append(" | ");
-			}
+  @Override
+  public String toString() {
+    if (this.size() == 1) {
+      return this.values.iterator().next().toString();
+    }
 
-			res.append(value.toString());
-		}
+    final StringBuilder res = new StringBuilder();
+    res.append("{ ");
 
-		res.append(" }");
+    boolean first = true;
 
-		return res.toString();
-	}
+    for (final T value : this.values) {
+      if (first) {
+        first = false;
+      } else {
+        res.append(" | ");
+      }
+
+      res.append(value.toString());
+    }
+
+    res.append(" }");
+
+    return res.toString();
+  }
 }

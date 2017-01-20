@@ -43,12 +43,8 @@ public class IndefinitpronomenFlektierer extends AbstractPronomenFlektierer {
    */
   public ImmutableCollection<IWordForm> anderes(final Lexeme lexeme,
       final String pos, final boolean auchGenitivMaskNeutr) {
-    final ImmutableList.Builder<IWordForm> res = ImmutableList
-        .<IWordForm> builder();
-    res.addAll(typDieser(lexeme, pos, false, // keine "Stärke"
+    return ImmutableList.copyOf(typDieser(lexeme, pos, false, // keine "Stärke"
         VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN, auchGenitivMaskNeutr));
-
-    return res.build();
   }
 
   /**

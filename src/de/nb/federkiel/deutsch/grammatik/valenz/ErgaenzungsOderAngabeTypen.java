@@ -14,113 +14,114 @@ import de.nb.federkiel.feature.RoleFrameSlot;
 import de.nb.federkiel.reflection.ReflectionUtil;
 
 /**
- * Enthält die Typen von Ergänzung oder Angabe zu einem Verb - z.B. das Subjekt,
- * das Akkusativobjekt oder adverbiale Angaben.
+ * Enthält die Typen von Ergänzung oder Angabe zu einem Verb - z.B. das Subjekt, das Akkusativobjekt
+ * oder adverbiale Angaben.
  *
  * @author nbudzyn 2011
  */
 public final class ErgaenzungsOderAngabeTypen {
-	public static final AbstractErgaenzungsOderAngabenTyp
-			// Ergänzungen (zwingend)
-			// - im Nominativ
-			SUBJEKT = new SubjektTyp("Subjekt", 1, false), // min (and max) 1
-															// filling, kein
-															// Pseudoaktant
+  public static final AbstractErgaenzungsOderAngabenTyp
+  // Ergänzungen (zwingend)
+  // - im Nominativ
+  SUBJEKT = new SubjektTyp("Subjekt", 1, false), // min (and max) 1
+                                                 // filling, kein
+                                                 // Pseudoaktant
 
-			PRAEDIKATIVUM = PraedikativumTyp.INSTANCE,
+      PRAEDIKATIVUM = PraedikativumTyp.INSTANCE,
 
-			/**
-			 * das "es" in "es regnet" (Duden Bd. 4 2006, 560)
-			 */
-			OBLIG_PSEUDOAKTANT_FORMALES_SUBJ = new SubjektTyp("PseudoaktantFormalesSubj", 1, true), // min
-			// (and
-			// max)
-			// 1
-			// filling, Pseudoaktant
+      /**
+       * das "es" in "es regnet" (Duden Bd. 4 2006, 560)
+       */
+      OBLIG_PSEUDOAKTANT_FORMALES_SUBJ = new SubjektTyp("PseudoaktantFormalesSubj", 1, true), // min
+      // (and
+      // max)
+      // 1
+      // filling, Pseudoaktant
 
-			/**
-			 * Das "es" (bzw. das fehlende es!) in <i>() Mich graut. / *Es*
-			 * graut mich.</i> (Duden Bd. 4 2006, 563)
-			 */
-			OPT_PSEUDOAKTANT_FORMALES_SUBJ = new SubjektTyp(
-					"PseudoaktantFormalesSubj", 0, true), // min 0 filling (max
-															// 1
-			// filling), Pseudoaktant
+      /**
+       * Das "es" (bzw. das fehlende es!) in <i>() Mich graut. / *Es* graut mich.</i> (Duden Bd. 4
+       * 2006, 563)
+       */
+      OPT_PSEUDOAKTANT_FORMALES_SUBJ = new SubjektTyp("PseudoaktantFormalesSubj", 0, true), // min 0
+                                                                                            // filling
+                                                                                            // (max
+                                                                                            // 1
+      // filling), Pseudoaktant
 
-			// - im Genitiv
+      // - im Genitiv
       GENITIVOBJEKT = new ObjektTyp("Genitivobjekt", GENITIV),
 
-			// - im Dativ
+      // - im Dativ
       DATIVOBJEKT = new ObjektTyp("Dativobjekt", DATIV),
 
-			/**
-			 * Ein Dativobjekt, das zwingend reflexiv sein muss
-			 */
-      REFL_DATIVOBJEKT = new ObjektTyp("ReflDativobjekt", DATIV,
-					1, 1, true, false),
-			// TODO Genauer spezifizieren (muss reflexiv sein) - reflexiven
-			// Gebrauch von Verben in die Grammatik einführen
+      /**
+       * Ein Dativobjekt, das zwingend reflexiv sein muss
+       */
+      REFL_DATIVOBJEKT = new ObjektTyp("ReflDativobjekt", DATIV, 1, 1, true, false),
+      // TODO Genauer spezifizieren (muss reflexiv sein) - reflexiven
+      // Gebrauch von Verben in die Grammatik einführen
 
-			// - im Akkusativ
+      // - im Akkusativ
       AKKUSATIVOBJEKT = new ObjektTyp("Akkusativobjekt", AKKUSATIV),
-			/**
-			 * z.B. bei "jdn. etw. lehren" das "jdn." (weil es
-			 * "beinahe ein Dativ geworden wäre")
-			 */
+      /**
+       * z.B. bei "jdn. etw. lehren" das "jdn." (weil es "beinahe ein Dativ geworden wäre")
+       */
       ZUS_PERSON_AKK_OBJEKT = new ObjektTyp("ZusPersonAkkObjekt", AKKUSATIV),
 
-			/**
-			 * Ein Akkusativobjekt, das zwingend reflexiv sein muss
-			 */
-      REFL_AKKUSATIVOBJEKT = new ObjektTyp("ReflAkkusativobjekt", AKKUSATIV,
-					1, 1, true, false),
+      /**
+       * Ein Akkusativobjekt, das zwingend reflexiv sein muss
+       */
+      REFL_AKKUSATIVOBJEKT = new ObjektTyp("ReflAkkusativobjekt", AKKUSATIV, 1, 1, true, false),
 
-			/**
-			 * das "es" bei "es gut haben", "es schlecht haben",
-			 * "es auf jdn. anlegen" etc. (Duden Bd. 4 2006, 539)
-			 */
-      OBLIG_PSEUDOAKTANT_AKK = new ObjektTyp("PseudoaktantAkk", AKKUSATIV, 1,
-          1, false, true),
+      /**
+       * das "es" bei "es gut haben", "es schlecht haben", "es auf jdn. anlegen" etc. (Duden Bd. 4
+       * 2006, 539)
+       */
+      OBLIG_PSEUDOAKTANT_AKK = new ObjektTyp("PseudoaktantAkk", AKKUSATIV, 1, 1, false, true),
 
-			// Angaben (fakultativ)
-			ADVERBIALE_ANGABEN = new AdverbialeAngabenTyp(
-					"AdverbialeAngabe");
+      // Angaben (fakultativ)
+      ADVERBIALE_ANGABEN_FUER_VERBFORM = new AdverbialeAngabenTyp("AdverbialeAngabe", false),
 
-	/**
-	 * Alle Ergaenzungs-oder-Angabe-Typen
-	 */
-	public static final Collection<AbstractErgaenzungsOderAngabenTyp> ALL =
-			ReflectionUtil.getConstantFields(ErgaenzungsOderAngabeTypen.class,
-					AbstractErgaenzungsOderAngabenTyp.class);
+      ADVERBIALE_ANGABEN_FUER_ADJEKTIVISCHE_FORM =
+          new AdverbialeAngabenTyp("AdverbialeAngabe", true);
 
-	private ErgaenzungsOderAngabeTypen() {
-		super();
-	}
+  /**
+   * Alle Ergaenzungs-oder-Angabe-Typen
+   */
+  public static final Collection<AbstractErgaenzungsOderAngabenTyp> ALL =
+      ReflectionUtil.getConstantFields(ErgaenzungsOderAngabeTypen.class,
+          AbstractErgaenzungsOderAngabenTyp.class);
 
-	public static Collection<RoleFrameSlot> buildAngabenSlots(
-      final String person, final Genus genusDesSubjekts,
-      final Numerus numerusDesSubjekts,
-      final String hoeflichkeitsformDesSubjekts) {
-		final ImmutableList.Builder<RoleFrameSlot> res =
-				ImmutableList.builder();
+  private ErgaenzungsOderAngabeTypen() {
+    super();
+  }
 
-		res.add(ADVERBIALE_ANGABEN.buildSlot(person, genusDesSubjekts,
-				numerusDesSubjekts, hoeflichkeitsformDesSubjekts));
+  public static Collection<RoleFrameSlot> buildAngabenSlots(final String person,
+      final Genus genusDesSubjekts, final Numerus numerusDesSubjekts,
+      final String hoeflichkeitsformDesSubjekts, final boolean fuerAdjektivischeForm) {
+    return ImmutableList.of(getAdverbialeAngabenTyp(fuerAdjektivischeForm).buildSlot(person,
+        genusDesSubjekts,
+        numerusDesSubjekts,
+        hoeflichkeitsformDesSubjekts));
+  }
 
-		return res.build();
-	}
+  private static AbstractErgaenzungsOderAngabenTyp getAdverbialeAngabenTyp(
+      boolean fuerAdjektivischeForm) {
+    if (fuerAdjektivischeForm) {
+      return ADVERBIALE_ANGABEN_FUER_ADJEKTIVISCHE_FORM;
+    }
 
-	/**
-	 * Erzeugt die {@link RoleFrameSlot}s, die angeben, welche Angaben
-	 * (unabhängig von Person und Numerus des Subjekts) möglich sind.
-	 */
-	public static Collection<RoleFrameSlot> buildAngabenRestrictionSlots() {
-		final ImmutableList.Builder<RoleFrameSlot> res =
-				ImmutableList.builder();
+    return ADVERBIALE_ANGABEN_FUER_VERBFORM;
+  }
 
-		res.add(ADVERBIALE_ANGABEN.buildRestrictionSlot());
-
-		return res.build();
-	}
+  /**
+   * Erzeugt die {@link RoleFrameSlot}s, die angeben, welche Angaben (unabhängig von Person und
+   * Numerus des Subjekts) möglich sind.
+   */
+  public static Collection<RoleFrameSlot> buildAngabenRestrictionSlots() {
+    // ADVERBIALE_ANGABEN_FUER_VERBFORM ist weniger restritiv als
+    // ADVERBIALE_ANGABEN_FUER_ADJEKTIVISCHE_FORM
+    return ImmutableList.of(ADVERBIALE_ANGABEN_FUER_VERBFORM.buildRestrictionSlot());
+  }
 
 }

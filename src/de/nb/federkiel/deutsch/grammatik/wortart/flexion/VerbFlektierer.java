@@ -1,5 +1,6 @@
 package de.nb.federkiel.deutsch.grammatik.wortart.flexion;
 
+import static com.google.common.collect.ImmutableList.toImmutableList;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Genus.FEMININUM;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Genus.MASKULINUM;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Genus.NEUTRUM;
@@ -670,17 +671,11 @@ public final class VerbFlektierer implements IFlektierer {
       }
     }
 
-    final ImmutableList.Builder<Pair<String, Valenz>> res = ImmutableList
-        .builder();
-
-    for (final Valenz valenzBeiImplizitenErgaenzungen : valenzenBeiImplizitenErgaenzungen
-        .build()) {
-      for (final String wordFormString : wordFormStrings) {
-        res.add(Pair.of(wordFormString, valenzBeiImplizitenErgaenzungen));
-      }
-    }
-
-    return res.build();
+    // @formatter:off
+    return valenzenBeiImplizitenErgaenzungen.build().stream()
+        .flatMap(v -> wordFormStrings.stream().map(w -> Pair.of(w, v)))
+        .collect(toImmutableList());
+    // @formatter:on
   }
 
   /**
@@ -819,16 +814,13 @@ public final class VerbFlektierer implements IFlektierer {
       return ausnahmeformen.getPartPerfAltern();
     }
 
-    final ImmutableList.Builder<String> res = ImmutableList.builder();
-
     // Vgl. Duden 614, 617
     // ge-lach-t, ge-gr¸nd-e-t
-    for (final String partPerfOhneGe : tilgeGgfEAusStammUndFuegeGgfEVorEndungEinUndHaengeEndungAn(
-        stammGemaessInfinitiv, "t")) {
-      res.add("ge" + partPerfOhneGe);
-    }
-
-    return res.build();
+    // @formatter:off
+    return tilgeGgfEAusStammUndFuegeGgfEVorEndungEinUndHaengeEndungAn(stammGemaessInfinitiv, "t").stream()
+        .map(partPerfOhneGe -> "ge" + partPerfOhneGe)
+        .collect(ImmutableList.toImmutableList());
+    // @formatter:on
   }
 
   /**
@@ -837,14 +829,11 @@ public final class VerbFlektierer implements IFlektierer {
    */
   private Collection<IWordForm> stdImpPl(final Lexeme lexeme, final String pos,
       final Valenz valenz, final String stammGemaessInfinitiv) {
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
-
     // Duden 609: "Im Plural werden Pr‰sensformen verwendet."
     // geht(!)
-    res.addAll(stdImp(lexeme, pos, valenz, SINGULAR,
+    return ImmutableList.copyOf(
+        stdImp(lexeme, pos, valenz, SINGULAR,
         stdP2PlPraesIndStrings(stammGemaessInfinitiv)));
-
-    return res.build();
   }
 
   /**
@@ -852,14 +841,13 @@ public final class VerbFlektierer implements IFlektierer {
    *         handelt - sonst <code>null</code>
    */
   private Basisformen findAusnahme(final String inputInfinitiv) {
-    for (final Basisformen basisform : AUSNAHMEENDEN) {
-      final Basisformen res = basisform.erzeugeKopieMitPraefix(inputInfinitiv);
-      if (res != null) {
-        return res;
-      }
-    }
-
-    return null;
+    // @formatter:off
+    return AUSNAHMEENDEN.stream()
+        .map(basisform -> basisform.erzeugeKopieMitPraefix(inputInfinitiv))
+        .filter(res -> res != null)
+        .findFirst()
+        .orElse(null);
+    // @formatter:on
   }
 
   /**
@@ -971,13 +959,10 @@ public final class VerbFlektierer implements IFlektierer {
       return ImmutableList.of("weiﬂ");
     }
 
-    final ImmutableList.Builder<String> res = ImmutableList.builder();
-
     // Duden 620
-    res.addAll(tilgeGgfEAusStammUndFuegeGgfEVorEndungEinUndHaengeEndungAn(
+    return ImmutableList.copyOf(
+        tilgeGgfEAusStammUndFuegeGgfEVorEndungEinUndHaengeEndungAn(
         stammPraesInd, "e"));
-
-    return res.build();
   }
 
   /**
@@ -2495,14 +2480,8 @@ public final class VerbFlektierer implements IFlektierer {
       final Valenz valenz, final String person, final Genus genus,
       final Numerus numerus, final boolean hoeflichkeitsform,
       final String tempus, final String modus, final Collection<String> strings) {
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
-
-    for (final String string : strings) {
-      res.add(stdFin(lexeme, pos, valenz, person, genus, numerus,
-          hoeflichkeitsform, tempus, modus, string));
-    }
-
-    return res.build();
+    return strings.stream().map(string -> stdFin(lexeme, pos, valenz, person, genus, numerus,
+        hoeflichkeitsform, tempus, modus, string)).collect(toImmutableList());
   }
 
   /**
@@ -2537,7 +2516,7 @@ public final class VerbFlektierer implements IFlektierer {
             // selbst.
             // -
             // Nicht aber: *Ihr gedenkt IHRER selbst. !
-            numerus, StringFeatureLogicUtil.booleanToString(hoeflichkeitsform)),
+            numerus, StringFeatureLogicUtil.booleanToString(hoeflichkeitsform), false),
         string);
   }
 
@@ -2581,7 +2560,8 @@ public final class VerbFlektierer implements IFlektierer {
             // gedenken - aber nicht
             // *Peter will IHRER SELBST gedenken !
             numerusDesImplizitenSubjekts, StringFeatureLogicUtil
-                .booleanToString(hoeflichkeitsformDesImplizitenSubjekts));
+                .booleanToString(hoeflichkeitsformDesImplizitenSubjekts),
+            false);
 
     return stdInf(lexeme, pos, ergaenzungenUndAngabenSlots);
   }
@@ -2603,7 +2583,7 @@ public final class VerbFlektierer implements IFlektierer {
         .buildErgaenzungenUndAngabenSlots(
             "2", // vgl. "Zeig DICH!", "Zeigt EUCH!"!!
             null, numerus,
-            StringFeatureLogicUtil.FALSE);
+            StringFeatureLogicUtil.FALSE, false);
 
     return stdImp(lexeme, pos, numerus, ergaenzungenUndAngabenSlots, string);
   }
@@ -2925,13 +2905,9 @@ public final class VerbFlektierer implements IFlektierer {
      */
     private ImmutableCollection<String> erzeugePartPerfAlternativenOhneGeMitPraefix(
         final String prefix) {
-      final ImmutableList.Builder<String> res = ImmutableList.builder();
-
-      for (final String partPerf : partPerfAltern) {
-        res.add(prefix + StringUtil.stripPrefixIfAny("ge", partPerf));
-      }
-
-      return res.build();
+      return partPerfAltern.stream().map(
+          partPerf -> prefix + StringUtil.stripPrefixIfAny("ge", partPerf)).collect(
+              toImmutableList());
     }
 
     public final Collection<String> getP2SgPraesIndAltern() {

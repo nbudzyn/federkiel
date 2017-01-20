@@ -174,13 +174,9 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
    */
   public Collection<IWordForm> stdAdj(final Lexeme lexeme, final Valenz valenzBeiImplizitemSubjekt,
       final String pos, final boolean steigerbar) {
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
-
     final String stamm = lexeme.getCanonicalizedForm();
 
-    res.addAll(stdAdj(lexeme, valenzBeiImplizitemSubjekt, pos, stamm, steigerbar));
-
-    return res.build();
+    return ImmutableList.copyOf(stdAdj(lexeme, valenzBeiImplizitemSubjekt, pos, stamm, steigerbar));
   }
 
   /**
@@ -490,7 +486,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
                 // die IHRER selbst gedenkende Männer /
                 // Frauen / Kinder,
                 // -> alle Genera möglich!
-                PLURAL, StringFeatureLogicUtil.FALSE));
+                PLURAL, StringFeatureLogicUtil.FALSE, true));
     // die ihrer selbst gedenkenden Männer,
     // NICHT JEDOCH: *die Ihrer selbst gedenkenden Männer!
 
@@ -504,14 +500,12 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv,
       final Valenz valenzBeiImplizitemSubjekt, final String pos, final String komparativ,
       final String stammInKomparation, final boolean eTilgungImSuffixEnUndEmErlaubt) {
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
-
     final ImmutableMap<String, IFeatureValue> additionalFeaturesSg =
         buildFeatureMap(komparativ, SCHWACH);
 
-    res.addAll(adjSchwachSg(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
+    return ImmutableList.copyOf(
+        adjSchwachSg(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
         eTilgungImSuffixEnUndEmErlaubt, valenzBeiImplizitemSubjekt, additionalFeaturesSg));
-    return res.build();
   }
 
   protected ImmutableList<IWordForm> adjSchwachPl(final Lexeme lexeme,
@@ -948,8 +942,9 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
             genusDesBezugsworts, // der SEINER selbst gedenkende
             // Mann, aber nicht
             // *der IHRER selbst gedenkende Mann !
-            numerusDesBezugsworts, StringFeatureLogicUtil.FALSE); // die ihrer
+            numerusDesBezugsworts, StringFeatureLogicUtil.FALSE, // die ihrer
                                                                   // selbst
+            true);
     // gedenkenden Männer,
     // ABER NICHT *die Ihrer selbst gedenkenden Männer!
     final RoleFrame verbRoleFrame = RoleFrame.of(ergaenzungenUndAngabenSlots);
@@ -1006,7 +1001,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
                 // (IHRER selbst gedenkende) Männer /
                 // Frauen / Kinder,
                 // -> alle Genera möglich!
-                PLURAL, StringFeatureLogicUtil.FALSE))));
+                PLURAL, StringFeatureLogicUtil.FALSE, true))));
     // Die ihrer selbst gedenkenden Männer,
     // ABER NICHT die Ihrer selbst gedenkenden Männer!
 
@@ -1434,7 +1429,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
    * @return die starken Wortformen, auch unter Berücksichtigung möglicher e-Tilgung im Suffix
    *         (<i>dunkeln</i>)
    */
-  protected Collection<IWordForm> adjStarkPl(final Lexeme lexeme,
+  protected ImmutableList<IWordForm> adjStarkPl(final Lexeme lexeme,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation,
       final ImmutableMap<String, IFeatureValue> additionalFeatures, Kasus kasus) {

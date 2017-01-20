@@ -1,5 +1,7 @@
 package de.nb.federkiel.feature;
 
+import static com.google.common.collect.ImmutableList.toImmutableList;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -426,17 +428,12 @@ implements Comparable<RoleFrame>
 			filterSlotAlternativesWhereAllFillingsMissingForCompletionCanBeAddedLater(
 					final ImmutableCollection<ImmutableMap<String, RoleFrameSlot>> slotAlternatives,
 					final IFillingUsageRestrictor fillingUsageRestrictor) {
-		final ImmutableList.Builder<ImmutableMap<String, RoleFrameSlot>> res =
-				ImmutableList.builder();
-
-		for (final ImmutableMap<String, RoleFrameSlot> slotAlternative : slotAlternatives) {
-			if (allFillingsMissingForCompletionCanBeAddedLater(slotAlternative,
-					fillingUsageRestrictor)) {
-				res.add(slotAlternative);
-			}
-		}
-
-		return res.build();
+    // @formatter:off
+	  return slotAlternatives.stream()
+	      .filter(slotAlternative -> allFillingsMissingForCompletionCanBeAddedLater(slotAlternative,
+                    fillingUsageRestrictor))
+	      .collect(toImmutableList());
+      // @formatter:on
 	}
 
 	/**
@@ -560,14 +557,13 @@ implements Comparable<RoleFrame>
 	 */
 	private static Plurival<RoleFrame> buildRoleFramesFromeSlotAlternatives(
 			final Collection<ImmutableMap<String, RoleFrameSlot>> slotsAlternatives) {
-		final ImmutableList.Builder<RoleFrame> res = ImmutableList.<RoleFrame>builder();
-		for (final ImmutableMap<String, RoleFrameSlot> newSlots : slotsAlternatives) {
-			res.add(RoleFrame.of(newSlots)); // all free fillings consumed //
-												// NOPMD by nbudzyn on 29.06.10
-												// 21:37
-		}
-
-		return Plurival.of(res.build());
+    // @formatter:off
+	  return Plurival.of(
+	      slotsAlternatives.stream()
+	        .map(newSlots -> RoleFrame.of(newSlots))
+	        .collect(toImmutableList())
+	      );
+      // @formatter:on
 	}
 
 	/**
@@ -575,14 +571,13 @@ implements Comparable<RoleFrame>
 	 */
 	private static Plurival<RoleFrame> buildRoleFramesFromFreeFillingAlternatives(
 			final Collection<ImmutableSet<IHomogeneousConstituentAlternatives>> freeFillingAlternatives) {
-		final ImmutableList.Builder<RoleFrame> res = ImmutableList.<RoleFrame>builder();
-		for (final ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings : freeFillingAlternatives) {
-			res.add(RoleFrame.of(freeFillings)); // all free fillings consumed
-													// // NOPMD by nbudzyn on
-													// 29.06.10 21:37
-		}
-
-		return Plurival.of(res.build());
+    //  @formatter:off
+	  return Plurival.of(
+	      freeFillingAlternatives.stream()
+	        .map(RoleFrame::of) // all free fillings consumed
+	        .collect(toImmutableList())
+	      );
+      //  @formatter:on
 	}
 
 

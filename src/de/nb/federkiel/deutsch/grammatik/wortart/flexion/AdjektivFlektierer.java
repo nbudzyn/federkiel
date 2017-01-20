@@ -57,7 +57,8 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
     final String wordForm = lexeme.getCanonicalizedForm();
 
     final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlotsSgMask = valenz
-        .buildErgaenzungenUndAngabenSlots("3", MASKULINUM, SINGULAR, StringFeatureLogicUtil.FALSE);
+        .buildErgaenzungenUndAngabenSlots("3", MASKULINUM, SINGULAR, StringFeatureLogicUtil.FALSE,
+            true);
 
     // Ich glaube, Formen auf -er lassen sich nicht steigern.
     res.add(buildWortform(lexeme, pos, POSITIV, KasusInfo.NOM_KEIN_NOMEN, SINGULAR, MASKULINUM,
@@ -70,7 +71,8 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
         ergaenzungenUndAngabenSlotsSgMask, wordForm));
 
     final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlotsSgFem = valenz
-        .buildErgaenzungenUndAngabenSlots("3", FEMININUM, SINGULAR, StringFeatureLogicUtil.FALSE);
+        .buildErgaenzungenUndAngabenSlots("3", FEMININUM, SINGULAR, StringFeatureLogicUtil.FALSE,
+            true);
 
     res.add(buildWortform(lexeme, pos, POSITIV, KasusInfo.NOM_KEIN_NOMEN, SINGULAR, FEMININUM,
         UNFLEKTIERT, ergaenzungenUndAngabenSlotsSgFem, wordForm));
@@ -82,7 +84,8 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
         ergaenzungenUndAngabenSlotsSgFem, wordForm));
 
     final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlotsSgNeutr = valenz
-        .buildErgaenzungenUndAngabenSlots("3", NEUTRUM, SINGULAR, StringFeatureLogicUtil.FALSE);
+        .buildErgaenzungenUndAngabenSlots("3", NEUTRUM, SINGULAR, StringFeatureLogicUtil.FALSE,
+            true);
 
     res.add(buildWortform(lexeme, pos, POSITIV, KasusInfo.NOM_KEIN_NOMEN, SINGULAR, NEUTRUM,
         UNFLEKTIERT, ergaenzungenUndAngabenSlotsSgNeutr, wordForm));
@@ -105,7 +108,8 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
   private ImmutableList<IWordForm> unveraendertPl(final Lexeme lexeme, final Valenz valenz,
       final String pos, final @Nullable String starkSchwach, final String wordForm) {
     final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlotsPl =
-        valenz.buildErgaenzungenUndAngabenSlots("3", null, PLURAL, StringFeatureLogicUtil.FALSE);
+        valenz.buildErgaenzungenUndAngabenSlots("3", null, PLURAL, StringFeatureLogicUtil.FALSE,
+            true);
     // Die ihrer selbst gedenkenden Männer, aber nicht
     // *die Ihrer selbst gedenkenden Männer!
 
@@ -203,16 +207,13 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
    */
   private ImmutableList<IWordForm> adjStarkSg(final Lexeme lexeme, final String stamm,
       final String komparation, final Kasus kasus, Genus genus) {
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
-
-    stammInKomparationGgfAuchNachETilgung(stamm, komparation).stream()
+    return stammInKomparationGgfAuchNachETilgung(stamm, komparation).stream()
         .map(stammInKomparation -> adjStarkSg(lexeme, GermanPOS.ADJA.toString(),
             stammInKomparation, GenMaskNeutrSgModus.NUR_EN, NomSgMaskUndNomAkkSgNeutrModus.MIT_ENDUNG,
             VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN,
             Valenz.LEER, buildFeatureMap(komparation, STARK), kasus, genus))
-        .forEach(t -> res.addAll(t));
-
-    return res.build();
+        .flatMap(Collection::stream)
+        .collect(ImmutableList.toImmutableList());
   }
 
   /**
@@ -230,7 +231,7 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
                 // (IHRER selbst gedenkende) Männer /
                 // Frauen / Kinder,
                 // -> alle Genera möglich!
-                PLURAL, StringFeatureLogicUtil.FALSE));
+                PLURAL, StringFeatureLogicUtil.FALSE, true));
     // Die ihrer selbst gedenkenden Männer,
     // ABER NICHT die Ihrer selbst gedenkenden Männer!
 
@@ -286,17 +287,13 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
    */
   private ImmutableList<IWordForm> adjSchwachSg(final Lexeme lexeme, final String stamm,
       final String komparation, final Kasus kasus, Genus genus) {
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
-
-    stammInKomparationGgfAuchNachETilgung(stamm, komparation).stream()
+    return stammInKomparationGgfAuchNachETilgung(stamm, komparation).stream()
         .map(stammInKomparation -> adjSchwachSg(lexeme,
             VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN, GermanPOS.ADJA.toString(),
             stammInKomparation,
             GermanUtil.erlaubtAdjektivischeETilgungBeiSuffixEnUndEm(stammInKomparation),
             Valenz.LEER, buildFeatureMap(komparation, SCHWACH), kasus, genus))
-        .forEach(t -> res.addAll(t));
-
-    return res.build();
+        .flatMap(Collection::stream).collect(ImmutableList.toImmutableList());
   }
 
   /**
@@ -315,20 +312,16 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
                 // die IHRER selbst gedenkende Männer /
                 // Frauen / Kinder,
                 // -> alle Genera möglich!
-                PLURAL, StringFeatureLogicUtil.FALSE));
+                PLURAL, StringFeatureLogicUtil.FALSE, true));
     // die ihrer selbst gedenkenden Männer,
     // NICHT JEDOCH: *die Ihrer selbst gedenkenden Männer!
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
-
-    stammInKomparationGgfAuchNachETilgung(stamm, komparation).stream()
+    return stammInKomparationGgfAuchNachETilgung(stamm, komparation).stream()
         .map(stammInKomparation -> adjSchwachPl(lexeme,
             VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN, GermanPOS.ADJA.toString(),
             stammInKomparation,
             GermanUtil.erlaubtAdjektivischeETilgungBeiSuffixEnUndEm(stammInKomparation),
             additionalFeaturesPl, kasus))
-        .forEach(t -> res.addAll(t));
-
-    return res.build();
+        .flatMap(Collection::stream).collect(ImmutableList.toImmutableList());
   }
 
 

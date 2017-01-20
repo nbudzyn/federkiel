@@ -1,10 +1,10 @@
 /*
  * ArtNumNounPhrase
- * 
+ *
  * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
  * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
- * 
+ *
  * Created on 21.03.2003
  *
  */
@@ -13,15 +13,15 @@ package de.nb.federkiel.deutsch.grammatik.phrase;
 import javax.annotation.Nullable;
 
 import de.nb.federkiel.deutsch.grammatik.kategorie.Genus;
-import de.nb.federkiel.deutsch.grammatik.kategorie.IDeterminativ;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Kasus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
+import de.nb.federkiel.deutsch.grammatik.wortart.artikelwort.Artikel;
 import de.nb.federkiel.deutsch.grammatik.wortart.substantiv.Aufzaehlbar;
 import de.nb.federkiel.grammatik.wortart.verb.VerbFlexionstyp;
 
 /**
  * Eine Nominalphrase mit spezifiziertem Numerus.
- * 
+ *
  * @author nikolaj
  */
 public class NumNominalphrase implements Aufzaehlbar {
@@ -31,17 +31,15 @@ public class NumNominalphrase implements Aufzaehlbar {
   public NumNominalphrase(final Nominalphrase nominalphrase,
       final Numerus numerus) {
 		this.nominalphrase = nominalphrase;
-		this.numerus     = numerus;		
+		this.numerus     = numerus;
 	}
 
   public String getFlektiert(final Kasus kasus) {
-    return this.nominalphrase.getFlektiert(kasus, this.numerus);
+    return nominalphrase.getFlektiert(kasus, numerus);
 	}
 
-  public String getFlektiertMitDeterminativ(final Kasus kasus,
-      final IDeterminativ determinativ) {
-    return this.nominalphrase.getFlektiertMitDeterminativ(kasus, numerus,
-        determinativ);
+  public String getFlektiertMitArtikel(final Kasus kasus, final @Nullable Artikel artikel) {
+    return nominalphrase.getFlektiertMitArtikel(kasus, numerus, artikel);
   }
 
   @Override

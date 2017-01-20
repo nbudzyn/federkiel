@@ -154,7 +154,7 @@ abstract class AbstractPronomenFlektierer extends
         stamm,
         buildFeatureMap(generateStaerke ? STARK : null, Valenz.LEER
             .buildErgaenzungenUndAngabenSlots("3", null, PLURAL,
-                StringFeatureLogicUtil.FALSE)));
+                StringFeatureLogicUtil.FALSE, true)));
     // Die ihrer selbst gedenkenden Männer, aber nicht
     // *die Ihrer selbst gedenkenden Männer!
   }

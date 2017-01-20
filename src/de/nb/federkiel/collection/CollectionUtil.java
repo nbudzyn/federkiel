@@ -1,5 +1,7 @@
 package de.nb.federkiel.collection;
 
+import static com.google.common.collect.ImmutableList.toImmutableList;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -9,7 +11,6 @@ import java.util.Map.Entry;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
@@ -140,6 +141,6 @@ final public class CollectionUtil {
   }
 
   public static <E extends Object> ImmutableList<E> immmutableListCopySkipNulls(Collection<E> col) {
-    return ImmutableList.copyOf(Collections2.filter(col, arg -> arg != null));
+    return col.stream().filter(arg -> arg != null).collect(toImmutableList());
   }
 }

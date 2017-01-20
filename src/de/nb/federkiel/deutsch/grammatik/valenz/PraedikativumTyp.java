@@ -10,70 +10,56 @@ import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.feature.FeatureAssignment;
 import de.nb.federkiel.feature.RoleFrameSlot;
 import de.nb.federkiel.feature.SlotRequirements;
+import de.nb.federkiel.feature.StringFeatureLogicUtil;
 import de.nb.federkiel.feature.ThreeStateFeatureEqualityFormula;
 import de.nb.federkiel.logic.FormulaUtil;
 import de.nb.federkiel.logic.IFormula;
 
 /**
- * Prädikativum - also Prädikatsnomen oder prädikatives Adjektiv (als Typ von
- * Ergänzung zu einem Verb)
+ * Prädikativum - also Prädikatsnomen oder prädikatives Adjektiv (als Typ von Ergänzung zu einem
+ * Verb)
  *
  * @author nbudzyn 2011
  */
 @Immutable
 final class PraedikativumTyp extends AbstractErgaenzungsOderAngabenTyp {
-	public static final PraedikativumTyp INSTANCE =
-			new PraedikativumTyp();
+  public static final PraedikativumTyp INSTANCE = new PraedikativumTyp();
 
-	private static final RoleFrameSlot RESTRICTION_SLOT =
-			RoleFrameSlot
-					.of(
-							"Praedikativum",
-							SlotRequirements
-									.of("N_PRONOMEN_PHR_REIHUNG",
-											buildPraedikatsnomenFeatureCondition(null)), // "ein Esel"
-							SlotRequirements.of("ADJEKTIV_PHR_UNFLEKT_REIHUNG",
-									buildPraedikativeOderAdverbialeAdjektivphraseFeatureCondition(
-											null, null, null, null))); // klug
+  private static final RoleFrameSlot RESTRICTION_SLOT = RoleFrameSlot.of("Praedikativum",
+      SlotRequirements.of("N_PRONOMEN_PHR_REIHUNG", buildPraedikatsnomenFeatureCondition(null)), // "ein
+                                                                                                 // Esel"
+      SlotRequirements.of("ADJEKTIV_PHR_UNFLEKT_REIHUNG",
+          buildPraedikativeOderAdverbialeAdjektivphraseFeatureCondition(null, null, null, null))); // klug
 
-	private PraedikativumTyp() {
-		super();
-	}
+  private PraedikativumTyp() {
+    super();
+  }
 
-	/**
-	 * @param numerusDesSubjekts
-	 *            <code>null</code> erlaubt, wenn es kein Subjekt gibt
-	 *            ("Heute sind Ferien.", "Heute ist hitzefrei.") - wenn der
-	 *            Numerus des Prädikativums also nicht eingeschränkt werden
-	 *            soll.
-	 */
-	@Override
-	public RoleFrameSlot buildSlot(final String person,
-      final Genus genusDesSubjekts,
-      final @Nullable Numerus numerusDesSubjekts,
-			final String hoeflichkeitsformDesSubjekts) {
-		return RoleFrameSlot
-				.of(
-						"Praedikativum",
-						SlotRequirements
-								.of("N_PRONOMEN_PHR_REIHUNG",
-										buildPraedikatsnomenFeatureCondition(numerusDesSubjekts)), // "ein Esel"
-						SlotRequirements
-								.
-								of("ADJEKTIV_PHR_UNFLEKT_REIHUNG",
-										buildPraedikativeOderAdverbialeAdjektivphraseFeatureCondition(
-												person, genusDesSubjekts,
-												numerusDesSubjekts, hoeflichkeitsformDesSubjekts))); // "klug",
-		// "Ihrer selbst überdrüssig"
-	}
+  /**
+   * @param numerusDesSubjekts <code>null</code> erlaubt, wenn es kein Subjekt gibt ("Heute sind
+   *        Ferien.", "Heute ist hitzefrei.") - wenn der Numerus des Prädikativums also nicht
+   *        eingeschränkt werden soll.
+   */
+  @Override
+  public RoleFrameSlot buildSlot(final String person, final Genus genusDesSubjekts,
+      final @Nullable Numerus numerusDesSubjekts, final String hoeflichkeitsformDesSubjekts) {
+    return RoleFrameSlot.of("Praedikativum",
+        SlotRequirements.of("N_PRONOMEN_PHR_REIHUNG",
+            buildPraedikatsnomenFeatureCondition(numerusDesSubjekts)), // "ein Esel"
+        SlotRequirements.of("ADJEKTIV_PHR_UNFLEKT_REIHUNG",
+            buildPraedikativeOderAdverbialeAdjektivphraseFeatureCondition(person, genusDesSubjekts,
+                numerusDesSubjekts, hoeflichkeitsformDesSubjekts))); // "klug",
+    // "Ihrer selbst überdrüssig"
+  }
 
-	@Override
-	public RoleFrameSlot buildRestrictionSlot() {
-		return RESTRICTION_SLOT;
-	}
+  @Override
+  public RoleFrameSlot buildRestrictionSlot() {
+    return RESTRICTION_SLOT;
+  }
 
-	private static IFormula<FeatureAssignment> buildPraedikatsnomenFeatureCondition(
+  private static IFormula<FeatureAssignment> buildPraedikatsnomenFeatureCondition(
       final @Nullable Numerus numerusDesSubjekts) {
+    // @formatter:off
 		// Petra war Regisseur. (Unterschiedliches Genus!)
 		// Ich war Regisseur. (Unterschiedliche Person!)
 
@@ -88,6 +74,8 @@ final class PraedikativumTyp extends AbstractErgaenzungsOderAngabenTyp {
 							ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
 									"kasus", "nom"),
 							ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
+                                "geeignetAlsPraedikativum", StringFeatureLogicUtil.TRUE),
+							ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
 									"numerus", "sg")));
 
 			// buildFeatureConditionExcludingIrrreflPersonalPronounIfAppropriate()
@@ -97,22 +85,27 @@ final class PraedikativumTyp extends AbstractErgaenzungsOderAngabenTyp {
 
 		// subjekt pl - oder gar kein subjekt (null)
 		// Duden Bd.4 2006, 1579: "Diese Sachen sind mein einziger Besitz."!
-		return ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
-				"kasus", "nom");
-	}
+		return FormulaUtil.and(
+            Arrays.asList(
+                ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
+                        "kasus", "nom"),
+                ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
+                    "geeignetAlsPraedikativum", StringFeatureLogicUtil.TRUE)));
+	      // @formatter:on
+  }
 
-	@Override
-	public boolean equals(final Object obj) {
-		return super.equals(obj);
-	}
+  @Override
+  public boolean equals(final Object obj) {
+    return super.equals(obj);
+  }
 
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
 
-	@Override
-	public String toString() {
-		return "Prädikativum";
-	}
+  @Override
+  public String toString() {
+    return "Prädikativum";
+  }
 }

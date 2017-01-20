@@ -7,6 +7,7 @@ import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Streams;
 
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.feature.FeatureStructure;
@@ -102,17 +103,14 @@ public final class WortformUtil {
 			final Iterable<IWordForm> wordForms,
 			final boolean alsoAllowLowerCaseAtSentenceStart,
 			final Locale locale) {
-		final ImmutableList.Builder<IWordForm> res =
-				ImmutableList.<IWordForm> builder();
-
-		// "abends" / "Haus"
-		for (final IWordForm wordForm : wordForms) {
-			res.addAll(wordForm
-					.expandToUpperLowerCaseForms(
-							alsoAllowLowerCaseAtSentenceStart,
-							locale));
-		}
-
-		return res.build();
+      // "abends" / "Haus"
+    // @formatter:off
+	  return Streams.stream(wordForms)
+	      .flatMap(wordForm -> wordForm
+                    .expandToUpperLowerCaseForms(
+                            alsoAllowLowerCaseAtSentenceStart,
+                            locale).stream())
+	      .collect(ImmutableList.toImmutableList());
+      // @formatter:on
 	}
 }

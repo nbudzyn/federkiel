@@ -5,6 +5,8 @@
  */
 package de.nb.federkiel.string;
 
+import static com.google.common.collect.ImmutableList.toImmutableList;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Locale;
@@ -13,7 +15,6 @@ import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableList;
 
 @Immutable
 @ThreadSafe
@@ -218,13 +219,7 @@ public class StringUtil {
 
   public static ImmutableCollection<String> prepend(final String prefix,
       final Collection<String> strings) {
-    final ImmutableList.Builder<String> res = ImmutableList.builder();
-
-    for (final String string : strings) {
-      res.add(prefix + string);
-    }
-
-    return res.build();
+    return strings.stream().map(string -> prefix + string).collect(toImmutableList());
   }
 
   public static String replaceRegion(final String string, final int startIndex,

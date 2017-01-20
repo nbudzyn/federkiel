@@ -23,8 +23,7 @@ StringFeatureValue, StringFeatureValue, FeatureAssignment> {
 	public StringFeatureValue calculate(
 			final StringFeatureValue first, final StringFeatureValue second) {
 
-		if (StringFeatureLogicUtil.stringToBoolean(first.getString()) &&
-				StringFeatureLogicUtil.stringToBoolean(second.getString())) {
+    if (FeatureStructure.toBoolean(first) && FeatureStructure.toBoolean(second)) {
 			return StringFeatureValue.J;
 		}
 

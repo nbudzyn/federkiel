@@ -1,8 +1,10 @@
 package de.nb.federkiel.deutsch.grammatik.wortart.flexion;
 
+import static com.google.common.collect.ImmutableList.toImmutableList;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Numerus.PLURAL;
 
 import java.util.Collection;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
@@ -48,49 +50,121 @@ abstract class AbstractArtikelUndPronomenFlektierer extends
         generateFeatureWortartTraegtFlexionsendung, generateStaerke);
   }
 
-  private Collection<IWordForm> einKeinUnser(final Lexeme lexeme,
-      final String pos, final String stamm, final boolean auchPlural,
-      final boolean generateFeatureWortartTraegtFlexionsendung,
-      final boolean generateStaerke) {
-    final ImmutableList.Builder<IWordForm> res = ImmutableList
-        .<IWordForm> builder();
+  public ImmutableList<IWordForm> einKeinUnser(final Lexeme lexeme,
+      final String pos,
+      final boolean generateFeatureWortartTraegtFlexionsendung, final boolean generateStaerke,
+      final Numerus numerus, Kasus kasus, Genus genus) {
+    return einKeinUnser(lexeme, pos,
+        lexeme.getCanonicalizedForm().substring(0, lexeme.getCanonicalizedForm().length()),
+        generateFeatureWortartTraegtFlexionsendung, generateStaerke, numerus, kasus, genus);
+  }
 
+  private Collection<IWordForm> einKeinUnser(final Lexeme lexeme, final String pos,
+      final String stamm, final boolean auchPlural,
+      final boolean generateFeatureWortartTraegtFlexionsendung, final boolean generateStaerke) {
+    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
+
+    res.addAll(einKeinUnserSg(lexeme, pos, stamm, generateFeatureWortartTraegtFlexionsendung,
+        generateStaerke));
+
+    if (auchPlural) {
+      res.addAll(einKeinUnserPl(lexeme, pos, stamm, generateFeatureWortartTraegtFlexionsendung,
+          generateStaerke));
+    }
+
+    return res.build();
+  }
+
+  private Collection<IWordForm> einKeinUnserSg(final Lexeme lexeme, final String pos,
+      final String stamm,
+      final boolean generateFeatureWortartTraegtFlexionsendung, final boolean generateStaerke) {
+    // @formatter:off
+    return Stream.of(Kasus.values())
+        .map(
+            kasus -> einKeinUnserSg(lexeme, pos, stamm, generateFeatureWortartTraegtFlexionsendung,
+                generateStaerke, kasus))
+        .flatMap(Collection::stream)
+        .collect(toImmutableList());
+    // @formatter:on
+  }
+
+  private Collection<IWordForm> einKeinUnserSg(final Lexeme lexeme, final String pos,
+      final String stamm, final boolean generateFeatureWortartTraegtFlexionsendung,
+      final boolean generateStaerke, Kasus kasus) {
+    return Stream
+        .of(Genus.values()).map(genus -> einKeinUnserSg(lexeme, pos, stamm,
+            generateFeatureWortartTraegtFlexionsendung, generateStaerke, kasus, genus))
+        .flatMap(Collection::stream).collect(toImmutableList());
+  }
+
+  private Collection<IWordForm> einKeinUnserPl(final Lexeme lexeme, final String pos,
+      final String stamm, final boolean generateFeatureWortartTraegtFlexionsendung,
+      final boolean generateStaerke) {
+    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
+
+    Stream
+        .of(Kasus.values()).map(kasus -> einKeinUnserPl(lexeme, pos, stamm,
+            generateFeatureWortartTraegtFlexionsendung, generateStaerke, kasus))
+        .forEach(e -> res.addAll(e));
+
+    return res.build();
+  }
+
+  public ImmutableList<IWordForm> einKeinUnser(final Lexeme lexeme,
+      final String pos, final String stamm,
+      final boolean generateFeatureWortartTraegtFlexionsendung,
+      final boolean generateStaerke,
+      final Numerus numerus, Kasus kasus, Genus genus) {
+    switch (numerus) {
+      case SINGULAR:
+        return einKeinUnserSg(lexeme, pos, stamm, generateFeatureWortartTraegtFlexionsendung,
+            generateStaerke, kasus, genus);
+      case PLURAL:
+        return einKeinUnserPl(lexeme, pos, stamm, generateFeatureWortartTraegtFlexionsendung,
+            generateStaerke, kasus);
+      default:
+        throw new IllegalStateException("Unerwarteter Numerus: " + numerus);
+    }
+  }
+
+  public ImmutableList<IWordForm> einKeinUnserSg(final Lexeme lexeme, final String pos,
+      final String stamm, final boolean generateFeatureWortartTraegtFlexionsendung,
+      final boolean generateStaerke, Kasus kasus, Genus genus) {
     final String staerke = generateStaerke ? STARK : null;
 
-    res.addAll(adjStarkSg(
-        lexeme,
-        pos,
-        stamm, // nur "eines (Autos)", nicht
+    return adjStarkSg(lexeme, pos, stamm, // nur "eines (Autos)", nicht
         GenMaskNeutrSgModus.NUR_ES, // "ein (Auto)",
         // "*einen (Autos)"
         NomSgMaskUndNomAkkSgNeutrModus.ENDUNGSLOS, // nicht
         // "*einer (Auto)"
-        generateFeatureWortartTraegtFlexionsendung ? VorgabeFuerNachfolgendesAdjektiv.ERLAUBT_NUR_SCHWACH
-            : VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN, Valenz.LEER,
-        buildFeatureMap(staerke)));
+        generateFeatureWortartTraegtFlexionsendung
+            ? VorgabeFuerNachfolgendesAdjektiv.ERLAUBT_NUR_SCHWACH
+            : VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN,
+        Valenz.LEER, buildFeatureMap(staerke), kasus, genus);
+  }
 
-    if (auchPlural) {
-      final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv = generateFeatureWortartTraegtFlexionsendung ? VorgabeFuerNachfolgendesAdjektiv.ERLAUBT_NUR_SCHWACH
-          : VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN;
+  public ImmutableList<IWordForm> einKeinUnserPl(final Lexeme lexeme, final String pos,
+      final String stamm, final boolean generateFeatureWortartTraegtFlexionsendung,
+      final boolean generateStaerke, Kasus kasus) {
+    final String staerke = generateStaerke ? STARK : null;
 
-      res.addAll(adjStarkPl(
-          lexeme,
-          vorgabeFuerNachfolgendesAdjektiv,
-          pos,
-          stamm,
-          buildFeatureMap(staerke,
-              Valenz.LEER.buildErgaenzungenUndAngabenSlots("3", null,
-              // (IHRER selbst gedenkende) Männer /
-              // Frauen / Kinder,
-              // -> alle Genera möglich!
-              // (und außerdem macht es bei LEERER Valenz
-              // ohnehin keinen Unterschied!)
-                  PLURAL, StringFeatureLogicUtil.FALSE))));
-      // Die ihrer selbst gedenkenden Männer, aber nicht
-      // *die Ihrer selbst gedenkenden Männer!
-    }
+    final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv =
+        generateFeatureWortartTraegtFlexionsendung
+            ? VorgabeFuerNachfolgendesAdjektiv.ERLAUBT_NUR_SCHWACH
+            : VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN;
 
-    return res.build();
+    return adjStarkPl(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stamm,
+        buildFeatureMap(staerke,
+            Valenz.LEER.buildErgaenzungenUndAngabenSlots("3", null,
+                // (IHRER selbst gedenkende) Männer /
+                // Frauen / Kinder,
+                // -> alle Genera möglich!
+                // (und außerdem macht es bei LEERER Valenz
+                // ohnehin keinen Unterschied!)
+                PLURAL, StringFeatureLogicUtil.FALSE, true)),
+        kasus);
+    // Die ihrer selbst gedenkenden Männer, aber nicht
+    // *die Ihrer selbst gedenkenden Männer!
   }
 
   /**
@@ -107,7 +181,7 @@ abstract class AbstractArtikelUndPronomenFlektierer extends
       final Numerus numerus, final @Nullable Genus genus, final String string) {
     final ImmutableMap<String, IFeatureValue> additionalFeatures = buildFeatureMap(
         staerke, Valenz.LEER.buildErgaenzungenUndAngabenSlots("3", genus,
-            numerus, StringFeatureLogicUtil.FALSE));
+            numerus, StringFeatureLogicUtil.FALSE, true));
     // Die ihrer selbst gedenkenden Männer, aber nicht
     // *die Ihrer selbst gedenkenden Männer!
 
@@ -130,7 +204,7 @@ abstract class AbstractArtikelUndPronomenFlektierer extends
       final Numerus numerus, final @Nullable Genus genus, final String string) {
     final ImmutableMap<String, IFeatureValue> additionalFeatures = buildFeatureMap(Valenz.LEER
         .buildErgaenzungenUndAngabenSlots("3", genus, numerus,
-            StringFeatureLogicUtil.FALSE));
+            StringFeatureLogicUtil.FALSE, true));
     // Die ihrer selbst gedenkenden Männer, aber nicht
     // *die Ihrer selbst gedenkenden Männer!
 

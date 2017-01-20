@@ -12,7 +12,7 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 class OrFormula<A extends IAssignment>
 extends BinaryLogicalOperatorFormula<A> {
-	protected OrFormula(final IFormula<A> firstFormula,
+  protected OrFormula(final IFormula<A> firstFormula,
 			final IFormula<A> secondFormula) {
 		super(firstFormula, secondFormula, "OR");
 	}
