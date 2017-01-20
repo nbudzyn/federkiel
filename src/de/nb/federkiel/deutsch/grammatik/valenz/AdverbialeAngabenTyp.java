@@ -8,6 +8,7 @@ import javax.annotation.concurrent.Immutable;
 
 import de.nb.federkiel.deutsch.grammatik.kategorie.Genus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
+import de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil;
 import de.nb.federkiel.feature.FeatureAssignment;
 import de.nb.federkiel.feature.RoleFrameSlot;
 import de.nb.federkiel.feature.SlotRequirements;
@@ -108,6 +109,9 @@ final class AdverbialeAngabenTyp extends AbstractErgaenzungsOderAngabenTyp {
     if (featureConditionExcludingIrrreflPersonalPronounIfAppropriate != null) {
       featureReqs.add(featureConditionExcludingIrrreflPersonalPronounIfAppropriate);
     }
+
+    featureReqs.add(ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
+        GermanUtil.IST_DAS_SUBJEKT, StringFeatureLogicUtil.FALSE));
 
     return FormulaUtil.and(featureReqs);
   }

@@ -41,6 +41,8 @@ public final class GermanUtil {
 
   public static final String EINZELNES_REFLEXIVPRONOMEN = "einzelnesReflexivpronomen";
 
+  public static final String IST_DAS_SUBJEKT = "istDasSubjekt";
+
   /**
    * Führt eine E-Tilgung von einem Stamm durch - wenn möglich. Beispiele:
    * <ul>

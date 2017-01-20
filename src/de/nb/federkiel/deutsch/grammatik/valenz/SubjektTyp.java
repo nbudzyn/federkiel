@@ -101,7 +101,7 @@ final class SubjektTyp extends AbstractErgaenzungsOderAngabenTyp {
     // 445.)
 
     featureReqs.add(ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
-        "geeignetAlsSubjekt", StringFeatureLogicUtil.TRUE));
+        GermanUtil.IST_DAS_SUBJEKT, StringFeatureLogicUtil.TRUE));
 
     return FormulaUtil.and(featureReqs); // immutable
   }

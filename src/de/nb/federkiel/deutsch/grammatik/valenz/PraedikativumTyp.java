@@ -7,6 +7,7 @@ import javax.annotation.concurrent.Immutable;
 
 import de.nb.federkiel.deutsch.grammatik.kategorie.Genus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
+import de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil;
 import de.nb.federkiel.feature.FeatureAssignment;
 import de.nb.federkiel.feature.RoleFrameSlot;
 import de.nb.federkiel.feature.SlotRequirements;
@@ -73,8 +74,8 @@ final class PraedikativumTyp extends AbstractErgaenzungsOderAngabenTyp {
 					Arrays.asList(
 							ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
 									"kasus", "nom"),
-							ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
-                                "geeignetAlsPraedikativum", StringFeatureLogicUtil.TRUE),
+						    ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
+						        GermanUtil.IST_DAS_SUBJEKT, StringFeatureLogicUtil.FALSE),
 							ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
 									"numerus", "sg")));
 
@@ -90,7 +91,7 @@ final class PraedikativumTyp extends AbstractErgaenzungsOderAngabenTyp {
                 ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
                         "kasus", "nom"),
                 ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
-                    "geeignetAlsPraedikativum", StringFeatureLogicUtil.TRUE)));
+                    GermanUtil.IST_DAS_SUBJEKT, StringFeatureLogicUtil.FALSE)));
 	      // @formatter:on
   }
 
