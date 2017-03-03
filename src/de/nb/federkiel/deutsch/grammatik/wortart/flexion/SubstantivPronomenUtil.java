@@ -42,7 +42,10 @@ public final class SubstantivPronomenUtil {
 
   /**
    * Ob dieses Lexeme ein NN ist, das wie ein Eigenname gebraucht wird (z.B. <i>Mutter</i>, vgl.
-   * <i>Mutters Küche...</i>)
+   * <i>Mutters Küche...</i>). Dies sind wohl fast nur Verwandschaftsbezeichnungenn (Duden, 397),
+   * evtl. "Apostels Gedanke" o.Ä.
+   * <p>
+   * Hierunter fallen jeden falls nicht "Januar", "Weihnachten" oder Ähnliches!
    */
   public static final String NN_WIE_EIN_EIGENNAME_GEBRAUCHT_KEY = "nnWieEinEigennameGebraucht";
 
@@ -50,11 +53,6 @@ public final class SubstantivPronomenUtil {
    * Ob dieses Lexeme ein substantiviertes Adjektiv ist - z.B. <i>(das) Schöne</i>.
    */
   public static final String SUBSTANTIVIERTES_ADJEKTIV_KEY = "substantiviertesAdjektiv";
-
-  /**
-   * Angabe zur Zaehlbarkeit (zaehlbar, nicht zaehlbar, Plurale Tantum)
-   */
-  public static final String ZAEHLBARKEIT_KEY = "zaehlbarkeit";
 
   /**
    * Ob es sich um eine Adelspräposition handelt (<i>von</i> o.Ä.)
@@ -69,8 +67,8 @@ public final class SubstantivPronomenUtil {
    * Erzeugt ein neues NN (typical features)
    */
   public static Lexeme createNN(final String nennform, final boolean substantiviertesAdjektiv,
-      final Genus genus, final NumerabilitaetsInfo zaehlbarkeit) {
-    return createNN(nennform, genus, substantiviertesAdjektiv, false, zaehlbarkeit,
+      final Genus genus) {
+    return createNN(nennform, genus, substantiviertesAdjektiv, false,
         ZEITRAUMNAME_KEINER, false);
   }
 
@@ -79,7 +77,14 @@ public final class SubstantivPronomenUtil {
    */
   public static Lexeme createNN(final String nennform, final Genus genus,
       final boolean substantiviertesAdjektiv, final boolean nnWieEinEigennameGebraucht,
-      final NumerabilitaetsInfo zaehlbarkeit, final String zeitraumname, final boolean abkuerzung) {
+      final String zeitraumname, final boolean abkuerzung) {
+    // Das Konzept ist dies:
+    // Alles was FÜR DIE GRAMMATIK RELEVANT IST, wird als Merkmale im Lexem (oder - bei Abweichungen
+    // - in der
+    // Wortform) gespeichert. Alles was nur für die Bildung der Wortformen (oder die Ermittlung
+    // dieser Merkmale)
+    // relevant ist, wird nur als Parameter hin- und hergereicht.
+
     // @formatter:off
     final FeatureStructure features =
         FeatureStructure.fromStringValues(ImmutableMap.<String, String>builder()
@@ -89,7 +94,6 @@ public final class SubstantivPronomenUtil {
             .put(GENITIVATTRIBUTFAEHIG_KEY, StringFeatureLogicUtil.TRUE)
             .put(SUBSTANTIVIERTES_ADJEKTIV_KEY, StringFeatureLogicUtil.booleanToString(substantiviertesAdjektiv))
             .put(NN_WIE_EIN_EIGENNAME_GEBRAUCHT_KEY, StringFeatureLogicUtil.booleanToString(nnWieEinEigennameGebraucht))
-            .put(ZAEHLBARKEIT_KEY, zaehlbarkeit.getString())
             .build());
     // @formatter:on
     return new Lexeme(GermanLexemeType.NORMALES_NOMEN, nennform, features);
@@ -101,14 +105,23 @@ public final class SubstantivPronomenUtil {
    * @param genus <code>null</code> erlaubt bei Pluralia Tantum
    */
   public static Lexeme createNE(final String nennform, final boolean substantiviertesAdjektiv,
-      final @Nullable Genus genus, final NumerabilitaetsInfo numerabilitaetsInfo,
+      final @Nullable Genus genus,
       final boolean adelspraeposition) {
+    // Das Konzept ist dies:
+    // Alles was FÜR DIE GRAMMATIK RELEVANT IST, wird als Merkmale im Lexem (oder - bei Abweichungen
+    // - in der
+    // Wortform) gespeichert. Alles was nur für die Bildung der Wortformen (oder die Ermittlung
+    // dieser Merkmale)
+    // relevant ist, wird nur als Parameter hin- und hergereicht.
+
+    // @formatter:off
     final FeatureStructure features =
-        FeatureStructure.fromStringValues(getDefaultSubstantivFSBuilder().put(GENUS_KEY,
-            FeatureStringConverter.toFeatureString(genus)).put(SUBSTANTIVIERTES_ADJEKTIV_KEY,
-                StringFeatureLogicUtil.booleanToString(substantiviertesAdjektiv)).put(
-                    ZAEHLBARKEIT_KEY, numerabilitaetsInfo.getString()).put(ADELSPRAEPOSITION,
-                        StringFeatureLogicUtil.booleanToString(adelspraeposition)).build());
+        FeatureStructure.fromStringValues(getDefaultSubstantivFSBuilder()
+            .put(GENUS_KEY,FeatureStringConverter.toFeatureString(genus))
+            .put(SUBSTANTIVIERTES_ADJEKTIV_KEY, StringFeatureLogicUtil.booleanToString(substantiviertesAdjektiv))
+            .put(ADELSPRAEPOSITION, StringFeatureLogicUtil.booleanToString(adelspraeposition))
+            .build());
+    // @formatter:on
     return new Lexeme(GermanLexemeType.EIGENNAME, nennform, features);
   }
 
@@ -155,7 +168,7 @@ public final class SubstantivPronomenUtil {
   }
 
   public static Lexeme createDemonstrativpronomen(final String nennform,
-      boolean geeignetAlsAdvAkkOderGen) {
+      final boolean geeignetAlsAdvAkkOderGen) {
     return new Lexeme(GermanLexemeType.DEMONSTRATIVPRONOMEN, nennform,
         FeatureStructure.fromStringValues(ImmutableMap.of(GEEIGNET_ALS_ADV_AKK_ODER_GEN_KEY,
             StringFeatureLogicUtil.booleanToString(geeignetAlsAdvAkkOderGen))));
@@ -221,34 +234,6 @@ public final class SubstantivPronomenUtil {
    */
   public static boolean isNeut(final Lexeme lexeme) {
     return hasStringFeatureThisValueOrIsUnspecified(lexeme, GENUS_KEY, GENUS_NEUT);
-  }
-
-  /**
-   * @return <code>true</code>, wenn das lexeme<code>lexeme</code> ein Plurale Tantum ist
-   */
-  public static boolean isPluraleTantum(final Lexeme lexeme) {
-    final String zaehlbarkeitString = lexeme.getStringFeatureValue(ZAEHLBARKEIT_KEY);
-    return zaehlbarkeitString.equals(NumerabilitaetsInfo.PLURALE_TANTUM.getString());
-  }
-
-  /**
-   * @param lexeme darf KEINE Plurale Tantum sein
-   *
-   * @return <code>true</code>, wenn das lexem zaehlbar ist, <code>false</code> , wenn nicht.
-   *         Pluralia Tantum erzeugen einen Fehler.
-   */
-  public static boolean isZaehlbar(final Lexeme lexeme) {
-    final String zaehlbarkeitString = lexeme.getStringFeatureValue(ZAEHLBARKEIT_KEY);
-    if (zaehlbarkeitString.equals(NumerabilitaetsInfo.ZAEHLBAR.getString())) {
-      return true;
-    }
-
-    if (zaehlbarkeitString.equals(NumerabilitaetsInfo.NICHT_ZAEHLBAR.getString())) {
-      return false;
-    }
-
-    throw new IllegalStateException(
-        "Unexpected value for key " + ZAEHLBARKEIT_KEY + ": " + zaehlbarkeitString);
   }
 
   private static boolean hasStringFeatureThisValueOrIsUnspecified(final Lexeme lexeme,

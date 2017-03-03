@@ -60,7 +60,9 @@ public final class VerbFlektierer implements IFlektierer {
    * Siehe Duden 704
    */
   private static final ImmutableCollection<Basisformen> AUSNAHMEENDEN =
-      ImmutableList.of(new Basisformen("backen",
+      ImmutableList.of(
+          // @formatter:off
+          new Basisformen("backen",
           // du
           alt("bäckst", "backst"),
           // er
@@ -307,6 +309,9 @@ public final class VerbFlektierer implements IFlektierer {
           // TODO ...
           new Basisformen("sterben", "stirbst", "stirbt", "stirb", "starb", "stürbe",
               alt("gestorben", "†"), Perfektbildung.SEIN),
+          // TODO...
+          new Basisformen("tragen", "trägst", "trägt", "trag", "trug", "trüge", "getragen",
+              Perfektbildung.HABEN),
           // TODO ...
           new Basisformen("treffen", "triffst", "trifft", "triff", "traf", "träfe", "getroffen",
               Perfektbildung.HABEN),
@@ -323,6 +328,7 @@ public final class VerbFlektierer implements IFlektierer {
       // gezogen.
       // TODO ...
 
+      // @formatter:on
       // TODO Alle Verben mit allen ihren Valenzen in
       // VerbLister übertragen
       // ...

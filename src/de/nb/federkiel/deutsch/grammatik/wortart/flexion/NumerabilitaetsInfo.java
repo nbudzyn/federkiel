@@ -6,28 +6,33 @@ package de.nb.federkiel.deutsch.grammatik.wortart.flexion;
  * @author nbudzyn 2011
  */
 public enum NumerabilitaetsInfo {
-	/**
-	 * z.B. Hunde
-	 */
-	ZAEHLBAR("zaehlbar"),
+  // TODO Wird zurzeit gar nicht verwendet. Wäre aber vielleicht nicht schlecht für den
+  // Einstieg in den Flektierer?
 
-	/**
-	 * Woerter die definitiv nicht zählbar sind (vielleicht bei Eigennamen)
-	 */
-	NICHT_ZAEHLBAR("nichtZaehlbar"),
+  // TODO könnte man auch als eine Art AdditionalNELexemeInfo aus dem NEGuesser übergeben!
 
-	/**
-	 * z.B. Eltern
-	 */
-	PLURALE_TANTUM("pluraleTantum");
+  /**
+   * z.B. Hunde
+   */
+  ZAEHLBAR("zaehlbar"),
 
-	private String string;
+  /**
+   * Woerter die definitiv nicht zählbar sind (vielleicht bei Eigennamen)
+   */
+  NICHT_ZAEHLBAR("nichtZaehlbar"),
 
-	private NumerabilitaetsInfo(final String string) {
-		this.string = string;
-	}
+  /**
+   * z.B. Eltern
+   */
+  PLURALE_TANTUM("pluraleTantum");
 
-	public String getString() {
-		return this.string;
-	}
+  private String string;
+
+  private NumerabilitaetsInfo(final String string) {
+    this.string = string;
+  }
+
+  public String getString() {
+    return string;
+  }
 }

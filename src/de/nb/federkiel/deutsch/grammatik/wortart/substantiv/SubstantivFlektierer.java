@@ -495,6 +495,7 @@ public class SubstantivFlektierer implements IFlektierer {
    *          "die Schweiz") oder nicht ("Deutschland")
    */
   public Collection<IWordForm> std(final Lexeme lexeme, final String pos,
+      final boolean zaehlbar,
       final boolean lexemStehtMitArtikelAusserImTelegrammstil,
       final boolean etablierteGruppeArtikelSgNurBeiSubjektNoetig,
       final boolean stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional,
@@ -502,8 +503,6 @@ public class SubstantivFlektierer implements IFlektierer {
       final boolean kommtEinemEigennameNaheDassGenitivSAuchEntfallenKann,
       final boolean personOderTier) {
     final Collection<IWordForm> res = new ArrayList<>(8);
-
-    final boolean zaehlbar = SubstantivPronomenUtil.isZaehlbar(lexeme);
 
     final Collection<String> pluralAlternativen = zaehlbar ? plural(lexeme,
         fremdwortTyp, kommtEinemEigennameNaheDassGenitivSAuchEntfallenKann,
@@ -997,6 +996,7 @@ public class SubstantivFlektierer implements IFlektierer {
     }
 
     // "Teil des Ganzen ist ..."
+    // "Ein Wasser aus dem Spessart erkennt man am Geschmack."
     return Artikelwortbezug.IM_NORMALSTIL_MIT_ODER_OHNE_ARTIKELWORT;
   }
 
