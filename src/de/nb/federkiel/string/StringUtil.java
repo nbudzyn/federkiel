@@ -204,6 +204,16 @@ public class StringUtil {
     return false;
   }
 
+  public static boolean startsWith(final String string, final String... possibleBeginnings) {
+    for (final String possibleBeginning : possibleBeginnings) {
+      if (string.startsWith(possibleBeginning)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   /**
    * @return <code>true</code>, if <code>string</code> equals one of the <code>otherStrings</code>.
    */

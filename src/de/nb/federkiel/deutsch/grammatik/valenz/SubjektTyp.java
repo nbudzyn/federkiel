@@ -79,7 +79,7 @@ final class SubjektTyp extends AbstractErgaenzungsOderAngabenTyp {
     featureReqs.add(ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue("kasus", "nom"));
     if (pseudoaktantEs) {
       featureReqs.add(ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
-          GermanUtil.GEEIGNET_ALS_PSEUDOAKTANT_ES,
+          GermanUtil.GEEIGNET_ALS_PSEUDOAKTANT_ES_KEY,
           StringFeatureLogicUtil.booleanToString(pseudoaktantEs)));
     }
 
@@ -101,7 +101,7 @@ final class SubjektTyp extends AbstractErgaenzungsOderAngabenTyp {
     // 445.)
 
     featureReqs.add(ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
-        GermanUtil.IST_DAS_SUBJEKT, StringFeatureLogicUtil.TRUE));
+        GermanUtil.IST_DAS_SUBJEKT_KEY, StringFeatureLogicUtil.TRUE));
 
     return FormulaUtil.and(featureReqs); // immutable
   }

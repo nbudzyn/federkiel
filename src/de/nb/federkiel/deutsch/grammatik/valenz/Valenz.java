@@ -162,32 +162,30 @@ public final class Valenz {
 
   /**
    * Es regnet.
+   * <p>
+   * (Hierunter fallen die "Wetterverben".)
    */
   public static final Valenz IMPERSONALIA_NUR_PSEUDOAKTANT_ALS_FORMALES_SUBJEKT = new Valenz(
-      ErgaenzungsOderAngabeTypen.SUBJEKT,
       ErgaenzungsOderAngabeTypen.OBLIG_PSEUDOAKTANT_FORMALES_SUBJ);
 
   /**
    * Es regnet rote Rosen.
    */
   public static final Valenz IMPERSONALIA_PSEUDOAKTANT_ALS_FORMALES_SUBJEKT_UND_AKK_OBJ = new Valenz(
-      ErgaenzungsOderAngabeTypen.SUBJEKT,
       ErgaenzungsOderAngabeTypen.OBLIG_PSEUDOAKTANT_FORMALES_SUBJ,
       ErgaenzungsOderAngabeTypen.AKKUSATIVOBJEKT);
 
   /**
-   * Mir graut (vor...)
+   * Mir graut (vor...) / Es graut mir (vor...)
    */
   public static final Valenz IMPERSONALIA_OPT_PSEUDOAKTANT_ALS_FORMALES_SUBJEKT_UND_DAT_OBJ = new Valenz(
-      ErgaenzungsOderAngabeTypen.SUBJEKT,
       ErgaenzungsOderAngabeTypen.OPT_PSEUDOAKTANT_FORMALES_SUBJ,
       ErgaenzungsOderAngabeTypen.DATIVOBJEKT);
 
   /**
-   * Mich graut (vor...)
+   * Mich graut (vor...) / Es graut mich (vor...)
    */
   public static final Valenz IMPERSONALIA_OPT_PSEUDOAKTANT_ALS_FORMALES_SUBJEKT_UND_AKK_OBJ = new Valenz(
-      ErgaenzungsOderAngabeTypen.SUBJEKT,
       ErgaenzungsOderAngabeTypen.OPT_PSEUDOAKTANT_FORMALES_SUBJ,
       ErgaenzungsOderAngabeTypen.AKKUSATIVOBJEKT);
 
@@ -195,7 +193,6 @@ public final class Valenz {
    * Es bedarf eines Auswegs.
    */
   public static final Valenz IMPERSONALIA_PSEUDOAKTANT_ALS_FORMALES_SUBJEKT_UND_GEN_OBJ = new Valenz(
-      ErgaenzungsOderAngabeTypen.SUBJEKT,
       ErgaenzungsOderAngabeTypen.OBLIG_PSEUDOAKTANT_FORMALES_SUBJ,
       ErgaenzungsOderAngabeTypen.GENITIVOBJEKT);
 
@@ -203,7 +200,6 @@ public final class Valenz {
    * Es handelt sich um Peter.
    */
   public static final Valenz IMPERSONALIA_PSEUDOAKTANT_ALS_FORMALES_SUBJEKT_UND_REFL_AKK_OBJ = new Valenz(
-      ErgaenzungsOderAngabeTypen.SUBJEKT,
       ErgaenzungsOderAngabeTypen.OBLIG_PSEUDOAKTANT_FORMALES_SUBJ,
       ErgaenzungsOderAngabeTypen.REFL_AKKUSATIVOBJEKT);
 
@@ -262,6 +258,33 @@ public final class Valenz {
     return beiDiesenImplizitenErgaenzungen(ErgaenzungsOderAngabeTypen.SUBJEKT,
         ErgaenzungsOderAngabeTypen.REFL_AKKUSATIVOBJEKT);
   }
+
+  // TODO: "Dass-Sätze besetzen in der Regel Stellen, die auch von nominalen Ergänzungen besetzt
+  // werden können,
+  // insbesondere die Stelle des Subjekts und des direkten Objekts. Umgekehrt kann aber nicht
+  // überall dort [...]
+  // auch ein dass-Satz stehen. [...] Damit ist ein syntaktischer Unterschied [...] festgestellt
+  // [...]" (Mehr in "Der Satz" S.59.)
+
+  // TODO "Neben den dass-Stätzen spielen die indirekten Fragesätze als Ergänzungen die wichtigste
+  // Rolle.
+  // [Darunter] verstehen wir einen Nebensatz, der mit ob oder einen Fragewort (wie, wer, was [...])
+  // eingeleitet
+  // ist." (Das Wort S.59f.)
+
+  // TODO "Viele Verben können - oft als Alternative von dass-Sätzen - zu-Infinitive als Ergänzungen
+  // regieren. [...]
+  // Karl hofft zu gewinnen. Der zu-Infinitiv kann in erste Näherung als eine Art verkürzter Satz
+  // aufgefasst werden, in dem die Subjektstelle nicht besetzt ist."
+  // (Beispiele / Gegenbeispiele: "Helga verspricht, dass sie wartet / zu warten." Aber nur
+  // "Helga merkt, dass sie träumt." und "Helga versucht zu lesen." (Das Wort S. 60.)
+
+  // TODO "Als weitere Form von Ergänzung spielen Sätze eine Rolle, die wie Hauptsätze aussehen
+  // [...]
+  // Helga behauptet, Karl spiele / spielt Saxophon." (Das Wort S. 60.)
+
+  // TODO "Als weitere [Konstruktion] kommt der reine Infinitiv im sog. AcI vor (Helga sieht ihn
+  // Kartoffeln schälen [...]). (Das Wort S. 60.)
 
   /**
    * Erzeugt aus dieser Valenz eine weitere, die davon ausgeht, dass das gewisse Ergänzungen

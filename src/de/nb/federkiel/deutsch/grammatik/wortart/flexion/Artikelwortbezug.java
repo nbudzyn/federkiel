@@ -28,11 +28,17 @@ public enum Artikelwortbezug {
    */
   ZWINGEND_MIT_ARTIKELWORT_AUSSER_IM_TELEGRAMMSTIL(false, false, true, true),
   /**
-   * z.B. "Komponist" (Nom), vgl. "der Komponist war [...]", "[...] war Komponist"
+   * Z.B. (Klasse 1) "Komponist" (Nom), vgl. "der Komponist war [...]", "[...] war Komponist"
+   * <p>
+   * Oder (Klasse 2) "Fabrik" (Nom), vgl. "Die Fabrik ist neu", "Das ist eine Fabrik", "Ein solcher
+   * Produktionsort heißt Fabrik."
    * <p>
    * Hierzu gehören fast Pluralformen der NN, außerdem Singularformen von "sozial etablierten und
    * anerkannten" Gruppen ("Nationalität, Herkunf, Beruf, Funktion, Weltanschauung, Religion,
    * gesellschaftlicher Status usw." (Duden 445).
+   * <p>
+   * Außerdem gehörten hierzu die meisten anderen Nomen, die keine Stoffbezeichnungen (Käse),
+   * Sammelbezeichnungen (Obst, Vieh, Besteck) oder Abstrakta (Intelligenz, Musik) sind.
    */
   IM_NORMALSTIL_ALS_SUBJEKT_MIT_ARTIKELWORT(false, true, true, true),
   /**
@@ -48,9 +54,9 @@ public enum Artikelwortbezug {
   private final boolean imTelegrammstilOhneArtikelwortMoeglich;
   private final boolean mitArtikelwortMoeglich;
 
-  private Artikelwortbezug(boolean imNormalstilAlsSubjektOhneArtikelwortMoeglich,
-      boolean imNormalstilOhneArtikelwortMoeglich,
-      boolean imTelegrammstilOhneArtikelwortMoeglich, boolean mitArtikelwortMoeglich) {
+  private Artikelwortbezug(final boolean imNormalstilAlsSubjektOhneArtikelwortMoeglich,
+      final boolean imNormalstilOhneArtikelwortMoeglich,
+      final boolean imTelegrammstilOhneArtikelwortMoeglich, final boolean mitArtikelwortMoeglich) {
     this.imNormalstilAlsSubjektOhneArtikelwortMoeglich =
         imNormalstilAlsSubjektOhneArtikelwortMoeglich;
     this.imNormalstilOhneArtikelwortMoeglich = imNormalstilOhneArtikelwortMoeglich;

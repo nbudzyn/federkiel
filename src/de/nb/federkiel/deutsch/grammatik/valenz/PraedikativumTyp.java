@@ -75,7 +75,7 @@ final class PraedikativumTyp extends AbstractErgaenzungsOderAngabenTyp {
 							ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
 									"kasus", "nom"),
 						    ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
-						        GermanUtil.IST_DAS_SUBJEKT, StringFeatureLogicUtil.FALSE),
+						        GermanUtil.IST_DAS_SUBJEKT_KEY, StringFeatureLogicUtil.FALSE),
 							ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
 									"numerus", "sg")));
 
@@ -91,7 +91,7 @@ final class PraedikativumTyp extends AbstractErgaenzungsOderAngabenTyp {
                 ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
                         "kasus", "nom"),
                 ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
-                    GermanUtil.IST_DAS_SUBJEKT, StringFeatureLogicUtil.FALSE)));
+                    GermanUtil.IST_DAS_SUBJEKT_KEY, StringFeatureLogicUtil.FALSE)));
 	      // @formatter:on
   }
 

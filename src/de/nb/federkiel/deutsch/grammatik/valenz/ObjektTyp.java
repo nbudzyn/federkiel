@@ -174,7 +174,7 @@ final class ObjektTyp extends AbstractErgaenzungsOderAngabenTyp {
         FeatureStringConverter.toFeatureString(kasus)));
     if (pseudoaktantEs) {
       featureReqs.add(ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
-          GermanUtil.GEEIGNET_ALS_PSEUDOAKTANT_ES,
+          GermanUtil.GEEIGNET_ALS_PSEUDOAKTANT_ES_KEY,
           StringFeatureLogicUtil.booleanToString(pseudoaktantEs)));
     }
 
@@ -185,10 +185,10 @@ final class ObjektTyp extends AbstractErgaenzungsOderAngabenTyp {
     // Er freut sich, aber nicht *er freut ihn oder
     // *er freut sich selbst.
     featureReqs.add(ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
-        GermanUtil.EINZELNES_REFLEXIVPRONOMEN, StringFeatureLogicUtil.TRUE));
+        GermanUtil.EINZELNES_REFLEXIVPRONOMEN_KEY, StringFeatureLogicUtil.TRUE));
 
     featureReqs.add(ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
-        GermanUtil.IST_DAS_SUBJEKT, StringFeatureLogicUtil.FALSE));
+        GermanUtil.IST_DAS_SUBJEKT_KEY, StringFeatureLogicUtil.FALSE));
 
     // Wegen der vorangegangenen Bedinung können wir auf
     // buildFeatureConditionExcludingIrrreflPersonalPronounIfAppropriate()
@@ -212,7 +212,7 @@ final class ObjektTyp extends AbstractErgaenzungsOderAngabenTyp {
         FeatureStringConverter.toFeatureString(kasus)));
     if (pseudoaktantEs) {
       featureReqs.add(ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
-          GermanUtil.GEEIGNET_ALS_PSEUDOAKTANT_ES,
+          GermanUtil.GEEIGNET_ALS_PSEUDOAKTANT_ES_KEY,
           StringFeatureLogicUtil.booleanToString(pseudoaktantEs)));
     }
 
@@ -242,7 +242,7 @@ final class ObjektTyp extends AbstractErgaenzungsOderAngabenTyp {
     }
 
     featureReqs.add(ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
-        GermanUtil.IST_DAS_SUBJEKT, StringFeatureLogicUtil.FALSE));
+        GermanUtil.IST_DAS_SUBJEKT_KEY, StringFeatureLogicUtil.FALSE));
 
     return FormulaUtil.and(featureReqs); // immutable
   }

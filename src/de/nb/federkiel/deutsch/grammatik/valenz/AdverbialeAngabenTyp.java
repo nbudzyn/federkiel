@@ -111,7 +111,7 @@ final class AdverbialeAngabenTyp extends AbstractErgaenzungsOderAngabenTyp {
     }
 
     featureReqs.add(ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
-        GermanUtil.IST_DAS_SUBJEKT, StringFeatureLogicUtil.FALSE));
+        GermanUtil.IST_DAS_SUBJEKT_KEY, StringFeatureLogicUtil.FALSE));
 
     return FormulaUtil.and(featureReqs);
   }

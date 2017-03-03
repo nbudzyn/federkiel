@@ -32,16 +32,17 @@ public final class GermanUtil {
   public static final String ABLEITUNG_AUF_ER_KEY = "ableitungAufEr";
   public static final String GENITIV_SICHTBAR_DURCH_S_KEY = "genitivSichtbarDurchS";
   public static final String GENITIV_SICHTBAR_DURCH_R_KEY = "genitivSichtbarDurchR";
-  public static final String ERLAUBT_NACHGESTELLTES_SCHWACH_FLEKTIERTES_ADJEKTIV =
+  public static final String ERLAUBT_NACHGESTELLTES_SCHWACH_FLEKTIERTES_ADJEKTIV_KEY =
       "erlaubtNachgestelltesSchwachFlektiertesAdjektiv";
-  protected static final String ERLAUBT_NACHGESTELLTES_STARK_FLEKTIERTES_ADJEKTIV =
+  protected static final String ERLAUBT_NACHGESTELLTES_STARK_FLEKTIERTES_ADJEKTIV_KEY =
       "erlaubtNachgestelltesStarkFlektiertesAdjektiv";
 
-  public static final String GEEIGNET_ALS_PSEUDOAKTANT_ES = "geeignetAlsPseudoaktantEs";
+  public static final String GEEIGNET_ALS_PSEUDOAKTANT_ES_KEY = "geeignetAlsPseudoaktantEs";
 
-  public static final String EINZELNES_REFLEXIVPRONOMEN = "einzelnesReflexivpronomen";
+  public static final String EINZELNES_REFLEXIVPRONOMEN_KEY = "einzelnesReflexivpronomen";
 
-  public static final String IST_DAS_SUBJEKT = "istDasSubjekt";
+  public static final String IST_DAS_SUBJEKT_KEY = "istDasSubjekt";
+  public static final String NENNFORM_KEY = "nennform";
 
   /**
    * Führt eine E-Tilgung von einem Stamm durch - wenn möglich. Beispiele:

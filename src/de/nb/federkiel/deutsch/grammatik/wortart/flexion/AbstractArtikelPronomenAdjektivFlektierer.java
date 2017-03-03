@@ -1492,10 +1492,10 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
         .put(GermanUtil.GENITIV_SICHTBAR_DURCH_S_KEY, FeatureStructure.toFeatureValue(
             StringFeatureLogicUtil.booleanToString(kasusInfo.isGenitivSichtbarDurchS())));
     if (vorgabeFuerNachfolgendesAdjektiv.isErzeugen()) {
-      builder.put(GermanUtil.ERLAUBT_NACHGESTELLTES_SCHWACH_FLEKTIERTES_ADJEKTIV,
+      builder.put(GermanUtil.ERLAUBT_NACHGESTELLTES_SCHWACH_FLEKTIERTES_ADJEKTIV_KEY,
           FeatureStructure.toFeatureValue(StringFeatureLogicUtil
               .booleanToString(vorgabeFuerNachfolgendesAdjektiv.isErlaubtSchwach())));
-      builder.put(GermanUtil.ERLAUBT_NACHGESTELLTES_STARK_FLEKTIERTES_ADJEKTIV,
+      builder.put(GermanUtil.ERLAUBT_NACHGESTELLTES_STARK_FLEKTIERTES_ADJEKTIV_KEY,
           FeatureStructure.toFeatureValue(StringFeatureLogicUtil
               .booleanToString(vorgabeFuerNachfolgendesAdjektiv.isErlaubtStark())));
     }

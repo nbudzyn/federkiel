@@ -17,8 +17,10 @@ import de.nb.federkiel.plurivallogic.Plurival;
 
 
 /**
- * A Collection of role frames.<p>
- * (This is a value, not a term.)
+ * A Collection of role frames. That collection might contain several role frames - corresponding to
+ * several parts of the sentence (these are <i>not</i> alternatives!).
+ * <p>
+ * (A <code>RoleFrameCollection</code> is a value, not a term.)
  *
  * @author nbudzyn 2009
  */

@@ -331,7 +331,7 @@ abstract class AbstractArtikelUndPronomenFlektierer extends
             StringFeatureLogicUtil.booleanToString(hoeflichkeitsform));
 
     if (pseudoaktantMoeglichkeit.isMerkmalVorgesehen()) {
-      builder.put(GermanUtil.GEEIGNET_ALS_PSEUDOAKTANT_ES,
+      builder.put(GermanUtil.GEEIGNET_ALS_PSEUDOAKTANT_ES_KEY,
           StringFeatureLogicUtil.booleanToString(pseudoaktantMoeglichkeit
               .isMoeglich()));
     }

@@ -81,7 +81,7 @@ public abstract class Artikel {
       final IWordForm wortform =
           wortformNegativ(numerusBezugsphrase, kasusBezugsphrase, genusBezugsphrase);;
       return FeatureStructure.toBoolean(
-          wortform.getFeatureValue(GermanUtil.ERLAUBT_NACHGESTELLTES_SCHWACH_FLEKTIERTES_ADJEKTIV));
+          wortform.getFeatureValue(GermanUtil.ERLAUBT_NACHGESTELLTES_SCHWACH_FLEKTIERTES_ADJEKTIV_KEY));
     }
 
     private IWordForm wortformNegativ(final Numerus numerus, final Kasus kasus, final Genus genus) {
