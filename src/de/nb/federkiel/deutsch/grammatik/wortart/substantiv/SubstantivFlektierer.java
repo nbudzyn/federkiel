@@ -35,6 +35,7 @@ import de.nb.federkiel.deutsch.grammatik.wortart.flexion.SubstantivPronomenUtil;
 import de.nb.federkiel.deutsch.lexikon.GermanPOS;
 import de.nb.federkiel.feature.FeatureStructure;
 import de.nb.federkiel.feature.StringFeatureLogicUtil;
+import de.nb.federkiel.interfaces.ILexeme;
 import de.nb.federkiel.interfaces.IWordForm;
 import de.nb.federkiel.lexikon.Lexeme;
 import de.nb.federkiel.lexikon.Wortform;
@@ -815,16 +816,7 @@ public class SubstantivFlektierer implements IFlektierer {
 
     final String stammWennOhneEndung = lexeme.getCanonicalizedForm();
 
-    final String stammWennMitEndung;
-    // Wird der Stamm ausnahmsweise verändert (Geheimnis -> den
-    // GeheimnisSen)?
-    final String ausnahmeStamm = findAusname(lexeme.getCanonicalizedForm(),
-        AUSNAHMEENDEN_STAMMABWEICHUNGEN_KASUSFLEXION);
-    if (ausnahmeStamm == null) {
-      stammWennMitEndung = lexeme.getCanonicalizedForm();
-    } else {
-      stammWennMitEndung = ausnahmeStamm;
-    }
+    final String stammWennMitEndung = stammWennMitEndung(stammWennOhneEndung);
 
     res.addAll(stdGenSg(lexeme, pos, lexemStehtMitArtikelAusserImTelegrammstil,
         etablierteGruppeArtikelSgNurBeiSubjektNoetig,
@@ -853,6 +845,20 @@ public class SubstantivFlektierer implements IFlektierer {
         fremdwortTyp, personOderTier, datAlternativen, akkAlternativen, plurale));
 
     return res.build();
+  }
+
+  public String stammWennMitEndung(final String stammWennOhneEndung) {
+    final String stammWennMitEndung;
+    // Wird der Stamm ausnahmsweise verändert (Geheimnis -> den
+    // GeheimnisSen)?
+    final String ausnahmeStamm = findAusname(stammWennOhneEndung,
+        AUSNAHMEENDEN_STAMMABWEICHUNGEN_KASUSFLEXION);
+    if (ausnahmeStamm == null) {
+      stammWennMitEndung = stammWennOhneEndung;
+    } else {
+      stammWennMitEndung = ausnahmeStamm;
+    }
+    return stammWennMitEndung;
   }
 
   private ImmutableCollection<IWordForm> stdNomSg(final Lexeme lexeme,
@@ -1824,7 +1830,7 @@ public class SubstantivFlektierer implements IFlektierer {
     return 0;
   }
 
-  public static Wortform buildSubstantivWortform(final Lexeme lexeme,
+  public static Wortform buildSubstantivWortform(final ILexeme lexeme,
       final String pos, final KasusInfo kasusInfo, final Numerus numerus,
       final Artikelwortbezug artikelwortbezug, final String string) {
 

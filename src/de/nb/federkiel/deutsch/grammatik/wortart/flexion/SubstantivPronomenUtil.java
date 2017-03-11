@@ -75,7 +75,7 @@ public final class SubstantivPronomenUtil {
   /**
    * Erzeugt ein neues NN
    */
-  public static Lexeme createNN(final String nennform, final Genus genus,
+  public static Lexeme createNN(final String nennform, @Nullable final Genus genus,
       final boolean substantiviertesAdjektiv, final boolean nnWieEinEigennameGebraucht,
       final String zeitraumname, final boolean abkuerzung) {
     // Das Konzept ist dies:

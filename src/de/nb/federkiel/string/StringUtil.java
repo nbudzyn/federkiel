@@ -271,6 +271,19 @@ public class StringUtil {
   }
 
   /**
+   * @return <code>true</code>, iff the strings contains only letters
+   */
+  public static boolean containsOnlyLetters(final String string) {
+    for (int i = 0; i < string.length(); i++) {
+      if (!Character.isLetter(string.charAt(i))) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
    * Splits the string at the occurences of the splitter, trims the single strings and returns those
    * that are not empty.
    */

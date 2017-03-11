@@ -13,7 +13,7 @@ import de.nb.federkiel.feature.UnspecifiedFeatureValue;
 
 /**
  * Static methods to convert enums etc. to feature values (and back).
- * 
+ *
  * @author Nikolaj Budzyn
  */
 
@@ -55,7 +55,7 @@ public class FeatureStringConverter {
     }
   }
 
-  public static @Nullable String toFeatureString(final Genus genus) {
+  public static @Nullable String toFeatureString(final @Nullable Genus genus) {
     if (genus == null) {
       return UnspecifiedFeatureValue.UNSPECIFIED_STRING;
     }
