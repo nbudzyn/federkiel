@@ -11,7 +11,7 @@ public enum Artikelwortbezug {
    * z.B. "Annas" (Gen), vgl. "*der Annas Hund", aber "Annas Hund" Hierzu gehören vor allem einige
    * Formen der NE.
    */
-  ZWINGEND_OHNE_ARTIKELWORT(true, true, true, false),
+  ZWINGEND_OHNE_ARTIKELWORT_UND_KEIN_NOMINATIV(false, true, true, false),
   /**
    * z.B. "Anna" (Gen), vgl. "der Anna Hund", nicht aber "*Anna Hund" (nicht einmal im
    * Telegrammstil).
@@ -44,8 +44,6 @@ public enum Artikelwortbezug {
   /**
    * z.B. "Teil" (Nom), vgl. "Teil der Übung war [...]", "Ein Teil war [...]", "[...] war (ein) Teil
    * davon."
-   * <p>
-   * Hierzu gehören fast alle Formen der NN.
    */
   IM_NORMALSTIL_MIT_ODER_OHNE_ARTIKELWORT(true, true, true, true);
 

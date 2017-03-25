@@ -2,6 +2,10 @@ package de.nb.federkiel.deutsch.grammatik.wortart.substantiv;
 
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Genus.FEMININUM;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Genus.MASKULINUM;
+import static de.nb.federkiel.deutsch.grammatik.kategorie.Kasus.AKKUSATIV;
+import static de.nb.federkiel.deutsch.grammatik.kategorie.Kasus.DATIV;
+import static de.nb.federkiel.deutsch.grammatik.kategorie.Kasus.GENITIV;
+import static de.nb.federkiel.deutsch.grammatik.kategorie.Kasus.NOMINATIV;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Numerus.PLURAL;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Numerus.SINGULAR;
 
@@ -23,6 +27,7 @@ import com.google.common.collect.ImmutableSet;
 import de.nb.federkiel.collection.CollectionUtil;
 import de.nb.federkiel.collection.Pair;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Genus;
+import de.nb.federkiel.deutsch.grammatik.kategorie.Kasus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.deutsch.grammatik.wortart.flexion.Artikelwortbezug;
 import de.nb.federkiel.deutsch.grammatik.wortart.flexion.FeatureStringConverter;
@@ -949,7 +954,7 @@ public class SubstantivFlektierer implements IFlektierer {
     final Artikelwortbezug artikelwortbezug = calcArtikelwortbezugSg(
         lexemStehtMitArtikelAusserImTelegrammstil, eigennameOderWieEigennameGebraucht(pos, lexeme),
         etablierteGruppeArtikelSgNurBeiSubjektNoetig,
-        stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional);
+        stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional, NOMINATIV);
     final Wortform nomSgWortform = SubstantivFlektierer
         .buildSubstantivWortform(
             lexeme,
@@ -983,14 +988,17 @@ public class SubstantivFlektierer implements IFlektierer {
       final boolean lexemStehtMitArtikelAusserImTelegrammstil,
       final boolean eigennameOderWieEigennameGebraucht,
       final boolean etablierteGruppeArtikelSgNurBeiSubjektNoetig,
-      final boolean stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional) {
+      final boolean stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional,
+      final Kasus kasus) {
     if (lexemStehtMitArtikelAusserImTelegrammstil) {
       return Artikelwortbezug.ZWINGEND_MIT_ARTIKELWORT_AUSSER_IM_TELEGRAMMSTIL;
     }
 
-    if ((etablierteGruppeArtikelSgNurBeiSubjektNoetig // "*Pianist kommt", aber "Peter ist
+    if (kasus == Kasus.NOMINATIV
+        && (etablierteGruppeArtikelSgNurBeiSubjektNoetig // "*Pianist kommt", aber "Peter ist
                                                       // Komponist".
-        || !stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional) && // "*Fabrik ist
+            || !stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional)
+        && // "*Fabrik ist
                                                                                // neu.", "*Das
                                                                                // Gebäude ist
                                                                                // Fabrik.", "Ein
@@ -1245,10 +1253,10 @@ public class SubstantivFlektierer implements IFlektierer {
     boolean enthaeltFormAufSOhneArtikelwort = false;
     boolean endungsloseFormBereitsHinzugefügt = false;
 
-    final Artikelwortbezug artikelwortbezugLexem = calcArtikelwortbezugSg(
+    final Artikelwortbezug artikelwortbezugLexemGenitiv = calcArtikelwortbezugSg(
         lexemStehtMitArtikelAusserImTelegrammstil, eigenname || wieEinEigennameGebraucht(lexeme),
         etablierteGruppeArtikelSgNurBeiSubjektNoetig,
-        stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional);
+        stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional, GENITIV);
 
     if (GermanUtil.endetAufSLaut(stammWennOhneEndung)) {
       // Duden 302 Endung -s NICHT möglich
@@ -1260,7 +1268,7 @@ public class SubstantivFlektierer implements IFlektierer {
                                                                           // schon
                                                                           // da
             KasusInfo.GEN_S, SINGULAR, // des
-            artikelwortbezugLexem, // Zirkus,
+            artikelwortbezugLexemGenitiv, // Zirkus,
             // des
             // Atlas
             stammWennOhneEndung));
@@ -1270,7 +1278,7 @@ public class SubstantivFlektierer implements IFlektierer {
       // endet *nicht* auf s-Laut -> Endung -s möglich
       // des Raums
       res.add(SubstantivFlektierer.buildSubstantivWortform(lexeme, pos,
-          KasusInfo.GEN_S, SINGULAR, artikelwortbezugLexem, // des Raums,
+          KasusInfo.GEN_S, SINGULAR, artikelwortbezugLexemGenitiv, // des Raums,
           // des alten
           // Roms,
           // Roms
@@ -1282,7 +1290,7 @@ public class SubstantivFlektierer implements IFlektierer {
         fremdwortTyp)) {
       // des Raumes, des Busses
       res.add(SubstantivFlektierer.buildSubstantivWortform(lexeme, pos,
-          KasusInfo.GEN_S, SINGULAR, artikelwortbezugLexem, stammWennMitEndung
+          KasusInfo.GEN_S, SINGULAR, artikelwortbezugLexemGenitiv, stammWennMitEndung
               + "es"));
     }
     if (eigenname || eigennameOderAehnlichesDassGenitivSEntfallenKann) {
@@ -1315,7 +1323,7 @@ public class SubstantivFlektierer implements IFlektierer {
     final Genus genus = FeatureStringConverter.toGenus(lexeme
         .getStringFeatureValue("genus"));
 
-    final Artikelwortbezug artikelwortBezug = genus == FEMININUM ? Artikelwortbezug.ZWINGEND_OHNE_ARTIKELWORT
+    final Artikelwortbezug artikelwortBezug = genus == FEMININUM ? Artikelwortbezug.ZWINGEND_OHNE_ARTIKELWORT_UND_KEIN_NOMINATIV
         :
         // bei femininen Eigennamen zwingend ohne
         // Artikelwort!
@@ -1325,7 +1333,8 @@ public class SubstantivFlektierer implements IFlektierer {
                                                                                     // einer
                                                                                     // gebraucht
                 etablierteGruppeArtikelSgNurBeiSubjektNoetig,
-                stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional); // durchaus "des
+                stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional, GENITIV); // durchaus
+                                                                                          // "des
                                                                                  // Hannes'"
 
     if (GermanUtil.endetAufSLaut(stammWennOhneEndung)) {
@@ -1362,10 +1371,10 @@ public class SubstantivFlektierer implements IFlektierer {
       final boolean etablierteGruppeArtikelSgNurBeiSubjektNoetig,
       final boolean stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional,
       final String stammWennOhneEndung, final boolean eigenname) {
-    final Artikelwortbezug artikelwortbezugLexem = calcArtikelwortbezugSg(
+    final Artikelwortbezug artikelwortbezugLexemGenitiv = calcArtikelwortbezugSg(
         lexemStehtMitArtikelAusserImTelegrammstil, eigenname || wieEinEigennameGebraucht(lexeme),
         etablierteGruppeArtikelSgNurBeiSubjektNoetig,
-        stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional);
+        stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional, GENITIV);
 
     final Artikelwortbezug artikelwortbezugFuerGattungsdeklinationGenitiv = eigenname ? Artikelwortbezug.ZWINGEND_MIT_ARTIKELWORT_AUCH_IM_TELEGRAMMSTIL
         : // der
@@ -1373,7 +1382,7 @@ public class SubstantivFlektierer implements IFlektierer {
         // Haus,
         // *Anna
         // Haus
-        artikelwortbezugLexem; // Mutter,
+        artikelwortbezugLexemGenitiv; // Mutter,
     // der
     // Mutter;
     // Zahl,
@@ -1402,7 +1411,7 @@ public class SubstantivFlektierer implements IFlektierer {
                                                                                               // einen
                                                                                               // Artikel?!
         etablierteGruppeArtikelSgNurBeiSubjektNoetig,
-        stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional);
+        stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional, GENITIV);
 
     if (folgeESollteFuerPluralOderSchwacheDeklinationEntfallen(stammWennMitEndung)
         || stammWennMitEndung.toLowerCase().endsWith("herr")) { // Ausnahme
@@ -1503,13 +1512,13 @@ public class SubstantivFlektierer implements IFlektierer {
 
     final boolean gemischt = SubstantivFlexionsklasse.anyGemscht(flexKlassen);
 
-    final Artikelwortbezug artikelwortbezugLexem = calcArtikelwortbezugSg(
+    final Artikelwortbezug artikelwortbezugLexemDativ = calcArtikelwortbezugSg(
         lexemStehtMitArtikelAusserImTelegrammstil, eigenname || wieEinEigennameGebraucht(lexeme),
         etablierteGruppeArtikelSgNurBeiSubjektNoetig,
-        stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional);
+        stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional, DATIV);
 
     res.add(SubstantivFlektierer.buildSubstantivWortform(lexeme, pos,
-        KasusInfo.DAT, SINGULAR, artikelwortbezugLexem,
+        KasusInfo.DAT, SINGULAR, artikelwortbezugLexemDativ,
         stammMitNOderEnFallsGemischt(stammWennOhneEndung, gemischt))); // Haus,
     // Frieden,
     // Felsen,
@@ -1521,7 +1530,7 @@ public class SubstantivFlektierer implements IFlektierer {
       // Duden 339, 340
       // dem Fels, dem Herz, dem Kunstherz
       res.add(SubstantivFlektierer.buildSubstantivWortform(lexeme, pos,
-          KasusInfo.DAT, SINGULAR, artikelwortbezugLexem,
+          KasusInfo.DAT, SINGULAR, artikelwortbezugLexemDativ,
           stammOhneEn(stammWennOhneEndung))); // Fels, Herz, Kunstherz
     }
 
@@ -1540,7 +1549,7 @@ public class SubstantivFlektierer implements IFlektierer {
           // EIGENNAMEN-DEKLINATION -
           // und diese HAT KEIN DATIV-e!
           final Artikelwortbezug artikelwortBezugFuerDativE = eigenname ? Artikelwortbezug.ZWINGEND_MIT_ARTIKELWORT_AUCH_IM_TELEGRAMMSTIL
-              : artikelwortbezugLexem;
+              : artikelwortbezugLexemDativ;
 
           // Dudem 317, Faktor I
           res.add(SubstantivFlektierer.buildSubstantivWortform(lexeme, pos,
@@ -1577,12 +1586,12 @@ public class SubstantivFlektierer implements IFlektierer {
 
     if (folgeESollteFuerPluralOderSchwacheDeklinationEntfallen(stammWennMitEndung)) {
       return SubstantivFlektierer.buildSubstantivWortform(lexeme, pos, kasus,
-          SINGULAR, Artikelwortbezug.ZWINGEND_OHNE_ARTIKELWORT,
+          SINGULAR, Artikelwortbezug.ZWINGEND_OHNE_ARTIKELWORT_UND_KEIN_NOMINATIV,
           stammWennMitEndung + "n"); // Muttern, Menzeln
     }
 
     return SubstantivFlektierer.buildSubstantivWortform(lexeme, pos,
-        KasusInfo.DAT, SINGULAR, Artikelwortbezug.ZWINGEND_OHNE_ARTIKELWORT,
+        KasusInfo.DAT, SINGULAR, Artikelwortbezug.ZWINGEND_OHNE_ARTIKELWORT_UND_KEIN_NOMINATIV,
         stammWennMitEndung + "en"); // Gellerten
   }
 
@@ -1595,13 +1604,13 @@ public class SubstantivFlektierer implements IFlektierer {
       final boolean eigenname) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
-    final Artikelwortbezug artikelwortbezugLexem = calcArtikelwortbezugSg(
+    final Artikelwortbezug artikelwortbezugLexemDativ = calcArtikelwortbezugSg(
         lexemStehtMitArtikelAusserImTelegrammstil, eigenname || wieEinEigennameGebraucht(lexeme),
         etablierteGruppeArtikelSgNurBeiSubjektNoetig,
-        stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional);
+        stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional, DATIV);
 
     final Artikelwortbezug artikelwortbezugFuerGattungsdeklinationDativSchwach = eigenname ? Artikelwortbezug.ZWINGEND_MIT_ARTIKELWORT_AUCH_IM_TELEGRAMMSTIL
-        : artikelwortbezugLexem;
+            : artikelwortbezugLexemDativ;
 
     if (folgeESollteFuerPluralOderSchwacheDeklinationEntfallen(stammWennMitEndung)
         || stammWennMitEndung.toLowerCase().endsWith("herr")) { // Ausnahme
@@ -1621,7 +1630,7 @@ public class SubstantivFlektierer implements IFlektierer {
     }
     if (eigenname) {
       res.add(SubstantivFlektierer.buildSubstantivWortform(lexeme, pos,
-          KasusInfo.DAT, SINGULAR, Artikelwortbezug.ZWINGEND_OHNE_ARTIKELWORT,
+          KasusInfo.DAT, SINGULAR, Artikelwortbezug.ZWINGEND_OHNE_ARTIKELWORT_UND_KEIN_NOMINATIV,
           stammWennOhneEndung));
     }
 
@@ -1681,7 +1690,7 @@ public class SubstantivFlektierer implements IFlektierer {
     final Artikelwortbezug artikelwortbezug = calcArtikelwortbezugSg(
         lexemStehtMitArtikelAusserImTelegrammstil, eigenname || wieEinEigennameGebraucht(lexeme),
         etablierteGruppeArtikelSgNurBeiSubjektNoetig,
-        stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional);
+        stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional, Kasus.AKKUSATIV);
 
     res.add(SubstantivFlektierer.buildSubstantivWortform(lexeme, pos,
         KasusInfo.AKK, SINGULAR, artikelwortbezug,
@@ -1714,13 +1723,13 @@ public class SubstantivFlektierer implements IFlektierer {
       final boolean eigenname) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
-    final Artikelwortbezug artikelwortbezugLexem = calcArtikelwortbezugSg(
+    final Artikelwortbezug artikelwortbezugLexemAkkusativ = calcArtikelwortbezugSg(
         lexemStehtMitArtikelAusserImTelegrammstil, eigenname || wieEinEigennameGebraucht(lexeme),
         etablierteGruppeArtikelSgNurBeiSubjektNoetig,
-        stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional);
+        stoffbezeichnungSammelbezeichnungOderAbstraktumArtikelOptional, AKKUSATIV);
 
     final Artikelwortbezug artikelwortbezugFuerGattungsdeklinationAkkSchwach = eigenname ? Artikelwortbezug.ZWINGEND_MIT_ARTIKELWORT_AUCH_IM_TELEGRAMMSTIL
-        : artikelwortbezugLexem;
+        : artikelwortbezugLexemAkkusativ;
     if (folgeESollteFuerPluralOderSchwacheDeklinationEntfallen(stammWennMitEndung)
         || stammWennMitEndung.toLowerCase().endsWith("herr")) { // Ausnahme
       // "den Herrn"
@@ -1739,7 +1748,7 @@ public class SubstantivFlektierer implements IFlektierer {
     }
     if (eigenname) {
       res.add(SubstantivFlektierer.buildSubstantivWortform(lexeme, pos,
-          KasusInfo.AKK, SINGULAR, Artikelwortbezug.ZWINGEND_OHNE_ARTIKELWORT,
+          KasusInfo.AKK, SINGULAR, Artikelwortbezug.ZWINGEND_OHNE_ARTIKELWORT_UND_KEIN_NOMINATIV,
           stammWennOhneEndung));
     }
 
@@ -1851,8 +1860,7 @@ public class SubstantivFlektierer implements IFlektierer {
                     .isGenitivSichtbarDurchS()))
             .put(
                 IM_NORMALSTIL_ALS_SUBJEKT_OHNE_ARTIKELWORT_MOEGLICH_KEY,
-                StringFeatureLogicUtil.booleanToString(artikelwortbezug
-                    .isImNormalstilAlsSubjektOhneArtikelwortMoeglich()))
+                StringFeatureLogicUtil.booleanToString(artikelwortbezug.isImNormalstilAlsSubjektOhneArtikelwortMoeglich()))
             .put(
                 IM_NORMALSTIL_OHNE_ARTIKELWORT_MOEGLICH_KEY,
                 StringFeatureLogicUtil.booleanToString(artikelwortbezug
