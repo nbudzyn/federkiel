@@ -11,14 +11,13 @@ import de.nb.federkiel.interfaces.IGuessedWordForm;
 import de.nb.federkiel.interfaces.IWordFormVisitor;
 
 /**
- * A collection containing several alternative constituents (realizations for a
- * grammar symbol in a rule) - what the grammar symbol could stand for - the
- * realizations are word forms, or passive parsing edges, or
- * <code>NullGrammarSymbolRepresentation</code>s (for optional symbol
- * references, that are left out).
+ * A collection containing several alternative constituents (realizations for a grammar symbol in a
+ * rule) - what the grammar symbol could stand for - the realizations are word forms, or passive
+ * parsing edges, or <code>NullGrammarSymbolRepresentation</code>s (for optional symbol references,
+ * that are left out).
  * <p>
- * (By using this alternatives, we try to avoid an exponentially growing number
- * of edges, when several combinations are possible.)
+ * (By using these alternatives, we try to avoid an exponentially growing number of edges, when
+ * several combinations are possible.)
  * <p>
  * All implementations must be IMMUTABLE
  *

@@ -4,8 +4,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -175,7 +177,7 @@ public class FeatureStructure implements Comparable<FeatureStructure> {
     return cache.findOrInsert(new FeatureStructure(features));
   }
 
-  public FeatureStructure removeNames(Collection<String> namesToBeRemoved) {
+  public FeatureStructure removeNames(final Collection<String> namesToBeRemoved) {
     if (namesToBeRemoved.isEmpty()) {
       return this;
     }
@@ -224,7 +226,7 @@ public class FeatureStructure implements Comparable<FeatureStructure> {
     return res;
   }
 
-  public void forEach(BiConsumer<? super String, ? super IFeatureValue> action) {
+  public void forEach(final BiConsumer<? super String, ? super IFeatureValue> action) {
     features.forEach(action);
   }
 
@@ -331,6 +333,33 @@ public class FeatureStructure implements Comparable<FeatureStructure> {
 
     return features.equals(other.features);
   }
+
+  /**
+   * Returns true, if this edge subsumes the <code>other</code> feature structure. This means, they
+   * are equal, or the other is just a special case of this one. For example: JOKER would subsume
+   * "n", and "JOKER" would as well subsume "nom" and "gen".
+   */
+  public boolean subsumes(final FeatureStructure other) {
+    if (features.size() != other.features.size()) {
+      return false;
+    }
+
+    for (final Entry<String, IFeatureValue> featureEntry : features.entrySet()) {
+      @Nullable
+      final IFeatureValue otherFeature = other.features.get(featureEntry.getKey());
+      if (otherFeature == null) {
+        return false;
+      }
+
+      if (!featureEntry.getValue().equals(otherFeature)
+          && !featureEntry.getValue().equals(UnspecifiedFeatureValue.INSTANCE)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
 
   @Override
   public int hashCode() {
