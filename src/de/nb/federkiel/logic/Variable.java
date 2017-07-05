@@ -26,7 +26,6 @@ public abstract class Variable<T extends Object, A extends IAssignment>
     return variableAssignment.<T>getValue(this);
   }
 
-  @Override
   public ImmutableSet<Variable<?, A>> getAllVariables() {
     return ImmutableSet.of(this);
   }
