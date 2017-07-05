@@ -28,7 +28,7 @@ public abstract class Artikel {
 
   private Artikel() {}
 
-  public static @Nullable Artikel createArtikel(Artikeltyp artikeltyp, Numerus numerus) {
+  public static @Nullable Artikel createArtikel(final Artikeltyp artikeltyp, final Numerus numerus) {
     switch (artikeltyp) {
       case BESTIMMT:
         return BESTIMMT;
@@ -46,6 +46,8 @@ public abstract class Artikel {
 
   public abstract boolean hatFlexionsendung(Kasus kasusBezugsphrase, Numerus numerusBezugsphrase,
       Genus genusBezugsphrase);
+
+  public abstract Lexeme getLexem();
 
   private static class UnbestimmterArtikel extends Artikel {
     private final Lexeme lexemEin = new Lexeme(GermanLexemeType.ARTIKEL, "ein", FeatureStructure
@@ -76,8 +78,8 @@ public abstract class Artikel {
     }
 
     @Override
-    public boolean hatFlexionsendung(Kasus kasusBezugsphrase, Numerus numerusBezugsphrase,
-        Genus genusBezugsphrase) {
+    public boolean hatFlexionsendung(final Kasus kasusBezugsphrase, final Numerus numerusBezugsphrase,
+        final Genus genusBezugsphrase) {
       final IWordForm wortform =
           wortformNegativ(numerusBezugsphrase, kasusBezugsphrase, genusBezugsphrase);;
       return FeatureStructure.toBoolean(
@@ -96,6 +98,11 @@ public abstract class Artikel {
                                                                                              // falsch
           true, // kann als "stark" gelten
           numerus, kasus, genus).get(0);
+    }
+
+    @Override
+    public Lexeme getLexem() {
+      return lexemEin;
     }
   }
 
@@ -118,13 +125,18 @@ public abstract class Artikel {
     }
 
     @Override
-    public boolean hatFlexionsendung(Kasus kasusBezugsphrase, Numerus numerusBezugsphrase,
-        Genus genusBezugsphrase) {
+    public boolean hatFlexionsendung(final Kasus kasusBezugsphrase, final Numerus numerusBezugsphrase,
+        final Genus genusBezugsphrase) {
       return true;
     }
 
-    private IWordForm wortform(Kasus kasus, Numerus numerus, Genus genus) {
+    private IWordForm wortform(final Kasus kasus, final Numerus numerus, final Genus genus) {
       return artikelFlekt.definit(lexeme, GermanPOS.ART.toString(), true, kasus, numerus, genus);
+    }
+
+    @Override
+    public Lexeme getLexem() {
+      return lexeme;
     }
   }
 }

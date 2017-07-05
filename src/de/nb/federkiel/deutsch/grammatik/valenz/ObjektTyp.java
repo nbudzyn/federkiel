@@ -247,7 +247,7 @@ final class ObjektTyp extends AbstractErgaenzungsOderAngabenTyp {
     return FormulaUtil.and(featureReqs); // immutable
   }
 
-  private List<IFormula<FeatureAssignment>> buildReinReflexivConditions(final String person,
+  private static List<IFormula<FeatureAssignment>> buildReinReflexivConditions(final String person,
       final Genus genusDesSubjekts, final Numerus numerusDesSubjekts,
       final String hoeflichkeitsformDesSubjekts) {
     return buildReflexivCondition(person, genusDesSubjekts, numerusDesSubjekts,
@@ -259,7 +259,7 @@ final class ObjektTyp extends AbstractErgaenzungsOderAngabenTyp {
    *         Numerus (Sg), Genus (z.B. m) und Höflichkeitsform (ihrer vs. Ihrer) mit dem Subjekt
    *         übereinstimmen!
    */
-  private List<IFormula<FeatureAssignment>> buildReflexivConditionsNichtUnbedingtRein(
+  private static List<IFormula<FeatureAssignment>> buildReflexivConditionsNichtUnbedingtRein(
       final String person, final Genus genusDesSubjekts, final Numerus numerusDesSubjekts,
       final String hoeflichkeitsformDesSubjekts) {
     // die N_PRONOMEN_PHR_REIHUNGs haben Merkmale erhalten:
@@ -279,7 +279,7 @@ final class ObjektTyp extends AbstractErgaenzungsOderAngabenTyp {
         "numerusDesReflexivenPronomens", "hoeflichkeitsformDesReflexivenPronomens");
   }
 
-  private List<IFormula<FeatureAssignment>> buildReflexivCondition(final String person,
+  private static List<IFormula<FeatureAssignment>> buildReflexivCondition(final String person,
       final Genus genusDesSubjekts, final Numerus numerusDesSubjekts,
       final String hoeflichkeitsformDesSubjekts, final String personMerkmalFuerReflexivbedingung,
       final String genusMerkmalFuerReflexivbedingung,

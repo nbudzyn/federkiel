@@ -3,6 +3,9 @@ package de.nb.federkiel.logic;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
+
 
 /**
  * An first-order logic formula, that consists of two formulas, connected with a logical operator
@@ -37,6 +40,12 @@ abstract class BinaryLogicalOperatorFormula<A extends IAssignment> implements IF
 
   public IFormula<A> getSecondFormula() {
     return this.secondFormula;
+  }
+
+  @Override
+  public ImmutableSet<Variable<?, A>> getAllVariables() {
+    return Sets.union(firstFormula.getAllVariables(),
+        secondFormula.getAllVariables()).immutableCopy();
   }
 
   @Override

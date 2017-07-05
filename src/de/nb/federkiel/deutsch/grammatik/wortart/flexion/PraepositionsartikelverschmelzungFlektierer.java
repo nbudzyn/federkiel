@@ -6,6 +6,7 @@ import static de.nb.federkiel.deutsch.grammatik.kategorie.Genus.NEUTRUM;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Kasus.AKKUSATIV;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Kasus.DATIV;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Numerus.SINGULAR;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.REG_KASUS_KEY;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
@@ -22,6 +23,8 @@ import de.nb.federkiel.lexikon.Wortform;
 import de.nb.federkiel.semantik.NothingInParticularSemantics;
 
 public class PraepositionsartikelverschmelzungFlektierer implements IFlektierer {
+  private static final String PRAEPOSITION_KEY = "praeposition";
+
   public static final String TYP = "mitArtikelVerschmolzenePraeposition";
 
   public PraepositionsartikelverschmelzungFlektierer() {
@@ -216,25 +219,30 @@ public class PraepositionsartikelverschmelzungFlektierer implements IFlektierer 
   // ----------------
   // FOR PRIVATE USE
   // ----------------
-  private Lexeme buildAPPARTLexem(final String praeposition,
+  private static Lexeme buildAPPARTLexem(final String praeposition,
       final Kasus regKasus) {
+    // @formatter:off
     final FeatureStructure features = FeatureStructure
         .fromStringValues(ImmutableMap.<String, String> builder()
-            .put("regKasus", FeatureStringConverter.toFeatureString(regKasus))
-            .put("praeposition", praeposition).build());
+              .put(REG_KASUS_KEY, FeatureStringConverter.toFeatureString(regKasus))
+              .put(PRAEPOSITION_KEY, praeposition)
+              .build());
+    // @formatter:on
 
     return new Lexeme(GermanLexemeType.PRAEPOSITION_MIT_INKORPORIERTEM_ARTIKEL,
         praeposition + "-", features);
   }
 
-  private Wortform buildAPPRARTWortform(final Lexeme lexeme, final String pos,
+  private static Wortform buildAPPRARTWortform(final Lexeme lexeme, final String pos,
       final Numerus numerus, final Genus genus, final String string) {
 
     final FeatureStructure features = FeatureStructure
+        // @formatter:off
         .fromStringValues(ImmutableMap.<String, String> builder()
             .put("numerus", FeatureStringConverter.toFeatureString(numerus))
             .put("genus", FeatureStringConverter.toFeatureString(genus))
             .build());
+    // @formatter:on
 
     return new Wortform(lexeme, pos, string, features,
         NothingInParticularSemantics.INSTANCE);

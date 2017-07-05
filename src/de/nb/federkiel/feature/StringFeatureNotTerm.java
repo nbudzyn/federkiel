@@ -3,6 +3,7 @@ package de.nb.federkiel.feature;
 import de.nb.federkiel.logic.ITerm;
 import de.nb.federkiel.logic.UnaryCompoundTerm;
 import de.nb.federkiel.logic.UnassignedVariableException;
+import de.nb.federkiel.logic.YieldsNoResultException;
 
 /**
  * A term, that is build up from a (sub-)term, that should lead to values like
@@ -21,10 +22,11 @@ StringFeatureValue, FeatureAssignment> {
 
 	@Override
 	public StringFeatureValue evaluate(final FeatureAssignment variableAssignment)
-	throws UnassignedVariableException {
+      throws UnassignedVariableException, YieldsNoResultException {
 		return StringFeatureValue.of(
 				StringFeatureLogicUtil.booleanToString(
             !FeatureStructure.toBoolean(getSubTerm().evaluate(variableAssignment))));
+    // UnassignedVariableException, YieldsNoResultException
 	}
 
 	@Override

@@ -1,5 +1,23 @@
 package de.nb.federkiel.deutsch.grammatik.wortart.flexion;
 
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.ABKUERZUNG_KEY;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.ADELSPRAEPOSITION;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.GEEIGNET_ALS_ADV_AKK_ODER_GEN_KEY;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.GENITIVATTRIBUTFAEHIG_KEY;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.GENUS_FEM;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.GENUS_KEY;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.GENUS_MASK;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.GENUS_NEUT;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.NN_WIE_EIN_EIGENNAME_GEBRAUCHT_KEY;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.STAMM_GENUS_KEY;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.STAMM_HOEFLICHKEITSFORM_KEY;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.STAMM_NUMERUS_KEY;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.STAMM_PERSON_KEY;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.SUBSTANTIVIERTES_ADJEKTIV_KEY;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.ZEITRAUMNAME_KEINER;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.ZEITRAUMNAME_KEY;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.ZUVOR_EIN_ODER_KEIN_AUCH_UNFLEKTIERT_KEY;
+
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
@@ -20,45 +38,6 @@ import de.nb.federkiel.lexikon.Lexeme;
 @Immutable
 @ThreadSafe
 public final class SubstantivPronomenUtil {
-  private static final String ZUVOR_EIN_ODER_KEIN_AUCH_UNFLEKTIERT_KEY =
-      "zuvorEinOderKeinAuchUnflektiert";
-  private static final String GEEIGNET_ALS_ADV_AKK_ODER_GEN_KEY = "geeignetAlsAdvAkkOderGen";
-
-  public final static String GENUS_KEY = "genus";
-  public final static String GENUS_FEM = "f";
-  public final static String GENUS_MASK = "m";
-  public final static String GENUS_NEUT = "n";
-
-  public final static String ZEITRAUMNAME_KEY = "zeitraumname";
-  public final static String ZEITRAUMNAME_KEINER = "keiner";
-
-  public final static String ABKUERZUNG_KEY = "abkuerzung";
-
-  /**
-   * Ob dieses Lexeme als Genitivattribut verwendet werden kann (z.B. Petras Stuhl, aber nicht
-   * *ihrer Stuhl)
-   */
-  public static final String GENITIVATTRIBUTFAEHIG_KEY = "genitivattributfaehig";
-
-  /**
-   * Ob dieses Lexeme ein NN ist, das wie ein Eigenname gebraucht wird (z.B. <i>Mutter</i>, vgl.
-   * <i>Mutters Küche...</i>). Dies sind wohl fast nur Verwandschaftsbezeichnungenn (Duden, 397),
-   * evtl. "Apostels Gedanke" o.Ä.
-   * <p>
-   * Hierunter fallen jeden falls nicht "Januar", "Weihnachten" oder Ähnliches!
-   */
-  public static final String NN_WIE_EIN_EIGENNAME_GEBRAUCHT_KEY = "nnWieEinEigennameGebraucht";
-
-  /**
-   * Ob dieses Lexeme ein substantiviertes Adjektiv ist - z.B. <i>(das) Schöne</i>.
-   */
-  public static final String SUBSTANTIVIERTES_ADJEKTIV_KEY = "substantiviertesAdjektiv";
-
-  /**
-   * Ob es sich um eine Adelspräposition handelt (<i>von</i> o.Ä.)
-   */
-  public final static String ADELSPRAEPOSITION = "adelspraeposition";
-
   private SubstantivPronomenUtil() {
     super();
   }
@@ -134,11 +113,14 @@ public final class SubstantivPronomenUtil {
   public static Lexeme createPossessivpronomen(final GermanLexemeType type,
       final String stammPerson, final String stammNumerus, final boolean stammHoeflichkeitsform,
       final String stammGenus, final String nennform) {
+    // @formatter:off
     return new Lexeme(type, nennform,
-        FeatureStructure.fromStringValues(ImmutableMap.of("stammPerson", stammPerson,
-            "stammNumerus", stammNumerus, "stammHoeflichkeitsform",
-            StringFeatureLogicUtil.booleanToString(stammHoeflichkeitsform), "stammGenus",
-            stammGenus)));
+        FeatureStructure.fromStringValues(ImmutableMap.of(
+            STAMM_PERSON_KEY, stammPerson,
+            STAMM_NUMERUS_KEY, stammNumerus,
+            STAMM_HOEFLICHKEITSFORM_KEY, StringFeatureLogicUtil.booleanToString(stammHoeflichkeitsform),
+            STAMM_GENUS_KEY, stammGenus)));
+    // @formatter:on
   }
 
   /**
@@ -160,11 +142,14 @@ public final class SubstantivPronomenUtil {
    */
   public static Lexeme createIndefinitpronomen(final String nennform,
       final boolean lexemFlektierbar, final boolean zuvorEinOderKeinAuchUnflektiert) {
+    // @formatter:off
     return new Lexeme(GermanLexemeType.INDEFINITPRONOMEN, nennform,
-        FeatureStructure.fromStringValues(ImmutableMap.of(ZUVOR_EIN_ODER_KEIN_AUCH_UNFLEKTIERT_KEY,
+        FeatureStructure.fromStringValues(ImmutableMap.of(
+            ZUVOR_EIN_ODER_KEIN_AUCH_UNFLEKTIERT_KEY,
             StringFeatureLogicUtil.booleanToString(zuvorEinOderKeinAuchUnflektiert),
             GermanUtil.LEXEM_FLEKTIERBAR_KEY,
             StringFeatureLogicUtil.booleanToString(lexemFlektierbar))));
+    // @formatter:on
   }
 
   public static Lexeme createDemonstrativpronomen(final String nennform,

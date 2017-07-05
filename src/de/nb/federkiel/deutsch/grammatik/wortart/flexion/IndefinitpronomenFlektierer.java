@@ -4,6 +4,7 @@ import static de.nb.federkiel.deutsch.grammatik.kategorie.Genus.FEMININUM;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Genus.MASKULINUM;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Genus.NEUTRUM;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Numerus.SINGULAR;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.STAERKE_UNFLEKTIERT;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +18,6 @@ import com.google.common.collect.ImmutableMap;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Genus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.VorgabeFuerNachfolgendesAdjektiv;
 import de.nb.federkiel.deutsch.grammatik.valenz.Valenz;
-import de.nb.federkiel.interfaces.IFeatureValue;
 import de.nb.federkiel.interfaces.IWordForm;
 import de.nb.federkiel.lexikon.Lexeme;
 
@@ -66,7 +66,7 @@ public class IndefinitpronomenFlektierer extends AbstractPronomenFlektierer {
         // "eines",
         // "eins"
         VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN, Valenz.LEER,
-        ImmutableMap.<String, IFeatureValue> of());
+        ImmutableMap.of(), ImmutableMap.of());
   }
 
   /**
@@ -89,7 +89,7 @@ public class IndefinitpronomenFlektierer extends AbstractPronomenFlektierer {
         // "unsereines",
         // "unsereins"
         VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN, Valenz.LEER,
-        ImmutableMap.<String, IFeatureValue> of());
+        ImmutableMap.of(), ImmutableMap.of());
   }
 
   /**
@@ -268,7 +268,7 @@ public class IndefinitpronomenFlektierer extends AbstractPronomenFlektierer {
 
     final Collection<IWordForm> res = new ArrayList<>(16);
 
-    final String staerke = generateStaerke ? UNFLEKTIERT : null;
+    final String staerke = generateStaerke ? STAERKE_UNFLEKTIERT : null;
 
     res.add(buildWortform(lexeme, pos, KasusInfo.NOM_KEIN_NOMEN, staerke,
         vorgabeFuerNachfolgendesAdjektiv, SINGULAR, NEUTRUM, stem));

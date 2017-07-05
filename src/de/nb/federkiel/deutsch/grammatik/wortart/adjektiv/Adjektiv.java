@@ -7,6 +7,9 @@
 package de.nb.federkiel.deutsch.grammatik.wortart.adjektiv;
 
 import static de.nb.federkiel.deutsch.grammatik.phrase.Flexionstyp.SCHWACHE_FLEXION;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.ABLEITUNG_AUF_ER_KEY;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.LEXEM_FLEKTIERBAR_KEY;
+import static de.nb.federkiel.deutsch.lexikon.GermanLexemeType.ADJEKTIV;
 import static de.nb.federkiel.feature.StringFeatureLogicUtil.booleanToString;
 
 import javax.annotation.Nullable;
@@ -18,9 +21,7 @@ import de.nb.federkiel.deutsch.grammatik.kategorie.Kasus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.deutsch.grammatik.phrase.Flexionstyp;
 import de.nb.federkiel.deutsch.grammatik.wortart.flexion.AdjektivFlektierer;
-import de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil;
 import de.nb.federkiel.deutsch.grammatik.wortart.substantiv.Substantiv;
-import de.nb.federkiel.deutsch.lexikon.GermanLexemeType;
 import de.nb.federkiel.feature.FeatureStructure;
 import de.nb.federkiel.lexikon.Lexeme;
 import de.nb.federkiel.string.StringUtil;
@@ -72,7 +73,7 @@ public class Adjektiv {
     this(stamm, unflektiert, rateFlexionsklasse(stamm, unflektiert), null);
   }
 
-  private static AdjektivFlexionsklasse rateFlexionsklasse(String stamm, String unflektiert) {
+  private static AdjektivFlexionsklasse rateFlexionsklasse(final String stamm, final String unflektiert) {
     if (!stamm.equals(unflektiert)) {
       // hoh / hoch, ander / anders
       return AdjektivFlexionsklasse.FLEKTIERBAR_KEIN_ZAHLADJEKTIV;
@@ -120,10 +121,13 @@ public class Adjektiv {
     this.flexionsklasse = flexionsklasse;
     this.substantivierung = substantivierung;
 
-    lexeme = new Lexeme(GermanLexemeType.ADJEKTIV, unflektiert,
-        FeatureStructure.fromStringValues(ImmutableMap.of(GermanUtil.LEXEM_FLEKTIERBAR_KEY,
-            booleanToString(flexionsklasse.isFlektierbar()), GermanUtil.ABLEITUNG_AUF_ER_KEY,
-            booleanToString(flexionsklasse.isAbleitungAufEr()))));
+    // @formatter:off
+    lexeme = new Lexeme(ADJEKTIV, unflektiert,
+        FeatureStructure.fromStringValues(ImmutableMap.of(
+            LEXEM_FLEKTIERBAR_KEY, booleanToString(flexionsklasse.isFlektierbar()),
+            ABLEITUNG_AUF_ER_KEY, booleanToString(flexionsklasse.isAbleitungAufEr()))));
+    // @formatter:on
+
     flekt = new AdjektivFlektierer();
   }
 

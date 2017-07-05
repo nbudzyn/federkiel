@@ -8,6 +8,7 @@ import de.nb.federkiel.logic.BinaryPredicateFormula;
 import de.nb.federkiel.logic.Constant;
 import de.nb.federkiel.logic.ITerm;
 import de.nb.federkiel.logic.UnassignedVariableException;
+import de.nb.federkiel.logic.YieldsNoResultException;
 
 
 /**
@@ -28,10 +29,12 @@ extends BinaryPredicateFormula<IFeatureValue, IFeatureValue, FeatureAssignment> 
 
 	@Override
 	public boolean evaluate(final FeatureAssignment variableAssignment)
-	throws UnassignedVariableException {
+      throws UnassignedVariableException, YieldsNoResultException {
 		return FeatureStructure.doFeatureValuesMatch(
-				getFirstTerm().evaluate(variableAssignment), // UnassignedVariableException
-				getSecondTerm().evaluate(variableAssignment)); // UnassignedVariableException
+        getFirstTerm().evaluate(variableAssignment), // UnassignedVariableException,
+                                                     // YieldsNoResultException
+        getSecondTerm().evaluate(variableAssignment)); // UnassignedVariableException,
+                                                       // YieldsNoResultException
 	}
 
 

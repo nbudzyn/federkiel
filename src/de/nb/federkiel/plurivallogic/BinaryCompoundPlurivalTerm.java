@@ -4,9 +4,12 @@ import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 
 import de.nb.federkiel.logic.IAssignment;
 import de.nb.federkiel.logic.UnassignedVariableException;
+import de.nb.federkiel.logic.Variable;
 
 
 /**
@@ -40,7 +43,6 @@ public abstract class BinaryCompoundPlurivalTerm<T extends Object, S1 extends Ob
     return this.secondSubTerm;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public final Plurival<T> evaluate(final A assignment) throws UnassignedVariableException {
     Plurival<S1> firstAlternativeSubResults = null;
@@ -88,6 +90,12 @@ public abstract class BinaryCompoundPlurivalTerm<T extends Object, S1 extends Ob
 //
 //	return Plurival.of(res.build());
     // @formatter:on
+  }
+
+  @Override
+  public ImmutableSet<Variable<?, A>> getAllVariables() {
+    return Sets.union(firstSubTerm.getAllVariables(),
+        secondSubTerm.getAllVariables()).immutableCopy();
   }
 
   /**

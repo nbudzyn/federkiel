@@ -2,6 +2,7 @@ package de.nb.federkiel.deutsch.grammatik.wortart.flexion;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Numerus.PLURAL;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.STAERKE_STARK;
 
 import java.util.Collection;
 import java.util.stream.Stream;
@@ -18,8 +19,10 @@ import de.nb.federkiel.deutsch.grammatik.kategorie.Kasus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.VorgabeFuerNachfolgendesAdjektiv;
 import de.nb.federkiel.deutsch.grammatik.valenz.Valenz;
+import de.nb.federkiel.feature.EnumStringFeatureType;
 import de.nb.federkiel.feature.FeatureStructure;
 import de.nb.federkiel.feature.StringFeatureLogicUtil;
+import de.nb.federkiel.interfaces.IFeatureType;
 import de.nb.federkiel.interfaces.IFeatureValue;
 import de.nb.federkiel.interfaces.IWordForm;
 import de.nb.federkiel.lexikon.Lexeme;
@@ -53,7 +56,7 @@ abstract class AbstractArtikelUndPronomenFlektierer extends
   public ImmutableList<IWordForm> einKeinUnser(final Lexeme lexeme,
       final String pos,
       final boolean generateFeatureWortartTraegtFlexionsendung, final boolean generateStaerke,
-      final Numerus numerus, Kasus kasus, Genus genus) {
+      final Numerus numerus, final Kasus kasus, final Genus genus) {
     return einKeinUnser(lexeme, pos,
         lexeme.getCanonicalizedForm().substring(0, lexeme.getCanonicalizedForm().length()),
         generateFeatureWortartTraegtFlexionsendung, generateStaerke, numerus, kasus, genus);
@@ -90,7 +93,7 @@ abstract class AbstractArtikelUndPronomenFlektierer extends
 
   private Collection<IWordForm> einKeinUnserSg(final Lexeme lexeme, final String pos,
       final String stamm, final boolean generateFeatureWortartTraegtFlexionsendung,
-      final boolean generateStaerke, Kasus kasus) {
+      final boolean generateStaerke, final Kasus kasus) {
     return Stream
         .of(Genus.values()).map(genus -> einKeinUnserSg(lexeme, pos, stamm,
             generateFeatureWortartTraegtFlexionsendung, generateStaerke, kasus, genus))
@@ -114,7 +117,7 @@ abstract class AbstractArtikelUndPronomenFlektierer extends
       final String pos, final String stamm,
       final boolean generateFeatureWortartTraegtFlexionsendung,
       final boolean generateStaerke,
-      final Numerus numerus, Kasus kasus, Genus genus) {
+      final Numerus numerus, final Kasus kasus, final Genus genus) {
     switch (numerus) {
       case SINGULAR:
         return einKeinUnserSg(lexeme, pos, stamm, generateFeatureWortartTraegtFlexionsendung,
@@ -129,8 +132,8 @@ abstract class AbstractArtikelUndPronomenFlektierer extends
 
   public ImmutableList<IWordForm> einKeinUnserSg(final Lexeme lexeme, final String pos,
       final String stamm, final boolean generateFeatureWortartTraegtFlexionsendung,
-      final boolean generateStaerke, Kasus kasus, Genus genus) {
-    final String staerke = generateStaerke ? STARK : null;
+      final boolean generateStaerke, final Kasus kasus, final Genus genus) {
+    final String staerke = generateStaerke ? STAERKE_STARK : null;
 
     return adjStarkSg(lexeme, pos, stamm, // nur "eines (Autos)", nicht
         GenMaskNeutrSgModus.NUR_ES, // "ein (Auto)",
@@ -140,13 +143,13 @@ abstract class AbstractArtikelUndPronomenFlektierer extends
         generateFeatureWortartTraegtFlexionsendung
             ? VorgabeFuerNachfolgendesAdjektiv.ERLAUBT_NUR_SCHWACH
             : VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN,
-        Valenz.LEER, buildFeatureMap(staerke), kasus, genus);
+        Valenz.LEER, buildFeatureMap(staerke), buildFeatureTypeMap(staerke), kasus, genus);
   }
 
   public ImmutableList<IWordForm> einKeinUnserPl(final Lexeme lexeme, final String pos,
       final String stamm, final boolean generateFeatureWortartTraegtFlexionsendung,
-      final boolean generateStaerke, Kasus kasus) {
-    final String staerke = generateStaerke ? STARK : null;
+      final boolean generateStaerke, final Kasus kasus) {
+    final String staerke = generateStaerke ? STAERKE_STARK : null;
 
     final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv =
         generateFeatureWortartTraegtFlexionsendung
@@ -162,6 +165,7 @@ abstract class AbstractArtikelUndPronomenFlektierer extends
                 // (und auﬂerdem macht es bei LEERER Valenz
                 // ohnehin keinen Unterschied!)
                 PLURAL, StringFeatureLogicUtil.FALSE, true)),
+        buildFeatureTypeMap(staerke),
         kasus);
     // Die ihrer selbst gedenkenden M‰nner, aber nicht
     // *die Ihrer selbst gedenkenden M‰nner!
@@ -185,8 +189,11 @@ abstract class AbstractArtikelUndPronomenFlektierer extends
     // Die ihrer selbst gedenkenden M‰nner, aber nicht
     // *die Ihrer selbst gedenkenden M‰nner!
 
+    final ImmutableMap<String, IFeatureType> additionalFeatureTypes = buildFeatureTypeMap(staerke);
+
     return buildWortform(lexeme, pos, kasusInfo,
         vorgabeFuerNachfolgendesAdjektiv, numerus, genus, additionalFeatures,
+        additionalFeatureTypes,
         string);
   }
 
@@ -210,6 +217,7 @@ abstract class AbstractArtikelUndPronomenFlektierer extends
 
     return buildWortform(lexeme, pos, kasusInfo,
         vorgabeFuerNachfolgendesAdjektiv, numerus, genus, additionalFeatures,
+        ImmutableMap.of(),
         string);
   }
 
@@ -314,14 +322,15 @@ abstract class AbstractArtikelUndPronomenFlektierer extends
    *          (Nur "es" ist - im Nominativ und Akkusativ - als Pseudoaktant
    *          geeignet - vgl. "Es regnet".)
    */
-  private Wortform buildWortformPersPron(final Lexeme lexeme, final String pos,
+  private static Wortform buildWortformPersPron(final Lexeme lexeme, final String pos,
       final @Nullable Kasus kasus, final String person,
       final @Nullable Numerus numerus, final boolean hoeflichkeitsform,
       final @Nullable Genus genus,
       final PseudoaktantMoeglichkeit pseudoaktantMoeglichkeit,
       final String string) {
 
-    final Builder<String, String> builder = ImmutableMap
+    // @formatter:off
+    final Builder<String, String> featureBuilder = ImmutableMap
         .<String, String> builder()
         .put("kasus", FeatureStringConverter.toFeatureString(kasus))
         .put("numerus", FeatureStringConverter.toFeatureString(numerus))
@@ -330,19 +339,28 @@ abstract class AbstractArtikelUndPronomenFlektierer extends
         .put("hoeflichkeitsform",
             StringFeatureLogicUtil.booleanToString(hoeflichkeitsform));
 
+    final Builder<String, IFeatureType> featureTypeBuilder = ImmutableMap
+        .<String, IFeatureType> builder()
+        .put("kasus",   FeatureStringConverter.KASUS_FEATURE_TYPE)
+        .put("numerus", FeatureStringConverter.NUMERUS_FEATURE_TYPE)
+        .put(GermanUtil.GENUS_KEY, GermanUtil.GENUS_FEATURE_TYPE)
+        .put("person", GermanUtil.PERSON_FEATURE_TYPE)
+        .put("hoeflichkeitsform", EnumStringFeatureType.BOOLEAN);
+
     if (pseudoaktantMoeglichkeit.isMerkmalVorgesehen()) {
-      builder.put(GermanUtil.GEEIGNET_ALS_PSEUDOAKTANT_ES_KEY,
+      featureBuilder.put(GermanUtil.GEEIGNET_ALS_PSEUDOAKTANT_ES_KEY,
           StringFeatureLogicUtil.booleanToString(pseudoaktantMoeglichkeit
               .isMoeglich()));
+
+      featureTypeBuilder.put(GermanUtil.GEEIGNET_ALS_PSEUDOAKTANT_ES_KEY, EnumStringFeatureType.BOOLEAN);
     }
 
-    final ImmutableMap<String, String> featureMap = builder.build();
+    final ImmutableMap<String, String> featureMap = featureBuilder.build();
 
-    final FeatureStructure features = FeatureStructure
-        .fromStringValues(featureMap);
+    final FeatureStructure features = FeatureStructure.fromStringValues(featureMap);
 
-    final Wortform res = new Wortform(lexeme, pos, string, features,
-        NothingInParticularSemantics.INSTANCE);
+    final Wortform res = new Wortform(lexeme, pos, string, features, NothingInParticularSemantics.INSTANCE);
+    // @formatter:on
 
     return res;
   }

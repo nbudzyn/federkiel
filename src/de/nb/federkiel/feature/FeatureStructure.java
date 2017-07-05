@@ -1,5 +1,8 @@
 package de.nb.federkiel.feature;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -12,10 +15,12 @@ import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.UnmodifiableIterator;
 
 import de.nb.federkiel.cache.WeakCache;
 import de.nb.federkiel.collection.CollectionUtil;
@@ -50,11 +55,7 @@ public class FeatureStructure implements Comparable<FeatureStructure> {
    */
 
   /**
-   * Die (grammatischen) Merkmale, jeweils mit Name und Wert, die für diese Wortform spezifisch sind
-   * (also über die Features des <i>Lexems</i> hinausgehen)
-   * <p>
-   * Die features des parents stehen hier NICHT nochmal (außer sie würden überschrieben), sondern
-   * sie gelten implizit!
+   * Die (grammatischen) Merkmale, jeweils mit Name und Wert
    */
   private final ImmutableMap<String, IFeatureValue> features;
 
@@ -109,6 +110,7 @@ public class FeatureStructure implements Comparable<FeatureStructure> {
    */
   private FeatureStructure(final ImmutableMap<String, IFeatureValue> features) {
     this.features = features;
+
     hashCode = calcHashCode(this.features);
   }
 
@@ -126,15 +128,16 @@ public class FeatureStructure implements Comparable<FeatureStructure> {
       return one;
     }
 
-    final Builder<String, IFeatureValue> builder = ImmutableMap.<String, IFeatureValue>builder();
-
     final FeatureStructure oneFeatureStructure = one;
     final FeatureStructure otherFeatureStructure = other;
 
-    builder.putAll(oneFeatureStructure.features);
-    builder.putAll(otherFeatureStructure.features);
+    final Builder<String, IFeatureValue> valueBuilder =
+        ImmutableMap.<String, IFeatureValue>builder();
 
-    return fromValues(builder.build());
+    valueBuilder.putAll(oneFeatureStructure.features);
+    valueBuilder.putAll(otherFeatureStructure.features);
+
+    return fromValues(valueBuilder.build());
   }
 
 
@@ -142,12 +145,14 @@ public class FeatureStructure implements Comparable<FeatureStructure> {
    * @param stringFeatures The key - string-value- pairs for the feature structure; an
    *        <code>UnspecifiedFeatureValue.UNSPECIFIED_STRING</code> leads to an
    *        <code>UnspecifiedFeatureValue</code>.
-   * @return
    */
   public static FeatureStructure fromStringValues(
       final ImmutableMap<String, String> stringFeatures) {
-    return cache.findOrInsert(new FeatureStructure(ImmutableMap.copyOf(
-        Maps.transformValues(stringFeatures, stringValue -> toFeatureValue(stringValue)))));
+    // @formatter:off
+    return cache.findOrInsert(new FeatureStructure(
+        ImmutableMap.copyOf(
+            Maps.transformValues(stringFeatures, stringValue -> toFeatureValue(stringValue)))));
+    // @formatter:off
   }
 
   public static FeatureStructure fromValues(final String key, final IFeatureValue value) {
@@ -182,13 +187,32 @@ public class FeatureStructure implements Comparable<FeatureStructure> {
       return this;
     }
 
-    final ImmutableMap.Builder<String, IFeatureValue> res = ImmutableMap.builder();
+    final ImmutableMap.Builder<String, IFeatureValue> newFeatures = ImmutableMap.builder();
 
     // @formatter:off
     features.entrySet().stream()
       .filter(featureEntry -> !namesToBeRemoved.contains(featureEntry.getKey()))
-      .forEach(featureEntry -> res.put(featureEntry.getKey(), featureEntry.getValue()));
+      .forEach(featureEntry -> newFeatures.put(featureEntry.getKey(), featureEntry.getValue()));
     // @formatter:on
+
+    return fromValues(newFeatures.build());
+  }
+
+  /**
+   * Returns a new feature structure from with this feature generalized (from its original value to
+   * JOKER).
+   */
+  public FeatureStructure generalizeFeature(final String featureName) {
+    final ImmutableMap.Builder<String, IFeatureValue> res = ImmutableMap.builder();
+
+    for (final Entry<String, IFeatureValue> originalEntry : features.entrySet()) {
+      if (originalEntry.getKey().equals(featureName)) {
+        res.put(featureName, UnspecifiedFeatureValue.INSTANCE);
+      } else {
+        res.put(originalEntry);
+      }
+    }
+
     return fromValues(res.build());
   }
 
@@ -212,7 +236,7 @@ public class FeatureStructure implements Comparable<FeatureStructure> {
     return defaultValue;
   }
 
-  public int numberOfFeatures() { // NO_UCD
+  public int numberOfFeatures() {
     return features.size();
   }
 
@@ -221,19 +245,20 @@ public class FeatureStructure implements Comparable<FeatureStructure> {
   }
 
   public boolean isEmpty() {
-    final boolean res = features.isEmpty();
-
-    return res;
+    return features.isEmpty();
   }
 
   public void forEach(final BiConsumer<? super String, ? super IFeatureValue> action) {
     features.forEach(action);
   }
 
-  public Iterator<String> featureNameIterator() {
-    return new FeatureNameIterator(features);
+  public UnmodifiableIterator<Entry<String, IFeatureValue>> unorderedFeatureIterator() {
+    return features.entrySet().iterator();
   }
 
+  public Iterator<String> orderedFeatureNameIterator() {
+    return new OrderedFeatureNameIterator(features);
+  }
 
   /**
    * For some role frame types, this method takes <i>several</i> role frames per type, and it
@@ -331,6 +356,10 @@ public class FeatureStructure implements Comparable<FeatureStructure> {
 
     final FeatureStructure other = (FeatureStructure) obj;
 
+    if (!features.equals(other.features)) {
+      return false;
+    }
+
     return features.equals(other.features);
   }
 
@@ -344,15 +373,94 @@ public class FeatureStructure implements Comparable<FeatureStructure> {
       return false;
     }
 
+    return subsumesExcluding(other, ImmutableList.of());
+  }
+
+  /**
+   * Returns true, if this edge subsumes the <code>other</code> feature structure, excluding the
+   * given features. This means, the feature structures are equal (excluding the given features), or
+   * the other is just a special case of this one. For example: JOKER would subsume "n", and "JOKER"
+   * would as well subsume "nom" and "gen".
+   */
+  public boolean subsumesExcluding(final FeatureStructure other, final String... excludedNames) {
+    return subsumesExcluding(other, Arrays.asList(excludedNames));
+  }
+
+  /**
+   * Returns true, if this edge subsumes the <code>other</code> feature structure, excluding the
+   * given features. This means, the feature structures are equal (excluding the given features), or
+   * the other is just a special case of this one. For example: JOKER would subsume "n", and "JOKER"
+   * would as well subsume "nom" and "gen".
+   */
+  public boolean subsumesExcluding(final FeatureStructure other,
+      final Collection<String> excludedNames) {
+
     for (final Entry<String, IFeatureValue> featureEntry : features.entrySet()) {
-      @Nullable
-      final IFeatureValue otherFeature = other.features.get(featureEntry.getKey());
-      if (otherFeature == null) {
+      if (excludedNames.contains(featureEntry.getKey())) {
+        continue;
+
+      }
+      final @Nullable IFeatureValue otherFeatureValue = other.features.get(featureEntry.getKey());
+      if (otherFeatureValue == null) {
         return false;
       }
 
-      if (!featureEntry.getValue().equals(otherFeature)
-          && !featureEntry.getValue().equals(UnspecifiedFeatureValue.INSTANCE)) {
+      if (!UnspecifiedFeatureValue.subsumes(featureEntry.getValue(), otherFeatureValue)) {
+        return false;
+      }
+    }
+
+    // Check the other way round!
+    for (final Entry<String, IFeatureValue> featureEntry : other.features.entrySet()) {
+      if (excludedNames.contains(featureEntry.getKey())) {
+        continue;
+      }
+
+      final @Nullable IFeatureValue oneFeature = features.get(featureEntry.getKey());
+
+      if (oneFeature == null) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Returns true, if the feature structures are equal, excluding the given features from the check.
+   */
+  public boolean equalsExcluding(final FeatureStructure other, final String... excludedNames) {
+    return equalsExcluding(other, Arrays.asList(excludedNames));
+  }
+
+  /**
+   * Returns true, if the feature structures are equal, excluding the given features from the check.
+   */
+  public boolean equalsExcluding(final FeatureStructure other,
+      final Collection<String> excludedNames) {
+    for (final Entry<String, IFeatureValue> featureEntry : features.entrySet()) {
+      if (excludedNames.contains(featureEntry.getKey())) {
+        continue;
+      }
+
+      final @Nullable IFeatureValue otherFeatureValue = other.features.get(featureEntry.getKey());
+      if (otherFeatureValue == null) {
+        return false;
+      }
+      if (!featureEntry.getValue().equals(otherFeatureValue)) {
+        return false;
+      }
+    }
+
+    // Check the other way round!
+    for (final Entry<String, IFeatureValue> featureEntry : other.features.entrySet()) {
+      if (excludedNames.contains(featureEntry.getKey())) {
+        continue;
+      }
+
+      final @Nullable IFeatureValue oneFeature = features.get(featureEntry.getKey());
+
+      if (oneFeature == null) {
         return false;
       }
     }
@@ -367,9 +475,12 @@ public class FeatureStructure implements Comparable<FeatureStructure> {
   }
 
   private final static int calcHashCode(final ImmutableMap<String, IFeatureValue> features) {
-    return features.hashCode();
+    return features.hashCode() * 32;
     // IDEA: Teuer? könnte man per entrySet /iterator auf einige wenige Einträge beschränken!
     // (die HashMap-Sets sind clever!)
+    // Feature structure type nicht berücksichtigen. Wenn die features gleich sind, wird in den
+    // allermeisten
+    // Fällen der feature structure type gleich sein.
   }
 
   @Override
@@ -383,7 +494,8 @@ public class FeatureStructure implements Comparable<FeatureStructure> {
 
     boolean first = true;
 
-    for (final Iterator<String> featureNameIt = featureNameIterator(); featureNameIt.hasNext();) {
+    for (final Iterator<String> featureNameIt =
+        orderedFeatureNameIterator(); featureNameIt.hasNext();) {
       if (first) {
         first = false;
       } else {
@@ -401,6 +513,39 @@ public class FeatureStructure implements Comparable<FeatureStructure> {
   }
 
   /**
+   * Unifies to values, that are supposed to be {@link StringFeatureValue}s or
+   * {@link UnspecifiedFeatureValue}s.
+   * <p>
+   * Examples:
+   * <ul>
+   * <li>"sg" unified with "sg" yields "sg"
+   * <li>"sg" unified with UNSPECIFIED yields "sg"
+   * <li>UNSPECIFIED unified with UNSPECIFIED yields UNSPECIFIED
+   * <li>"sg" unified with "pl" yields null (no result)
+   * </ul>
+   */
+  public static @Nullable IFeatureValue unifyStrings(final IFeatureValue first,
+      final IFeatureValue second) {
+    if (first.equals(UnspecifiedFeatureValue.INSTANCE)) {
+      return second;
+    }
+
+    if (second.equals(UnspecifiedFeatureValue.INSTANCE)) {
+      return first;
+    }
+
+    checkArgument(first instanceof StringFeatureValue);
+    checkArgument(second instanceof StringFeatureValue);
+
+    if (first.equals(second)) {
+      return first;
+    }
+
+    return null;
+  }
+
+
+  /**
    * @param stringFeatureValueOrMarkerForUnspecified String feature value - or
    *        UnspecifiedFeatureValue.UNSPECIFIED_STRING (as a marker for an unspecified feature
    *        value).
@@ -416,12 +561,12 @@ public class FeatureStructure implements Comparable<FeatureStructure> {
   }
 
   /**
-   * Used for the {@link FeatureStructure#featureNameIterator()} method.
+   * Used for the {@link FeatureStructure#orderedFeatureNameIterator()} method.
    */
-  private static class FeatureNameIterator implements Iterator<String> {
+  private static class OrderedFeatureNameIterator implements Iterator<String> {
     private final Iterator<String> mapIterator;
 
-    private FeatureNameIterator(final Map<String, IFeatureValue> featureMap) {
+    private OrderedFeatureNameIterator(final Map<String, IFeatureValue> featureMap) {
       final List<String> featureNamesSorted = Ordering.natural().sortedCopy(featureMap.keySet());
 
       mapIterator = featureNamesSorted.iterator();

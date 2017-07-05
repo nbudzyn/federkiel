@@ -60,7 +60,7 @@ final class SubjektTyp extends AbstractErgaenzungsOderAngabenTyp {
       final Numerus numerusDesSubjekts, final String hoeflichkeitsformDesSubjekts) {
     final SlotRequirements reqsAlternative = SlotRequirements.of("N_PRONOMEN_PHR_REIHUNG",
         buildFeatureConditionForN_PRONOMEN_PHR_REIHUNG(person, genusDesSubjekts,
-            numerusDesSubjekts));
+            numerusDesSubjekts, hoeflichkeitsformDesSubjekts));
 
     return RoleFrameSlot.of(slotName, minFillings, // minFillings
         1, // max fillings
@@ -73,7 +73,8 @@ final class SubjektTyp extends AbstractErgaenzungsOderAngabenTyp {
   }
 
   private IFormula<FeatureAssignment> buildFeatureConditionForN_PRONOMEN_PHR_REIHUNG(
-      final String person, final Genus genus, final Numerus numerus) {
+      final String person, final Genus genus, final Numerus numerus,
+      final String hoeflichkeitsformDesSubjekts) {
     final List<IFormula<FeatureAssignment>> featureReqs = new LinkedList<>();
 
     featureReqs.add(ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue("kasus", "nom"));
@@ -95,9 +96,13 @@ final class SubjektTyp extends AbstractErgaenzungsOderAngabenTyp {
       featureReqs.add(ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue("numerus",
           FeatureStringConverter.toFeatureString(numerus)));
     }
+    if (UnspecifiedFeatureValue.notNullAndNotUnspecified(hoeflichkeitsformDesSubjekts)) {
+      featureReqs.add(ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(
+          "hoeflichkeitsform", hoeflichkeitsformDesSubjekts));
+    }
 
     // "Pianist kommt." ist nur im Telegrammstil möglich.
-    // (Allerdings sind "Peter ist Pianist" und "Peter lernt Pianist" problemlos möglich. Duden
+    // (Allerdings sind "Peter ist Pianist" und "Peter lernt Koch" problemlos möglich. Duden
     // 445.)
 
     featureReqs.add(ThreeStateFeatureEqualityFormula.featureEqualsExplicitValue(

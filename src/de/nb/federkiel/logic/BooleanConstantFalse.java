@@ -3,6 +3,8 @@ package de.nb.federkiel.logic;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
+import com.google.common.collect.ImmutableSet;
+
 
 /**
  * The logical constant False.
@@ -25,6 +27,11 @@ final class BooleanConstantFalse<A extends IAssignment> implements
 	public boolean evaluate(final IAssignment variableAssignment) {
 		return false;
 	}
+
+  @Override
+  public ImmutableSet<Variable<?, A>> getAllVariables() {
+    return ImmutableSet.of();
+  }
 
 	@Override
 	public boolean equals(final Object obj) {

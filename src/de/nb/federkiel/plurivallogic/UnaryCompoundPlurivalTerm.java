@@ -4,9 +4,11 @@ import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 import de.nb.federkiel.logic.IAssignment;
 import de.nb.federkiel.logic.UnassignedVariableException;
+import de.nb.federkiel.logic.Variable;
 
 
 /**
@@ -45,6 +47,11 @@ public abstract class UnaryCompoundPlurivalTerm<T extends Object, S extends Obje
 		    .flatMap(subResult -> calculate(subResult).stream())
 		    .collect(ImmutableList.toImmutableList()));
         // @formatter:on
+  }
+
+  @Override
+  public ImmutableSet<Variable<?, A>> getAllVariables() {
+    return subTerm.getAllVariables();
   }
 
   /**

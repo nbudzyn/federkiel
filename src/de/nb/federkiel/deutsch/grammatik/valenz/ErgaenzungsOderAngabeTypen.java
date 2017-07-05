@@ -83,7 +83,15 @@ public final class ErgaenzungsOderAngabeTypen {
       ADVERBIALE_ANGABEN_FUER_VERBFORM = new AdverbialeAngabenTyp("AdverbialeAngabe", false),
 
       ADVERBIALE_ANGABEN_FUER_ADJEKTIVISCHE_FORM =
-          new AdverbialeAngabenTyp("AdverbialeAngabe", true);
+          new AdverbialeAngabenTyp("AdverbialeAngabe", true),
+
+      /**
+       * "Seiner Mutter [wird er] das Geld geben"[.]
+       * <p>
+       * Ein reiner Infinitiv (also ohne "zu") mit seinen Ergänzungen und Angaben - allerdings nicht
+       * als (kontinuierliche) Phrase, sondern als Rollenrahmen.
+       */
+      REINER_INFINITIV_RF = ReinerInfinitivTyp.INSTANCE;
 
   /**
    * Alle Ergaenzungs-oder-Angabe-Typen
@@ -100,13 +108,11 @@ public final class ErgaenzungsOderAngabeTypen {
       final Genus genusDesSubjekts, final Numerus numerusDesSubjekts,
       final String hoeflichkeitsformDesSubjekts, final boolean fuerAdjektivischeForm) {
     return ImmutableList.of(getAdverbialeAngabenTyp(fuerAdjektivischeForm).buildSlot(person,
-        genusDesSubjekts,
-        numerusDesSubjekts,
-        hoeflichkeitsformDesSubjekts));
+        genusDesSubjekts, numerusDesSubjekts, hoeflichkeitsformDesSubjekts));
   }
 
   private static AbstractErgaenzungsOderAngabenTyp getAdverbialeAngabenTyp(
-      boolean fuerAdjektivischeForm) {
+      final boolean fuerAdjektivischeForm) {
     if (fuerAdjektivischeForm) {
       return ADVERBIALE_ANGABEN_FUER_ADJEKTIVISCHE_FORM;
     }

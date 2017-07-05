@@ -97,7 +97,7 @@ public class Lexeme implements ILexeme {
 	}
 
 	public Iterator<String> featureNameIterator() {
-		return features.featureNameIterator();
+		return features.orderedFeatureNameIterator();
 	}
 
 	public boolean areAllFeaturesCompleted() {

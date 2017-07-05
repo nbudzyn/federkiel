@@ -1,10 +1,15 @@
 package de.nb.federkiel.deutsch.grammatik.wortart.flexion;
 
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.FeatureStringConverter.NUMERUS_FEATURE_TYPE;
+
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.log4j.Logger;
 
+import de.nb.federkiel.feature.EnumStringFeatureType;
+import de.nb.federkiel.feature.FeatureTypeDictionary;
+import de.nb.federkiel.feature.RoleFrameCollectionFeatureType;
 import de.nb.federkiel.string.StringUtil;
 
 /**
@@ -29,20 +34,226 @@ public final class GermanUtil {
   /**
    * für Adjektive: Frankfurter, neunziger
    */
+  public final static String ABKUERZUNG_KEY = "abkuerzung";
   public static final String ABLEITUNG_AUF_ER_KEY = "ableitungAufEr";
-  public static final String GENITIV_SICHTBAR_DURCH_S_KEY = "genitivSichtbarDurchS";
-  public static final String GENITIV_SICHTBAR_DURCH_R_KEY = "genitivSichtbarDurchR";
+
+  /**
+   * Ob es sich um eine Adelspräposition handelt (<i>von</i> o.Ä.)
+   */
+  public final static String ADELSPRAEPOSITION = "adelspraeposition";
+
+  public static final String AKK_MUSS_DURCH_ARTIKEL_ANGEZEIGT_WERDEN_AUSSER_IM_TELEGRAMMSTIL_KEY =
+      "akkMussDurchArtikelAngezeigtWerdenAusserImTelegrammstil";
+
+  public static final String CARD_TYP_ZIFFER_NULL = "zifferNull";
+  public static final String CARD_TYP_ZIFFER_AUSSER_NULL = "zifferAusserNull";
+  public static final String CARD_TYP_DEZIMALTRENNZEICHEN = "dezimaltrennzeichen";
+  public static final String CARD_TYP_TAUSENDERTRENNZEICHEN = "tausendertrennzeichen";
+  public static final String CARD_TYP_ROEMISCHE_ZIFFER = "roemischeZiffer";
+  public static final String CARD_TYP_SPORTERGEBNIS_TRENNER = "sportergebnisTrenner";
+  public static final String CARD_TYP_AUSGESCHRIEBENE_GANZE_ZAHL = "ausgeschriebeneGanzeZahl";
+
+  public static final String EINZELNES_REFLEXIVPRONOMEN_KEY = "einzelnesReflexivpronomen";
   public static final String ERLAUBT_NACHGESTELLTES_SCHWACH_FLEKTIERTES_ADJEKTIV_KEY =
       "erlaubtNachgestelltesSchwachFlektiertesAdjektiv";
   protected static final String ERLAUBT_NACHGESTELLTES_STARK_FLEKTIERTES_ADJEKTIV_KEY =
       "erlaubtNachgestelltesStarkFlektiertesAdjektiv";
-
+  public static final String GEEIGNET_ALS_ADV_AKK_ODER_GEN_KEY = "geeignetAlsAdvAkkOderGen";
   public static final String GEEIGNET_ALS_PSEUDOAKTANT_ES_KEY = "geeignetAlsPseudoaktantEs";
 
-  public static final String EINZELNES_REFLEXIVPRONOMEN_KEY = "einzelnesReflexivpronomen";
+  /**
+   * Ob dieses Lexeme als Genitivattribut verwendet werden kann (z.B. Petras Stuhl, aber nicht
+   * *ihrer Stuhl)
+   */
+  public static final String GENITIVATTRIBUTFAEHIG_KEY = "genitivattributfaehig";
+
+  public static final String GENITIV_SICHTBAR_DURCH_S_KEY = "genitivSichtbarDurchS";
+  public static final String GENITIV_SICHTBAR_DURCH_R_KEY = "genitivSichtbarDurchR";
+
+  public final static String GENUS_KEY = "genus";
+  public final static String GENUS_MASK = "m";
+  public final static String GENUS_FEM = "f";
+  public final static String GENUS_NEUT = "n";
+
+  public static EnumStringFeatureType GENUS_FEATURE_TYPE =
+      new EnumStringFeatureType(GENUS_MASK, GENUS_FEM, GENUS_NEUT);
+
+  /**
+   * Ob diese Substantiv-Wortform (NN oder NE) <i>im Normalstil als einzelnes Subjekt ohne
+   * vorangehendes Artikelwort</i> stehen kann (z.B. "Pianist" (Nom), kann im Normalstil nicht ohne
+   * vorangehendes Artikelwort stehen ("?Pianist spielt Klavier." - hingegen ist "Peter ist
+   * Pianist." erlaubt. "Pianisten" kann auch als Subjekt ohne vorangehendes Artikelwort stehen).
+   */
+  public static final String IM_NORMALSTIL_ALS_SUBJEKT_OHNE_ARTIKELWORT_MOEGLICH_KEY =
+      "imNormalstilAlsSubjektOhneArtikelwortMoeglich";
+
+  /**
+   * Ob diese Substantiv-Wortform (NN oder NE oder TRUNC) <i>im Normalstil ohne vorangehendes
+   * Artikelwort</i> stehen kann (z.B. "Schweiz" (Nom), kann im Normalstil nicht ohne vorangehendes
+   * Artikelwort stehen ("?Wir fahren in Schweiz"). Auch "Anna" (Gen) kann nicht ohne vorangehendes
+   * Artikelwort stehen ("*Anna Hund"). "Annas" (Gen) hingegen kann ohne vorangehendes Artikelwort
+   * stehen ("Annas Hund").
+   */
+  public static final String IM_NORMALSTIL_OHNE_ARTIKELWORT_MOEGLICH_KEY =
+      "imNormalstilOhneArtikelwortMoeglich";
+
+  /**
+   * Ob diese Substantiv-Wortform (NN oder NE oder TRUNC) <i>im Telegrammstil ohne vorangehendes
+   * Artikelwort</i> stehen kann (z.B. "Anna" (Gen) kann nicht ohne vorangehendes Artikelwort stehen
+   * ("*Anna Hund"). "Annas" (Gen) hingegen kann ohne vorangehendes Artikelwort stehen ("Annas
+   * Hund"). Auch "Schweiz" kann im Telegrammstil ohne vorangehendes Artikelwort stehen ("Raub in
+   * Schweiz aufgeklärt").
+   */
+  public static final String IM_TELEGRAMMSTIL_OHNE_ARTIKELWORT_MOEGLICH_KEY =
+      "imTelegrammstilOhneArtikelwortMoeglich";
+
+  public static final String KONJUNKTIONALPHRASENFAEHIG_KEY = "konjunktionalphrasenfaehig";
+
+  public static final String KOMPARATION_KEY = "komparation";
+  public static final String KOMPARATION_POSITIV = "positiv";
+  public static final String KOMPARATION_KOMPARATIV = "komparativ";
+  public static final String KOMPARATION_SUPERLATIV = "superlativ"; // TODO Duden 500 ff
+
+  public static final EnumStringFeatureType KOMPARATION_FEATURE_TYPE = new EnumStringFeatureType(
+      KOMPARATION_POSITIV, KOMPARATION_KOMPARATIV, KOMPARATION_SUPERLATIV);
+
+  /**
+   * Ob diese Substantiv-Wortform (NN oder NE oder TRUNC) nach einem Artikelwort stehen kann (z.B.
+   * "Anna" (Gen) kann nach einem Artikelwort stehen, nämlich in "der Anna". "Annas" (Gen) hingegen,
+   * kann nicht nach einem Artikelwort stehen ("*der Annas").
+   */
+  public static final String MIT_ARTIKELWORT_MOEGLICH_KEY = "mitArtikelwortMoeglich";
+
+  public final static String MOEGLICHERWEISE_DAT_ODER_AKK_MIT_UNTERLASSENER_KASUSFLEXION_KEY =
+      "moeglicherweiseDatOderAkkMitUnterlassenerKasusflexion";
 
   public static final String IST_DAS_SUBJEKT_KEY = "istDasSubjekt";
+  public static final String KOMPARATIV_HOMONYM_ZUM_POSITIV_MIT_STARKER_ENDUNG =
+      "komparativHomonymZumPositivMitStarkerEndung";
+
+  public static final String MODUS_KEY = "modus";
+  /**
+   * Ob dieses Lexeme ein NN ist, das wie ein Eigenname gebraucht wird (z.B. <i>Mutter</i>, vgl.
+   * <i>Mutters Küche...</i>). Dies sind wohl fast nur Verwandschaftsbezeichnungenn (Duden, 397),
+   * evtl. "Apostels Gedanke" o.Ä.
+   * <p>
+   * Hierunter fallen jeden falls nicht "Januar", "Weihnachten" oder Ähnliches!
+   */
+  public static final String NN_WIE_EIN_EIGENNAME_GEBRAUCHT_KEY = "nnWieEinEigennameGebraucht";
+
+  public static final String INDIKATIV = "ind";
+  public static final String KONJUNKTIV = "konj";
+
+  public static EnumStringFeatureType MODUS_FEATURE_TYPE =
+      new EnumStringFeatureType(INDIKATIV, KONJUNKTIV);
+
+  public static final String TEMPUS = "tempus";
+  public static final String PRAESENS = "praes";
+  public static final String PRAETERITUM = "praet";
+
+  public static final String PRESTIGE_PRAEPOSITION_KEY = "prestigePraeposition";
+
+  /**
+   * Ob dieses Lexeme ein substantiviertes Adjektiv ist - z.B. <i>(das) Schöne</i>.
+   */
+  public static final String SUBSTANTIVIERTES_ADJEKTIV_KEY = "substantiviertesAdjektiv";
+
+  public static final EnumStringFeatureType TEMPUS_FEATURE_TYPE =
+      new EnumStringFeatureType(PRAESENS, PRAETERITUM);
+
   public static final String NENNFORM_KEY = "nennform";
+
+  public static final String OHNE_VERBINDUNG_MIT_ZEIT_MENGEN_ODER_GROESSEN_ANGABE_MGL_KEY =
+      "ohneVerbindungMitZeitMengenOderGroessenAngabeMgl";
+
+  public static final EnumStringFeatureType PERSON_FEATURE_TYPE =
+      new EnumStringFeatureType("1", "2", "3");
+
+  public static final String REG_KASUS_KEY = "regKasus";
+
+  /**
+   * Merkmal - kann den Wert stark, schwach oder unflektiert haben
+   */
+  public static final String STAERKE_KEY = "staerke";
+  public static final String STAERKE_STARK = "stark";
+  public static final String STAERKE_SCHWACH = "schwach";
+  public static final String STAERKE_UNFLEKTIERT = "unflektiert";
+
+  public static final EnumStringFeatureType STAERKE_FEATURE_TYPE =
+      new EnumStringFeatureType(STAERKE_STARK, STAERKE_SCHWACH, STAERKE_UNFLEKTIERT);
+
+  public static final String STAMM_PERSON_KEY = "stammPerson";
+  public static final String STAMM_NUMERUS_KEY = "stammNumerus";
+  public static final String STAMM_GENUS_KEY = "stammGenus";
+  public static final String STAMM_HOEFLICHKEITSFORM_KEY = "stammHoeflichkeitsform";
+
+  public final static String ZEITRAUMNAME_KEY = "zeitraumname";
+
+  public final static String ZEITRAUMNAME_KEINER = "keiner";
+  public final static String ZEITRAUMNAME_WOCHENTAG = "wochentag";
+  public final static String ZEITRAUMNAME_MONAT = "monat";
+
+  public static final EnumStringFeatureType ZEITRAUMNAME_FEATURE_TYPE =
+      new EnumStringFeatureType(ZEITRAUMNAME_KEINER, ZEITRAUMNAME_WOCHENTAG, ZEITRAUMNAME_MONAT);
+
+  public static final String ZUVOR_EIN_ODER_KEIN_AUCH_UNFLEKTIERT_KEY =
+      "zuvorEinOderKeinAuchUnflektiert";
+
+  public static final FeatureTypeDictionary FEATURE_TYPE_DICTIONARY =
+      buildGermanFeatureTypeDictionary();
+
+  private static FeatureTypeDictionary buildGermanFeatureTypeDictionary() {
+    final FeatureTypeDictionary res = new FeatureTypeDictionary();
+    res.put(ABKUERZUNG_KEY, EnumStringFeatureType.BOOLEAN);
+    res.put(ABLEITUNG_AUF_ER_KEY, EnumStringFeatureType.BOOLEAN);
+    res.put(ADELSPRAEPOSITION, EnumStringFeatureType.BOOLEAN);
+    res.put(AKK_MUSS_DURCH_ARTIKEL_ANGEZEIGT_WERDEN_AUSSER_IM_TELEGRAMMSTIL_KEY,
+        EnumStringFeatureType.BOOLEAN);
+    res.put(DEFINIT_KEY, EnumStringFeatureType.BOOLEAN);
+    res.put(ERLAUBT_NACHGESTELLTES_SCHWACH_FLEKTIERTES_ADJEKTIV_KEY, EnumStringFeatureType.BOOLEAN);
+    res.put(ERLAUBT_NACHGESTELLTES_STARK_FLEKTIERTES_ADJEKTIV_KEY, EnumStringFeatureType.BOOLEAN);
+    res.put(GENITIVATTRIBUTFAEHIG_KEY, EnumStringFeatureType.BOOLEAN);
+    res.put(GEEIGNET_ALS_ADV_AKK_ODER_GEN_KEY, EnumStringFeatureType.BOOLEAN);
+    res.put(GENITIV_SICHTBAR_DURCH_R_KEY, EnumStringFeatureType.BOOLEAN);
+    res.put(GENITIV_SICHTBAR_DURCH_S_KEY, EnumStringFeatureType.BOOLEAN);
+    res.put(GENUS_KEY, GENUS_FEATURE_TYPE);
+    res.put(IM_NORMALSTIL_ALS_SUBJEKT_OHNE_ARTIKELWORT_MOEGLICH_KEY, EnumStringFeatureType.BOOLEAN);
+    res.put(IM_NORMALSTIL_OHNE_ARTIKELWORT_MOEGLICH_KEY, EnumStringFeatureType.BOOLEAN);
+    res.put(IM_TELEGRAMMSTIL_OHNE_ARTIKELWORT_MOEGLICH_KEY, EnumStringFeatureType.BOOLEAN);
+    res.put(IST_SATZANFANG_KEY, EnumStringFeatureType.BOOLEAN);
+    res.put("kasus", FeatureStringConverter.KASUS_FEATURE_TYPE);
+    res.put(KOMPARATION_KEY, KOMPARATION_FEATURE_TYPE);
+    res.put(KOMPARATIV_HOMONYM_ZUM_POSITIV_MIT_STARKER_ENDUNG, EnumStringFeatureType.BOOLEAN);
+    res.put(KONJUNKTIONALPHRASENFAEHIG_KEY, EnumStringFeatureType.BOOLEAN);
+    res.put(LEXEM_FLEKTIERBAR_KEY, EnumStringFeatureType.BOOLEAN);
+    res.put(MIT_ARTIKELWORT_MOEGLICH_KEY, EnumStringFeatureType.BOOLEAN);
+    res.put(MODUS_KEY, MODUS_FEATURE_TYPE);
+    res.put(MOEGLICHERWEISE_DAT_ODER_AKK_MIT_UNTERLASSENER_KASUSFLEXION_KEY,
+        EnumStringFeatureType.BOOLEAN);
+    res.put(NN_WIE_EIN_EIGENNAME_GEBRAUCHT_KEY, EnumStringFeatureType.BOOLEAN);
+    res.put(NUMERUS_KEY, NUMERUS_FEATURE_TYPE);
+    res.put(OHNE_VERBINDUNG_MIT_ZEIT_MENGEN_ODER_GROESSEN_ANGABE_MGL_KEY,
+        EnumStringFeatureType.BOOLEAN);
+    res.put("person", PERSON_FEATURE_TYPE);
+    res.put(PRESTIGE_PRAEPOSITION_KEY, EnumStringFeatureType.BOOLEAN);
+    res.put(REG_KASUS_KEY, FeatureStringConverter.KASUS_FEATURE_TYPE);
+    res.put(ROLE_FRAME_COLLECTION_NAME_VERB, RoleFrameCollectionFeatureType.INSTANCE);
+    res.put(STAERKE_KEY, STAERKE_FEATURE_TYPE);
+    res.put(STAMM_PERSON_KEY, GermanUtil.PERSON_FEATURE_TYPE);
+    res.put(STAMM_NUMERUS_KEY, FeatureStringConverter.NUMERUS_FEATURE_TYPE);
+    res.put(STAMM_HOEFLICHKEITSFORM_KEY, EnumStringFeatureType.BOOLEAN);
+    res.put(STAMM_GENUS_KEY, GENUS_FEATURE_TYPE);
+    res.put(SUBSTANTIVIERTES_ADJEKTIV_KEY, EnumStringFeatureType.BOOLEAN);
+    res.put(TEMPUS, TEMPUS_FEATURE_TYPE);
+    // unter "typ" fassen wir im Moment alles Mögliche!
+    res.put(ZEITRAUMNAME_KEY, ZEITRAUMNAME_FEATURE_TYPE);
+    res.put(ZUVOR_EIN_ODER_KEIN_AUCH_UNFLEKTIERT_KEY, EnumStringFeatureType.BOOLEAN);
+
+
+
+
+    return res;
+  }
 
   /**
    * Führt eine E-Tilgung von einem Stamm durch - wenn möglich. Beispiele:
@@ -517,6 +728,10 @@ public final class GermanUtil {
 
     return isVokal(string.charAt(string.length() - 1));
   }
+
+  public static final String IST_SATZANFANG_KEY = "istSatzanfang";
+  public static final String ROLE_FRAME_COLLECTION_NAME_VERB = "verb";
+  public static final String NUMERUS_KEY = "numerus";
 
   private GermanUtil() {
     super();

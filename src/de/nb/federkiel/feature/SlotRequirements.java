@@ -10,6 +10,7 @@ import de.nb.federkiel.logic.AndFormula;
 import de.nb.federkiel.logic.BooleanConstantTrue;
 import de.nb.federkiel.logic.IFormula;
 import de.nb.federkiel.logic.UnassignedVariableException;
+import de.nb.federkiel.logic.YieldsNoResultException;
 
 /**
  * The requirements to an element to fill a slot in role frame. (The subject of
@@ -96,6 +97,8 @@ public class SlotRequirements implements Comparable<SlotRequirements> {
 			}
 
 			return true;
+    } catch (final YieldsNoResultException e) {
+      return false;
 		} catch (final UnassignedVariableException e) {
 			throw new IllegalStateException("Feature missing in parse "
 					+ toBeChecked + "?",

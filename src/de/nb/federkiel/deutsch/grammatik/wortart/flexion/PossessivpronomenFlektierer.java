@@ -1,5 +1,7 @@
 package de.nb.federkiel.deutsch.grammatik.wortart.flexion;
 
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.KOMPARATION_POSITIV;
+
 import java.util.Collection;
 
 import javax.annotation.concurrent.ThreadSafe;
@@ -61,7 +63,7 @@ public class PossessivpronomenFlektierer
 				Valenz.LEER,
 				pos,
 				vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
-				POSITIV, // "seines (Autos)", nicht *seins
+				KOMPARATION_POSITIV, // "seines (Autos)", nicht *seins
 				stamm,
 				GenMaskNeutrSgModus.NUR_ES, // (Autos)
 				nomSgMaskUndNomAkkSgNeutrModus));
@@ -76,7 +78,7 @@ public class PossessivpronomenFlektierer
 					Valenz.LEER,
 					pos,
 					vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
-					POSITIV, // "unsres (Autos)", nicht
+					KOMPARATION_POSITIV, // "unsres (Autos)", nicht
 					stammNachETilgung,
 					GenMaskNeutrSgModus.NUR_ES
 					, // "*unsren (Autos)"

@@ -10,6 +10,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil;
 import de.nb.federkiel.feature.FeatureStructure;
 import de.nb.federkiel.feature.StringFeatureLogicUtil;
 import de.nb.federkiel.feature.UnspecifiedFeatureValue;
@@ -33,8 +34,6 @@ import de.nb.federkiel.string.StringUtil;
 @Immutable
 @ThreadSafe
 public class Wortform implements IWordForm {
-  private static final String IST_SATZANFANG_KEY = "istSatzanfang";
-
   /**
    * Das zu Grunde liegende Lexeme.
    */
@@ -118,7 +117,10 @@ public class Wortform implements IWordForm {
                                                                                                   // are
                                                                                                   // already
                                                                                                   // included!
-        additionalSpecificFeatures), original.semantics, false); // (lexeme features are already
+        additionalSpecificFeatures), original.semantics, false); // (lexeme
+                                                                                       // features
+                                                                                       // are
+                                                                                       // already
     // included!)
   }
 
@@ -126,13 +128,15 @@ public class Wortform implements IWordForm {
    * @param string must not be empty
    */
   private Wortform(final ILexeme lexeme, final String pos, final String string,
-      final FeatureStructure features, final ISemantics semantics,
+      final FeatureStructure features,
+      final ISemantics semantics,
       final boolean addFeaturesFromLexeme) {
     this.lexeme = lexeme;
     this.pos = pos;
     this.string = string;
     this.features = addFeaturesFromLexeme
-        ? FeatureStructure.disjunctUnion(this.lexeme.getFeatures(), features) : features;
+        ? FeatureStructure.disjunctUnion(this.lexeme.getFeatures(), features)
+        : features;
     this.semantics = semantics;
   }
 
@@ -141,14 +145,28 @@ public class Wortform implements IWordForm {
    */
   public static Wortform lexemeFeaturesAlreadyIntegrated(final ILexeme lexeme, final String pos,
       final String string, final FeatureStructure allWordformFeatures, final ISemantics semantics) {
-    return new Wortform(lexeme, pos, string, allWordformFeatures, semantics, false);
+    return new Wortform(lexeme, pos, string, allWordformFeatures,
+        semantics, false);
+  }
+
+  /**
+   * Returns a new word from with this feature generalized (from its original value to JOKER).
+   */
+  @Override
+  public IWordForm generalizeFeature(final String featureName) {
+    final FeatureStructure generalizedFeatures = features.generalizeFeature(featureName);
+    return new Wortform(lexeme, pos, string,
+        generalizedFeatures, // lexeme
+        // features are already included!
+        semantics, false); // (lexeme features are already
   }
 
   /**
    * @param strings none of them may be empty
    */
   public static IWordForm[] unflektMitTyp(final ILexemeType lexemeType, final String pos,
-      final String typ, final ISemantics semantics, final String... strings) {
+      final String typ, final ISemantics semantics,
+      final String... strings) {
     final IWordForm[] res = new IWordForm[strings.length];
 
     final FeatureStructure features =
@@ -236,13 +254,18 @@ public class Wortform implements IWordForm {
   }
 
   private Collection<IWordForm> addUpperCaseFeatures() {
-    return ImmutableList.<IWordForm>of(new Wortform(this, buildCaseFeature(null)));
+    return ImmutableList.<IWordForm>of(
+        new Wortform(this, buildCaseFeature(null)));
   }
 
-  private FeatureStructure buildCaseFeature(@Nullable Boolean istSatzanfang) {
-    return FeatureStructure.fromStringValues(ImmutableMap.of(IST_SATZANFANG_KEY,
-        istSatzanfang != null ? StringFeatureLogicUtil.booleanToString(istSatzanfang)
-            : UnspecifiedFeatureValue.UNSPECIFIED_STRING));
+  private static FeatureStructure buildCaseFeature(@Nullable final Boolean istSatzanfang) {
+    // @formatter:off
+    return FeatureStructure.fromStringValues(
+        ImmutableMap.of(GermanUtil.IST_SATZANFANG_KEY,
+            istSatzanfang != null ?
+                StringFeatureLogicUtil.booleanToString(istSatzanfang) :
+                  UnspecifiedFeatureValue.UNSPECIFIED_STRING));
+    // @formatter:on
   }
 
   @Override

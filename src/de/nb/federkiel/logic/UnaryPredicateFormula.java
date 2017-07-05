@@ -3,11 +3,13 @@ package de.nb.federkiel.logic;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
+import com.google.common.collect.ImmutableSet;
+
 
 /**
- * A formula, that is build up from a single term. Typically, the formula tells,
- * whether this term has some kind of &quot;quality&quot; (whether a
- * <i>role frame collection</i> is <i>completed</i>, e.g.)
+ * A formula, that is build up from a single term. Typically, the formula tells, whether this term
+ * has some kind of &quot;quality&quot; (whether a <i>role frame collection</i> is <i>completed</i>,
+ * e.g.)
  * <p>
  * T ist the type of the term.
  *
@@ -16,63 +18,67 @@ import javax.annotation.concurrent.ThreadSafe;
 @Immutable
 @ThreadSafe
 public abstract class UnaryPredicateFormula<T extends Object, A extends IAssignment>
-implements IFormula<A> {
+    implements IFormula<A> {
 
-	private final ITerm<T, A> term;
+  private final ITerm<T, A> term;
 
-	public UnaryPredicateFormula(final ITerm<T, A> term) {
-		super();
-		this.term = term;
-	}
+  public UnaryPredicateFormula(final ITerm<T, A> term) {
+    super();
+    this.term = term;
+  }
 
-	public ITerm<T, A> getTerm() {
-		return this.term;
-	}
+  public ITerm<T, A> getTerm() {
+    return this.term;
+  }
 
-	@Override
-	public int hashCode() {
-		return this.term.hashCode();
-	}
+  @Override
+  public ImmutableSet<Variable<?, A>> getAllVariables() {
+    return term.getAllVariables();
+  }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final UnaryPredicateFormula<? extends Object, ? extends IAssignment> other =
-			(UnaryPredicateFormula<? extends Object, ? extends IAssignment>) obj;
-		if (!this.term.equals(other.term)) {
-			return false;
-		}
+  @Override
+  public int hashCode() {
+    return this.term.hashCode();
+  }
 
-		return true;
-	}
+  @SuppressWarnings("unchecked")
+  @Override
+  public boolean equals(final Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final UnaryPredicateFormula<? extends Object, ? extends IAssignment> other =
+        (UnaryPredicateFormula<? extends Object, ? extends IAssignment>) obj;
+    if (!this.term.equals(other.term)) {
+      return false;
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public int compareTo(final IFormula<? extends IAssignment> obj) {
-		final int classNameCompared =
-			this.getClass().getCanonicalName().compareTo(
-					obj.getClass().getCanonicalName());
-		if (classNameCompared != 0) {
-			return classNameCompared;
-		}
+    return true;
+  }
 
-		final UnaryPredicateFormula<?, ? extends IAssignment> other =
-			(UnaryPredicateFormula<?, ? extends IAssignment>) obj;
+  @SuppressWarnings("unchecked")
+  @Override
+  public int compareTo(final IFormula<? extends IAssignment> obj) {
+    final int classNameCompared =
+        this.getClass().getCanonicalName().compareTo(obj.getClass().getCanonicalName());
+    if (classNameCompared != 0) {
+      return classNameCompared;
+    }
 
-		return this.term.compareTo(other.term);
-	}
+    final UnaryPredicateFormula<?, ? extends IAssignment> other =
+        (UnaryPredicateFormula<?, ? extends IAssignment>) obj;
 
-	@Override
-	public String toString() {
-		return this.toString(false);
-	}
+    return this.term.compareTo(other.term);
+  }
+
+  @Override
+  public String toString() {
+    return this.toString(false);
+  }
 }

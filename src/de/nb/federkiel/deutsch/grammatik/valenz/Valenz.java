@@ -214,6 +214,15 @@ public final class Valenz {
   // TODO Ist nicht "gut" bei "es gut haben" eine Art praedikatives Adjektiv
   // (wie bei "Peter ist nett."?)
 
+
+  /**
+   * Seiner Mutter [wird] er das Geld geben.
+   * <p>
+   * (<i>Reiner Infinitiv</i> meint <i>Infinitiv ohne zur</i>.)
+   */
+  public static final Valenz SUBJEKT_REINER_INFINITIV = new Valenz(
+      ErgaenzungsOderAngabeTypen.SUBJEKT, ErgaenzungsOderAngabeTypen.REINER_INFINITIV_RF);
+
   /**
    * Alle möglichen Valenzen
    */

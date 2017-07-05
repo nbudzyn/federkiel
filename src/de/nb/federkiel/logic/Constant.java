@@ -4,6 +4,7 @@ import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * A constant (Individuenkonstante) in firstTerm-order logic. Denotes one element of the domain of
@@ -35,6 +36,11 @@ public class Constant<T extends Object, A extends IAssignment> implements ITerm<
   @Override
   public T evaluate(final A variableAssignment) {
     return this.value;
+  }
+
+  @Override
+  public ImmutableSet<Variable<?, A>> getAllVariables() {
+    return ImmutableSet.of();
   }
 
   /*

@@ -6,6 +6,10 @@ import static de.nb.federkiel.deutsch.grammatik.kategorie.Genus.MASKULINUM;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Genus.NEUTRUM;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Numerus.PLURAL;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Numerus.SINGULAR;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.INDIKATIV;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.KONJUNKTIV;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.PRAESENS;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.PRAETERITUM;
 
 import java.util.Collection;
 
@@ -41,14 +45,6 @@ import de.nb.federkiel.string.StringUtil;
 @ThreadSafe
 public final class VerbFlektierer implements IFlektierer {
   public static final String TYP = "Verb";
-
-  public static final String INDIKATIV = "ind";
-
-  public static final String KONJUNKTIV = "konj";
-
-  public static final String PRAESENS = "praes";
-
-  public static final String PRAETERITUM = "praet";
 
   /**
    * (Enden von) Ausnahmen. Hier müssen insbesondere alle (Enden von) starken Vollverben und von
@@ -360,7 +356,7 @@ public final class VerbFlektierer implements IFlektierer {
    * @return Eine Infinitiv-Wortform dieser Valenz mit diesem String - oder <code>null</code>, falls
    *         die Valenz kein Subjekt vorsieht (also keinen Infinitiv ermöglicht)
    */
-  public IWordForm stdInf(final Lexeme lexeme, final String pos,
+  public static IWordForm stdInf(final Lexeme lexeme, final String pos,
       final Valenzvariante valenzvariante, final String personDesImplizitenSubjekts,
       final Genus genusDesImplizitenSubjekts, final @Nullable Numerus numerusDesImplizitenSubjekts,
       final boolean hoeflichkeitsformDesImplizitenSubjekts) {
@@ -403,7 +399,7 @@ public final class VerbFlektierer implements IFlektierer {
    *
    * @return <code>null</code>, falls es kein Hilfsverb ist
    */
-  private Collection<IWordForm> auxFin(final Valenzvariante variante, final Lexeme lexeme,
+  private static Collection<IWordForm> auxFin(final Valenzvariante variante, final Lexeme lexeme,
       final String pos) {
     final String infinitive = variante.getCanonicalForm();
     if (infinitive.equals("sein")) {
@@ -424,6 +420,7 @@ public final class VerbFlektierer implements IFlektierer {
    *
    * @return <code>null</code>, falls es sich nicht um ein Modalverb handelt
    */
+  @SuppressWarnings("static-method")
   private Collection<IWordForm> modFin(final Valenzvariante variante, final Lexeme lexeme,
       final String pos) {
     final String infinitive = variante.getCanonicalForm();
@@ -454,7 +451,8 @@ public final class VerbFlektierer implements IFlektierer {
    *
    * @return <code>null</code>, falls es sich nicht um ein Modalverb handelt
    */
-  private Collection<String> modPartPerfStrings(final Valenzvariante variante, final Lexeme lexeme,
+  private static Collection<String> modPartPerfStrings(final Valenzvariante variante,
+      final Lexeme lexeme,
       final String pos) {
     final String infinitive = variante.getCanonicalForm();
     if (infinitive.equals("dürfen")) {
@@ -484,7 +482,7 @@ public final class VerbFlektierer implements IFlektierer {
    *
    * @return <code>null</code>, falls es kein Hilfsverb ist
    */
-  private Collection<IWordForm> auxImp(final Valenzvariante variante, final Lexeme lexeme,
+  private static Collection<IWordForm> auxImp(final Valenzvariante variante, final Lexeme lexeme,
       final String pos) {
     final String infinitive = variante.getCanonicalForm();
     if (infinitive.equals("sein")) {
@@ -505,7 +503,8 @@ public final class VerbFlektierer implements IFlektierer {
    *
    * @return <code>null</code>, falls es kein Hilfsverb ist
    */
-  private Collection<String> auxPartPerfStrings(final Valenzvariante variante, final Lexeme lexeme,
+  private static Collection<String> auxPartPerfStrings(final Valenzvariante variante,
+      final Lexeme lexeme,
       final String pos) {
     final String infinitive = variante.getCanonicalForm();
     if (infinitive.equals("sein")) {
@@ -527,7 +526,7 @@ public final class VerbFlektierer implements IFlektierer {
    *         Wortform-String und Valenz (Subjekt ist IMPLIZIT) - oder <code>null</code>, falls es
    *         kein Partizip Präsens gibt (z.B. bei der Verbvariante, die bei "Mich deucht." vorliegt)
    */
-  public Pair<String, Valenz> stdPartPraes(final Valenzvariante valenzvariante) {
+  public static Pair<String, Valenz> stdPartPraes(final Valenzvariante valenzvariante) {
     final Valenz valenzBeiImplizitemSubjekt = valenzvariante.getValenz().beiImplizitemSubjekt();
     if (valenzBeiImplizitemSubjekt == null) {
       return null;
@@ -540,6 +539,7 @@ public final class VerbFlektierer implements IFlektierer {
   /**
    * Standard-Deklination eines Verbs gemäß Duden - Imperative Sg. und Plural
    */
+  @SuppressWarnings("static-method")
   public Collection<IWordForm> stdImp(final Valenzvariante valenzvariante, final Lexeme lexeme,
       final String pos) {
     final Collection<IWordForm> auxImp = auxImp(valenzvariante, lexeme, pos);
@@ -628,7 +628,7 @@ public final class VerbFlektierer implements IFlektierer {
   /**
    * Dies hier ist eher eine Heuristik, die im Zweifel eher "ja" sagt.
    */
-  private boolean istIntransivUndTransformativoderTelischUndBildetPerfektMitSein(
+  private static boolean istIntransivUndTransformativoderTelischUndBildetPerfektMitSein(
       final Valenzvariante variante, final Basisformen ausnahmeBasisformen) {
     if (!variante.isIntransitiv()) {
       return false;
@@ -646,7 +646,8 @@ public final class VerbFlektierer implements IFlektierer {
    *
    * @param ausnahmeBasisformen <code>null</code> erlaubt
    */
-  private boolean isTransformativoderTelischUndBildetPerfektMitSein(final Valenzvariante variante,
+  private static boolean isTransformativoderTelischUndBildetPerfektMitSein(
+      final Valenzvariante variante,
       final Basisformen ausnahmeBasisformen) {
     if (!bildetPerfektMitSein(ausnahmeBasisformen)) {
       return false;
@@ -664,7 +665,7 @@ public final class VerbFlektierer implements IFlektierer {
   /**
    * @param ausnahmeBasisformen <code>null</code> erlaubt
    */
-  private boolean bildetPerfektMitSein(final Basisformen ausnahmeBasisformen) {
+  private static boolean bildetPerfektMitSein(final Basisformen ausnahmeBasisformen) {
     if (ausnahmeBasisformen == null) {
       return false;
     }
@@ -675,6 +676,7 @@ public final class VerbFlektierer implements IFlektierer {
   /**
    * Standard-Deklination eines Verbs gemäß Duden - Partizip Perfekt (Partizip II)
    */
+  @SuppressWarnings("static-method")
   public Collection<String> stdPartPerfStrings(final Valenzvariante valenzvariante,
       final Lexeme lexeme, final String pos) {
     final Collection<String> auxPartPerfStrings = auxPartPerfStrings(valenzvariante, lexeme, pos);
@@ -702,7 +704,8 @@ public final class VerbFlektierer implements IFlektierer {
   /**
    * @param ausnahmeformen <code>null</code> erlaubt
    */
-  private Collection<IWordForm> stdImpSg(final Lexeme lexeme, final String pos, final Valenz valenz,
+  private static Collection<IWordForm> stdImpSg(final Lexeme lexeme, final String pos,
+      final Valenz valenz,
       final Basisformen ausnahmeformen, final String stammGemaessInfinitiv) {
     if (ausnahmeformen != null) {
       return stdImp(lexeme, pos, valenz, SINGULAR, ausnahmeformen.getImpSgAltern());
@@ -735,7 +738,7 @@ public final class VerbFlektierer implements IFlektierer {
   /**
    * @param ausnahmeformen <code>null</code> erlaubt
    */
-  private Collection<String> stdPartPerfStrings(final Lexeme lexeme, final String pos,
+  private static Collection<String> stdPartPerfStrings(final Lexeme lexeme, final String pos,
       final Valenz valenz, final Basisformen ausnahmeformen, final String stammGemaessInfinitiv) {
     if (stammGemaessInfinitiv.equals("wiss")) {
       return ImmutableList.of("gewusst");
@@ -757,7 +760,8 @@ public final class VerbFlektierer implements IFlektierer {
   /**
    * @param ausnahmeformen <code>null</code> erlaubt
    */
-  private Collection<IWordForm> stdImpPl(final Lexeme lexeme, final String pos, final Valenz valenz,
+  private static Collection<IWordForm> stdImpPl(final Lexeme lexeme, final String pos,
+      final Valenz valenz,
       final String stammGemaessInfinitiv) {
     // Duden 609: "Im Plural werden Präsensformen verwendet."
     // geht(!)
@@ -769,7 +773,7 @@ public final class VerbFlektierer implements IFlektierer {
    * @return Basisformen für diesen Infinitiv - wenn es sich um eine Ausnahme handelt - sonst
    *         <code>null</code>
    */
-  private Basisformen findAusnahme(final String inputInfinitiv) {
+  private static Basisformen findAusnahme(final String inputInfinitiv) {
     // @formatter:off
     return AUSNAHMEENDEN.stream()
         .map(basisform -> basisform.erzeugeKopieMitPraefix(inputInfinitiv))
@@ -788,7 +792,8 @@ public final class VerbFlektierer implements IFlektierer {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
     res.addAll(stdPraesensInd(lexeme, pos, valenz, ausnahmeformen, stammGemaessInfinitiv));
-    res.addAll(stdPraesKonjUndPraetStarkKonj(lexeme, pos, valenz, PRAESENS, stammGemaessInfinitiv));
+    res.addAll(stdPraesKonjUndPraetStarkKonj(lexeme, pos, valenz, PRAESENS,
+        stammGemaessInfinitiv));
 
     return res.build();
   }
@@ -796,6 +801,7 @@ public final class VerbFlektierer implements IFlektierer {
   /**
    * @param ausnahmeformen <code>null</code> erlaubt
    */
+  @SuppressWarnings("static-method")
   private Collection<IWordForm> stdPraesensInd(final Lexeme lexeme, final String pos,
       final Valenz valenz, final Basisformen ausnahmeformen,
       final String stammPraesIndGemaessInfinitiv) {
@@ -813,7 +819,7 @@ public final class VerbFlektierer implements IFlektierer {
   /**
    * @param ausnahmeformen <code>null</code> erlaubt
    */
-  private Collection<IWordForm> stdSgPraesInd(final Lexeme lexeme, final String pos,
+  private static Collection<IWordForm> stdSgPraesInd(final Lexeme lexeme, final String pos,
       final Valenz valenz, final Basisformen ausnahmeformen,
       final String stammPraesIndGemaessInfinitiv) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
@@ -836,7 +842,7 @@ public final class VerbFlektierer implements IFlektierer {
     return res.build();
   }
 
-  private Collection<IWordForm> stdPlPraesInd(final Lexeme lexeme, final String pos,
+  private static Collection<IWordForm> stdPlPraesInd(final Lexeme lexeme, final String pos,
       final Valenz valenz, final String stammPraesInd) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
@@ -857,14 +863,14 @@ public final class VerbFlektierer implements IFlektierer {
     return res.build();
   }
 
-  private Collection<IWordForm> stdPraesInd(final Lexeme lexeme, final String pos,
+  private static Collection<IWordForm> stdPraesInd(final Lexeme lexeme, final String pos,
       final Valenz valenz, final String person, final Genus genus, final Numerus numerus,
       final boolean hoeflichkeitsform, final Collection<String> strings) {
     return stdFin(lexeme, pos, valenz, person, genus, numerus, hoeflichkeitsform, PRAESENS,
         INDIKATIV, strings);
   }
 
-  private Collection<String> stdP1SgPraesIndStrings(final String stammPraesInd) {
+  private static Collection<String> stdP1SgPraesIndStrings(final String stammPraesInd) {
     if (stammPraesInd.equals("wiss")) {
       // Duden 4 2006 644
       return ImmutableList.of("weiß");
@@ -878,7 +884,7 @@ public final class VerbFlektierer implements IFlektierer {
   /**
    * @param ausnahmeformen <code>null</code> erlaubt
    */
-  private Collection<String> stdP2SgPraesIndStrings(final Basisformen ausnahmeformen,
+  private static Collection<String> stdP2SgPraesIndStrings(final Basisformen ausnahmeformen,
       final String stammPraesIndGemaessInfinitiv) {
     if (stammPraesIndGemaessInfinitiv.equals("wiss")) {
       // Duden 4 2006 644
@@ -927,7 +933,7 @@ public final class VerbFlektierer implements IFlektierer {
    * Möglichkeit, teilweise werden beide Möglichkeiten geliefert).
    * </ul>
    */
-  private Collection<String> tilgeGgfEAusStammUndFuegeGgfEVorEndungEinUndHaengeEndungAn(
+  private static Collection<String> tilgeGgfEAusStammUndFuegeGgfEVorEndungEinUndHaengeEndungAn(
       final String stamm, final String endung) {
     final ImmutableList.Builder<String> res = ImmutableList.builder();
 
@@ -951,7 +957,7 @@ public final class VerbFlektierer implements IFlektierer {
    * <p>
    * Vgl. Duden Bd. 4 2006 617ff.
    */
-  private Collection<String> fuegeGgfEVorEndungEinUndHaengeEndungAn(final String stamm,
+  private static Collection<String> fuegeGgfEVorEndungEinUndHaengeEndungAn(final String stamm,
       final String endung) {
     final ImmutableList.Builder<String> res = ImmutableList.builder();
 
@@ -973,7 +979,7 @@ public final class VerbFlektierer implements IFlektierer {
    *         werden <i>muss</i>. <code>false</code>, falls <i>kein e eingeschoben werden darf</i>.
    *         (Vgl. Duden 4 2006 617, 618)
    */
-  private boolean eEinschubZwingend(final String stamm, final String endung) {
+  private static boolean eEinschubZwingend(final String stamm, final String endung) {
     // Dies hier ergibt sich ohnehin:
     // if (GermanUtil.endetAufSLaut(stamm) ||
     // GermanUtil.endetAufSchLaut(stamm)) {
@@ -1002,7 +1008,7 @@ public final class VerbFlektierer implements IFlektierer {
   /**
    * @param ausnahmeformen <code>null</code> erlaubt
    */
-  private Collection<String> stdP3SgPraesIndStrings(final Basisformen ausnahmeformen,
+  private static Collection<String> stdP3SgPraesIndStrings(final Basisformen ausnahmeformen,
       final String stammPraesIndGemaessInfinitiv) {
     if (stammPraesIndGemaessInfinitiv.equals("wiss")) {
       // Duden 4 2006 644
@@ -1017,7 +1023,7 @@ public final class VerbFlektierer implements IFlektierer {
         "t");
   }
 
-  private Collection<String> stdP2PlPraesIndStrings(final String stammPraesInd) {
+  private static Collection<String> stdP2PlPraesIndStrings(final String stammPraesInd) {
     final ImmutableSet.Builder<String> res = ImmutableSet.builder();
 
     res.addAll(tilgeGgfEAusStammUndFuegeGgfEVorEndungEinUndHaengeEndungAn(stammPraesInd, "t"));
@@ -1038,7 +1044,7 @@ public final class VerbFlektierer implements IFlektierer {
    * @return der Stamm der Indikativ-Präsens-Formen, wie er sich aus dem Infinitiv ergeben müsste
    *         (berücksichtigt KEINE Ausnahmen!)
    */
-  private String stammGemaessInfinitiv(final Lexeme lexeme) {
+  private static String stammGemaessInfinitiv(final Lexeme lexeme) {
     final String infinitiv = lexeme.getCanonicalizedForm();
 
     if (infinitiv.length() <= 2) {
@@ -1058,6 +1064,7 @@ public final class VerbFlektierer implements IFlektierer {
   /**
    * @param ausnahmeformen <code>null</code> erlaubt
    */
+  @SuppressWarnings("static-method")
   private Collection<IWordForm> stdPraeteritumInd(final Lexeme lexeme, final String pos,
       final Valenz valenz, final Basisformen ausnahmeformen, final String stammGemaessInfinitiv) {
     if (stammGemaessInfinitiv.equals("wiss")) {
@@ -1084,7 +1091,7 @@ public final class VerbFlektierer implements IFlektierer {
     return stdPraeteritumSchwach(lexeme, pos, valenz, stammGemaessInfinitiv, INDIKATIV);
   }
 
-  private Collection<IWordForm> stdPraeteritumSchwach(final Lexeme lexeme, final String pos,
+  private static Collection<IWordForm> stdPraeteritumSchwach(final Lexeme lexeme, final String pos,
       final Valenz valenz, final String stammPraetSchwach, final String modus) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
@@ -1099,7 +1106,7 @@ public final class VerbFlektierer implements IFlektierer {
     return res.build();
   }
 
-  private Iterable<? extends IWordForm> stdPraeteritumIndStark(final Lexeme lexeme,
+  private static Iterable<? extends IWordForm> stdPraeteritumIndStark(final Lexeme lexeme,
       final String pos, final Valenz valenz, final String stammPraetInd) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
@@ -1114,7 +1121,8 @@ public final class VerbFlektierer implements IFlektierer {
     return res.build();
   }
 
-  private Collection<IWordForm> stdPraetSchwachUndIndStark(final Lexeme lexeme, final String pos,
+  private static Collection<IWordForm> stdPraetSchwachUndIndStark(final Lexeme lexeme,
+      final String pos,
       final Valenz valenz, final String stammPraetInd, final Numerus numerus, final String modus,
       final String p1Suffix, final String p2Suffix, final String p3Suffix) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
@@ -1145,14 +1153,15 @@ public final class VerbFlektierer implements IFlektierer {
     return res.build();
   }
 
-  private Collection<IWordForm> stdPraetSchwachUndIndStark(final Lexeme lexeme, final String pos,
+  private static Collection<IWordForm> stdPraetSchwachUndIndStark(final Lexeme lexeme,
+      final String pos,
       final Valenz valenz, final String person, final Genus genus, final Numerus numerus,
       final boolean hoeflichkeitsform, final String modus, final Collection<String> strings) {
     return stdFin(lexeme, pos, valenz, person, genus, numerus, hoeflichkeitsform, PRAETERITUM,
         modus, strings);
   }
 
-  private ImmutableCollection<String> stdPraetIndStrings(final String stammPraetInd,
+  private static ImmutableCollection<String> stdPraetIndStrings(final String stammPraetInd,
       final String suffixOhneOptionalesE) {
     final ImmutableList.Builder<String> res = ImmutableList.builder();
 
@@ -1184,7 +1193,8 @@ public final class VerbFlektierer implements IFlektierer {
     return res.build();
   }
 
-  private Collection<IWordForm> stdPraesKonjUndPraetStarkKonj(final Lexeme lexeme, final String pos,
+  private static Collection<IWordForm> stdPraesKonjUndPraetStarkKonj(final Lexeme lexeme,
+      final String pos,
       final Valenz valenz, final String tempus, final String stammPraesKonj) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
@@ -1196,7 +1206,7 @@ public final class VerbFlektierer implements IFlektierer {
     return res.build();
   }
 
-  private Collection<IWordForm> stdSgPraesKonjUndPraetStarkKonj(final Lexeme lexeme,
+  private static Collection<IWordForm> stdSgPraesKonjUndPraetStarkKonj(final Lexeme lexeme,
       final String pos, final Valenz valenz, final String tempus, final String stamm) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
@@ -1217,7 +1227,7 @@ public final class VerbFlektierer implements IFlektierer {
     return res.build();
   }
 
-  private Collection<IWordForm> stdPlPraesKonjUndPraetStarkKonj(final Lexeme lexeme,
+  private static Collection<IWordForm> stdPlPraesKonjUndPraetStarkKonj(final Lexeme lexeme,
       final String pos, final Valenz valenz, final String tempus, final String stamm) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
@@ -1239,6 +1249,7 @@ public final class VerbFlektierer implements IFlektierer {
   /**
    * @param ausnahmeformen <code>null</code> erlaubt
    */
+  @SuppressWarnings("static-method")
   private Collection<IWordForm> stdPraeteritumKonj(final Lexeme lexeme, final String pos,
       final Valenz valenz, final Basisformen ausnahmeformen, final String stammGemaessInfinitiv) {
     if (stammGemaessInfinitiv.equals("wiss")) {
@@ -1266,7 +1277,7 @@ public final class VerbFlektierer implements IFlektierer {
     return stdPraeteritumSchwach(lexeme, pos, valenz, stammGemaessInfinitiv, KONJUNKTIV);
   }
 
-  private Collection<IWordForm> seinFin(final Valenz valenz, final Lexeme lexeme,
+  private static Collection<IWordForm> seinFin(final Valenz valenz, final Lexeme lexeme,
       final String pos) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
@@ -1318,7 +1329,7 @@ public final class VerbFlektierer implements IFlektierer {
     return res.build();
   }
 
-  private Collection<IWordForm> seinImp(final Valenz valenz, final Lexeme lexeme,
+  private static Collection<IWordForm> seinImp(final Valenz valenz, final Lexeme lexeme,
       final String pos) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
@@ -1328,7 +1339,7 @@ public final class VerbFlektierer implements IFlektierer {
     return res.build();
   }
 
-  private Collection<IWordForm> habenFin(final Valenz valenz, final Lexeme lexeme,
+  private static Collection<IWordForm> habenFin(final Valenz valenz, final Lexeme lexeme,
       final String pos) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
@@ -1382,7 +1393,7 @@ public final class VerbFlektierer implements IFlektierer {
     return res.build();
   }
 
-  private Collection<IWordForm> habenImp(final Valenz valenz, final Lexeme lexeme,
+  private static Collection<IWordForm> habenImp(final Valenz valenz, final Lexeme lexeme,
       final String pos) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
@@ -1394,7 +1405,8 @@ public final class VerbFlektierer implements IFlektierer {
     return res.build();
   }
 
-  private void addStdImpIfNotNul(final ImmutableList.Builder<IWordForm> res, final Lexeme lexeme,
+  private static void addStdImpIfNotNul(final ImmutableList.Builder<IWordForm> res,
+      final Lexeme lexeme,
       final String pos, final Valenz valenz, final Numerus numerus, final String string) {
     final Wortform imp = stdImp(lexeme, pos, valenz, numerus, string);
     if (imp != null) {
@@ -1402,7 +1414,7 @@ public final class VerbFlektierer implements IFlektierer {
     }
   }
 
-  private Collection<IWordForm> werdenFin(final Valenz valenz, final Lexeme lexeme,
+  private static Collection<IWordForm> werdenFin(final Valenz valenz, final Lexeme lexeme,
       final String pos) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
@@ -1472,7 +1484,7 @@ public final class VerbFlektierer implements IFlektierer {
     return res.build();
   }
 
-  private Collection<IWordForm> werdenImp(final Valenz valenz, final Lexeme lexeme,
+  private static Collection<IWordForm> werdenImp(final Valenz valenz, final Lexeme lexeme,
       final String pos) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
@@ -1483,7 +1495,7 @@ public final class VerbFlektierer implements IFlektierer {
     return res.build();
   }
 
-  private final Collection<IWordForm> duerfenFin(final Valenz valenz, final Lexeme lexeme,
+  private final static Collection<IWordForm> duerfenFin(final Valenz valenz, final Lexeme lexeme,
       final String pos) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
@@ -1530,7 +1542,7 @@ public final class VerbFlektierer implements IFlektierer {
     return res.build();
   }
 
-  private final Collection<IWordForm> wollenFin(final Valenz valenz, final Lexeme lexeme,
+  private final static Collection<IWordForm> wollenFin(final Valenz valenz, final Lexeme lexeme,
       final String pos) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
@@ -1577,7 +1589,7 @@ public final class VerbFlektierer implements IFlektierer {
     return res.build();
   }
 
-  private final Collection<IWordForm> koennenFin(final Valenz valenz, final Lexeme lexeme,
+  private final static Collection<IWordForm> koennenFin(final Valenz valenz, final Lexeme lexeme,
       final String pos) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
@@ -1624,7 +1636,7 @@ public final class VerbFlektierer implements IFlektierer {
     return res.build();
   }
 
-  private final Collection<IWordForm> sollenFin(final Valenz valenz, final Lexeme lexeme,
+  private final static Collection<IWordForm> sollenFin(final Valenz valenz, final Lexeme lexeme,
       final String pos) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
@@ -1682,7 +1694,7 @@ public final class VerbFlektierer implements IFlektierer {
     return res.build();
   }
 
-  private final Collection<IWordForm> muessenFin(final Valenz valenz, final Lexeme lexeme,
+  private final static Collection<IWordForm> muessenFin(final Valenz valenz, final Lexeme lexeme,
       final String pos) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
@@ -1730,7 +1742,7 @@ public final class VerbFlektierer implements IFlektierer {
     return res.build();
   }
 
-  private final Collection<IWordForm> moegenFin(final Valenz valenz, final Lexeme lexeme,
+  private final static Collection<IWordForm> moegenFin(final Valenz valenz, final Lexeme lexeme,
       final String pos) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
@@ -1777,35 +1789,36 @@ public final class VerbFlektierer implements IFlektierer {
     return res.build();
   }
 
-  public Wortform stdPraesInd(final Lexeme lexeme, final String pos, final Valenz valenz,
+  public static Wortform stdPraesInd(final Lexeme lexeme, final String pos, final Valenz valenz,
       final String person, final Genus genus, final Numerus numerus,
       final boolean hoeflichkeitsform, final String string) {
     return stdFin(lexeme, pos, valenz, person, genus, numerus, hoeflichkeitsform, PRAESENS,
         INDIKATIV, string);
   }
 
-  public Wortform stdPraetInd(final Lexeme lexeme, final String pos, final Valenz valenz,
+  public static Wortform stdPraetInd(final Lexeme lexeme, final String pos, final Valenz valenz,
       final String person, final Genus genus, final Numerus numerus,
       final boolean hoeflichkeitsform, final String string) {
     return stdFin(lexeme, pos, valenz, person, genus, numerus, hoeflichkeitsform, PRAETERITUM,
         INDIKATIV, string);
   }
 
-  public IWordForm stdPraesKonj(final Lexeme lexeme, final String pos, final Valenz valenz,
+  public static IWordForm stdPraesKonj(final Lexeme lexeme, final String pos, final Valenz valenz,
       final String person, final Genus genus, final Numerus numerus,
       final boolean hoeflichkeitsform, final String string) {
     return stdKonj(lexeme, pos, valenz, person, genus, numerus, hoeflichkeitsform, PRAESENS,
         string);
   }
 
-  public IWordForm stdPraetKonj(final Lexeme lexeme, final String pos, final Valenz valenz,
+  public static IWordForm stdPraetKonj(final Lexeme lexeme, final String pos, final Valenz valenz,
       final String person, final Genus genus, final Numerus numerus,
       final boolean hoeflichkeitsform, final String string) {
     return stdKonj(lexeme, pos, valenz, person, genus, numerus, hoeflichkeitsform, PRAETERITUM,
         string);
   }
 
-  public Collection<IWordForm> stdKonj(final Lexeme lexeme, final String pos, final Valenz valenz,
+  public static Collection<IWordForm> stdKonj(final Lexeme lexeme, final String pos,
+      final Valenz valenz,
       final String person, final Numerus numerus, final String tempus,
       final Collection<String> strings) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
@@ -1827,14 +1840,15 @@ public final class VerbFlektierer implements IFlektierer {
     return res.build();
   }
 
-  public IWordForm stdKonj(final Lexeme lexeme, final String pos, final Valenz valenz,
+  public static IWordForm stdKonj(final Lexeme lexeme, final String pos, final Valenz valenz,
       final String person, final Genus genus, final Numerus numerus,
       final boolean hoeflichkeitsform, final String tempus, final String string) {
     return stdFin(lexeme, pos, valenz, person, genus, numerus, hoeflichkeitsform, tempus,
         KONJUNKTIV, string);
   }
 
-  public Collection<IWordForm> stdFin(final Lexeme lexeme, final String pos, final Valenz valenz,
+  public static Collection<IWordForm> stdFin(final Lexeme lexeme, final String pos,
+      final Valenz valenz,
       final String person, final Genus genus, final Numerus numerus,
       final boolean hoeflichkeitsform, final String tempus, final String modus,
       final Collection<String> strings) {
@@ -1847,7 +1861,8 @@ public final class VerbFlektierer implements IFlektierer {
    *         <code>Collection</code>, falls die Valenz kein Subjekt vorsieht (also keinen Imperativ
    *         ermöglicht)
    */
-  public Collection<IWordForm> stdImp(final Lexeme lexeme, final String pos, final Valenz valenz,
+  public static Collection<IWordForm> stdImp(final Lexeme lexeme, final String pos,
+      final Valenz valenz,
       final Numerus numerus, final Collection<String> strings) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
@@ -1858,7 +1873,7 @@ public final class VerbFlektierer implements IFlektierer {
     return res.build();
   }
 
-  public Wortform stdFin(final Lexeme lexeme, final String pos, final Valenz valenz,
+  public static Wortform stdFin(final Lexeme lexeme, final String pos, final Valenz valenz,
       final String person, final Genus genus, final Numerus numerus,
       final boolean hoeflichkeitsform, final String tempus, final String modus,
       final String string) {
@@ -1889,7 +1904,7 @@ public final class VerbFlektierer implements IFlektierer {
    * @return Eine Infinitiv-Wortform dieser Valenz mit diesem String - oder <code>null</code>, falls
    *         die Valenz kein Subjekt vorsieht (also keinen Infinitiv ermöglicht)
    */
-  public Wortform stdInf(final Lexeme lexeme, final String pos, final Valenz valenz,
+  public static Wortform stdInf(final Lexeme lexeme, final String pos, final Valenz valenz,
       final String personDesImplizitenSubjekts, final Genus genusDesImplizitenSubjekts,
       final @Nullable Numerus numerusDesImplizitenSubjekts,
       final boolean hoeflichkeitsformDesImplizitenSubjekts) {
@@ -1918,7 +1933,8 @@ public final class VerbFlektierer implements IFlektierer {
    * @return Eine Imperativ-Wortform dieser Valenz mit diesem String - oder <code>null</code>, falls
    *         die Valenz kein Subjekt vorsieht (also keinen Imperativ ermöglicht)
    */
-  public @Nullable Wortform stdImp(final Lexeme lexeme, final String pos, final Valenz valenz,
+  public @Nullable static Wortform stdImp(final Lexeme lexeme, final String pos,
+      final Valenz valenz,
       final Numerus numerus, final String string) {
     final Valenz valenzBeiImplizitemSubjekt = valenz.beiImplizitemSubjekt();
 
@@ -1934,20 +1950,20 @@ public final class VerbFlektierer implements IFlektierer {
     return stdImp(lexeme, pos, numerus, ergaenzungenUndAngabenSlots, string);
   }
 
-  public Wortform stdFin(final Lexeme lexeme, final String pos, final String tempus,
+  public static Wortform stdFin(final Lexeme lexeme, final String pos, final String tempus,
       final String modus, final Collection<RoleFrameSlot> ergaenzungenUndAngaben,
       final String string) {
     return WortformUtil.buildVerbFormFin(lexeme, pos, tempus, modus, string,
         ergaenzungenUndAngaben.toArray(new RoleFrameSlot[] {}));
   }
 
-  public Wortform stdImp(final Lexeme lexeme, final String pos, final Numerus numerus,
+  public static Wortform stdImp(final Lexeme lexeme, final String pos, final Numerus numerus,
       final Collection<RoleFrameSlot> ergaenzungenUndAngaben, final String string) {
     return WortformUtil.buildVerbFormImp(lexeme, pos, numerus, string,
         ergaenzungenUndAngaben.toArray(new RoleFrameSlot[] {}));
   }
 
-  public Wortform stdInf(final Lexeme lexeme, final String pos,
+  public static Wortform stdInf(final Lexeme lexeme, final String pos,
       final Collection<RoleFrameSlot> ergaenzungenUndAngabenFuerInf) {
     return WortformUtil.buildVerbFormInf(lexeme, pos, ergaenzungenUndAngabenFuerInf.toArray(
         new RoleFrameSlot[ergaenzungenUndAngabenFuerInf.size()]));

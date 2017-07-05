@@ -5,9 +5,12 @@ import static de.nb.federkiel.deutsch.grammatik.kategorie.Genus.MASKULINUM;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Genus.NEUTRUM;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Numerus.PLURAL;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Numerus.SINGULAR;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.STAERKE_STARK;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.STAERKE_UNFLEKTIERT;
 
 import java.util.Collection;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.google.common.collect.ImmutableCollection;
@@ -129,6 +132,8 @@ abstract class AbstractPronomenFlektierer extends
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv,
       final boolean generateStaerke, final boolean auchGenitivMaskNeutr,
       final boolean nomAkkSgNeutrumAuchSStattEs) {
+    @Nullable
+    final String staerke = generateStaerke ? STAERKE_STARK : null;
     return adjStarkSg(
         lexeme,
         pos,
@@ -140,21 +145,24 @@ abstract class AbstractPronomenFlektierer extends
         nomAkkSgNeutrumAuchSStattEs ? NomSgMaskUndNomAkkSgNeutrModus.MIT_ENDUNG_UND_NOM_AKK_AUCH_NUR_MIT_S_STATT_ES
             : NomSgMaskUndNomAkkSgNeutrModus.MIT_ENDUNG,
         vorgabeFuerNachfolgendesAdjektiv, Valenz.LEER,
-        buildFeatureMap(generateStaerke ? STARK : null));
+        buildFeatureMap(staerke), buildFeatureTypeMap(staerke));
   }
 
   public Collection<IWordForm> typDieserPl(final Lexeme lexeme,
       final String pos, final String stamm,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv,
       final boolean generateStaerke) {
+    @Nullable
+    final String staerke = generateStaerke ? STAERKE_STARK : null;
     return adjStarkPl(
         lexeme,
         vorgabeFuerNachfolgendesAdjektiv,
         pos,
         stamm,
-        buildFeatureMap(generateStaerke ? STARK : null, Valenz.LEER
-            .buildErgaenzungenUndAngabenSlots("3", null, PLURAL,
-                StringFeatureLogicUtil.FALSE, true)));
+        buildFeatureMap(staerke, Valenz.LEER
+            .buildErgaenzungenUndAngabenSlots("3", null, PLURAL, StringFeatureLogicUtil.FALSE,
+                true)),
+        buildFeatureTypeMap(staerke));
     // Die ihrer selbst gedenkenden Männer, aber nicht
     // *die Ihrer selbst gedenkenden Männer!
   }
@@ -194,7 +202,7 @@ abstract class AbstractPronomenFlektierer extends
     final String stem = lexeme.getCanonicalizedForm().substring(0,
         lexeme.getCanonicalizedForm().length() - 5); // "all"
 
-    final String staerke = generateStaerke ? UNFLEKTIERT : null;
+    final String staerke = generateStaerke ? STAERKE_UNFLEKTIERT : null;
 
     final ImmutableList.Builder<IWordForm> res = ImmutableList
         .<IWordForm> builder();

@@ -6,16 +6,24 @@ import de.nb.federkiel.plurivallogic.IPlurivalTerm;
 import de.nb.federkiel.plurivallogic.Plurival;
 
 /**
- * A term, that is build up from two (sub-)terms. If the first sub-term is specified, then this is
- * the value of the term - otherwise the value of the second sub-term is the value of the term
- * (functioning as a "default value").
+ * A term, that is build up from two (sub-)terms. This term unifies the to subterms: It checks for
+ * String equality (allowing unspecified values) and returns the most specific value, if the are
+ * counted as equal. If not equal, this term has no result.
+ * <p>
+ * Examples:
+ * <ul>
+ * <li>"sg" unified with "sg" yields "sg"
+ * <li>"sg" unified with UNSPECIFIED yields "sg"
+ * <li>UNSPECIFIED unified with UNSPECIFIED yields UNSPECIFIED
+ * <li>"sg" unified with "pl" has no result (empty Plurival)
+ * </ul>
  *
- * @author nbudzyn 2011
+ * @author nbudzyn 2017
  */
-public class FeatureDefaultPlurivalTerm extends
+public class ThreeStateFeatureUnifyPlurivalTerm extends
     BinaryCompoundPlurivalTerm<IFeatureValue, IFeatureValue, IFeatureValue, FeatureAssignment> {
 
-  public FeatureDefaultPlurivalTerm(
+  public ThreeStateFeatureUnifyPlurivalTerm(
       final IPlurivalTerm<IFeatureValue, FeatureAssignment> firstSubTerm,
       final IPlurivalTerm<IFeatureValue, FeatureAssignment> secondSubTerm) {
     super(firstSubTerm, secondSubTerm);
@@ -23,11 +31,12 @@ public class FeatureDefaultPlurivalTerm extends
 
   @Override
   public Plurival<IFeatureValue> calculate(final IFeatureValue first, final IFeatureValue second) {
-    if (!UnspecifiedFeatureValue.INSTANCE.equals(first)) {
-      return Plurival.of(first);
+    final IFeatureValue unified = FeatureStructure.unifyStrings(first, second);
+    if (unified != null) {
+      return Plurival.of(unified);
     }
 
-    return Plurival.of(second);
+    return Plurival.<IFeatureValue>empty();
   }
 
   @Override
@@ -37,7 +46,7 @@ public class FeatureDefaultPlurivalTerm extends
       res.append("(");
     }
     res.append(getFirstSubTerm().toString(true));
-    res.append(" JOKER_DEFAULTING_TO ");
+    res.append(" U ");
     res.append(getSecondSubTerm().toString(true));
     if (surroundWithBracketsIfApplicable) {
       res.append(")");

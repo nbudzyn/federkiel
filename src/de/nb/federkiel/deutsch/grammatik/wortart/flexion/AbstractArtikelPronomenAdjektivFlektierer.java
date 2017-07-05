@@ -9,6 +9,15 @@ import static de.nb.federkiel.deutsch.grammatik.kategorie.Kasus.GENITIV;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Kasus.NOMINATIV;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Numerus.PLURAL;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Numerus.SINGULAR;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.KOMPARATION_FEATURE_TYPE;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.KOMPARATION_KEY;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.KOMPARATION_KOMPARATIV;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.KOMPARATION_POSITIV;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.KOMPARATION_SUPERLATIV;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.STAERKE_FEATURE_TYPE;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.STAERKE_KEY;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.STAERKE_SCHWACH;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.STAERKE_STARK;
 
 import java.util.Collection;
 
@@ -32,6 +41,7 @@ import de.nb.federkiel.feature.RoleFrameCollection;
 import de.nb.federkiel.feature.RoleFrameSlot;
 import de.nb.federkiel.feature.StringFeatureLogicUtil;
 import de.nb.federkiel.feature.StringFeatureValue;
+import de.nb.federkiel.interfaces.IFeatureType;
 import de.nb.federkiel.interfaces.IFeatureValue;
 import de.nb.federkiel.interfaces.IWordForm;
 import de.nb.federkiel.lexikon.Lexeme;
@@ -98,19 +108,6 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
     MIT_ENDUNG_UND_NOM_AKK_AUCH_NUR_MIT_S_STATT_ES;
   }
 
-  public static final String KOMPARATION = "komparation";
-  public static final String POSITIV = "positiv";
-  public static final String KOMPARATIV = "komparativ";
-  public static final String SUPERLATIV = "superlativ"; // TODO Duden 500 ff
-
-  /**
-   * Merkmal - kann den Wert stark, schwach oder unflektiert haben
-   */
-  public static final String STAERKE = "staerke";
-  public static final String STARK = "stark";
-  public static final String SCHWACH = "schwach";
-  public static final String UNFLEKTIERT = "unflektiert";
-
   private static final ImmutableCollection<Pair<String, String>> AUSNAHMEENDEN_KOMPARATIV;
   private static final ImmutableCollection<Pair<String, String>> AUSNAHMEENDEN_SUPERLATIV;
 
@@ -120,45 +117,45 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
 
     // (Duden 498)
     // Umlaut, Vokal a
-        add(Pair.of("alt", "älter")).add(Pair.of("arg", "ärger")).add(Pair.of("arm", "ärmer"))
-        .add(Pair.of("hart", "härter")).add(Pair.of("kalt", "kälter"))
-        .add(Pair.of("lang", "länger")).add(Pair.of("nah", "näher"))
-        .add(Pair.of("scharf", "schärfer")).add(Pair.of("schwach", "schwächer"))
-        .add(Pair.of("schwarz", "schwärzer")).add(Pair.of("stark", "stärker"))
-        .add(Pair.of("warm", "wärmer")).
+        add(Pair.of("alt", "älter")).add(Pair.of("arg", "ärger")).add(Pair.of("arm", "ärmer")).add(
+            Pair.of("hart", "härter")).add(Pair.of("kalt", "kälter")).add(
+                Pair.of("lang", "länger")).add(Pair.of("nah", "näher")).add(
+                    Pair.of("scharf", "schärfer")).add(Pair.of("schwach", "schwächer")).add(
+                        Pair.of("schwarz", "schwärzer")).add(Pair.of("stark", "stärker")).add(
+                            Pair.of("warm", "wärmer")).
         // Vokal o
         add(Pair.of("grob", "gröber")).add(Pair.of("groß", "größer")).add(Pair.of("hoch", "höher")).
         // Vokal u
-        add(Pair.of("dumm", "dümmer")).add(Pair.of("jung", "jünger")).add(Pair.of("klug", "klüger"))
-        .add(Pair.of("kurz", "kürzer")).
+        add(Pair.of("dumm", "dümmer")).add(Pair.of("jung", "jünger")).add(
+            Pair.of("klug", "klüger")).add(Pair.of("kurz", "kürzer")).
         // Schwankend, Vokal a
-        add(Pair.of("bang", "banger")).add(Pair.of("bang", "bänger"))
-        .add(Pair.of("blass", "blasser")).add(Pair.of("blass", "blässer"))
-        .add(Pair.of("glatt", "glatter")).add(Pair.of("glatt", "glätter"))
-        .add(Pair.of("karg", "karger")).add(Pair.of("karg", "kärger"))
-        .add(Pair.of("krank", "kranker")). // (nicht im Duden
+        add(Pair.of("bang", "banger")).add(Pair.of("bang", "bänger")).add(
+            Pair.of("blass", "blasser")).add(Pair.of("blass", "blässer")).add(
+                Pair.of("glatt", "glatter")).add(Pair.of("glatt", "glätter")).add(
+                    Pair.of("karg", "karger")).add(Pair.of("karg", "kärger")).add(
+                        Pair.of("krank", "kranker")). // (nicht im Duden
         // 498)
-        add(Pair.of("krank", "kränker")).add(Pair.of("nass", "nasser"))
-        .add(Pair.of("nass", "nässer")).add(Pair.of("schmal", "schmaler"))
-        .add(Pair.of("schmal", "schmäler")).
+        add(Pair.of("krank", "kränker")).add(Pair.of("nass", "nasser")).add(
+            Pair.of("nass", "nässer")).add(Pair.of("schmal", "schmaler")).add(
+                Pair.of("schmal", "schmäler")).
         // Schwankend, Vokal o
-        add(Pair.of("fromm", "frommer")).add(Pair.of("fromm", "frömmer"))
-        .add(Pair.of("rot", "roter")).add(Pair.of("rot", "röter")).
+        add(Pair.of("fromm", "frommer")).add(Pair.of("fromm", "frömmer")).add(
+            Pair.of("rot", "roter")).add(Pair.of("rot", "röter")).
         // Schwankend, Vokal u
         add(Pair.of("krumm", "krummer")).add(Pair.of("krumm", "krümmer")).
         // gesund
         add(Pair.of("gesund", "gesünder")).
         // weitere unregelmäßige Formen (Duden 501)
-        add(Pair.of("gut", "besser")).add(Pair.of("viel", "mehr")).add(Pair.of("wenig", "weniger"))
-        .add(Pair.of("wenig", "minder")).build();
+        add(Pair.of("gut", "besser")).add(Pair.of("viel", "mehr")).add(
+            Pair.of("wenig", "weniger")).add(Pair.of("wenig", "minder")).build();
 
     AUSNAHMEENDEN_SUPERLATIV = new ImmutableSet.Builder<Pair<String, String>>().
     // Die üblicheren immer zuerst!
 
     // (Duden 501)
-        add(Pair.of("größer", "größt")).add(Pair.of("höher", "höchst"))
-        .add(Pair.of("näher", "nächst")).add(Pair.of("besser", "best"))
-        .add(Pair.of("mehr", "meist")).build();
+        add(Pair.of("größer", "größt")).add(Pair.of("höher", "höchst")).add(
+            Pair.of("näher", "nächst")).add(Pair.of("besser", "best")).add(
+                Pair.of("mehr", "meist")).build();
   }
 
   AbstractArtikelPronomenAdjektivFlektierer() {
@@ -189,37 +186,37 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
     res.addAll(adjStark(lexeme, valenzBeiImplizitemSubjekt, pos,
-        VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN, POSITIV, stamm, GenMaskNeutrSgModus.NUR_EN,
+        VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN, KOMPARATION_POSITIV, stamm, GenMaskNeutrSgModus.NUR_EN,
         NomSgMaskUndNomAkkSgNeutrModus.MIT_ENDUNG));
     res.addAll(adjSchwach(lexeme, VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN,
-        valenzBeiImplizitemSubjekt, pos, POSITIV, stamm));
+        valenzBeiImplizitemSubjekt, pos, KOMPARATION_POSITIV, stamm));
 
     // e-Tilgung für Positiv
     final @Nullable String stammNachETilgung = GermanUtil.tilgeEAusStammWennMoeglich(stamm);
 
     if (stammNachETilgung != null) {
       res.addAll(adjStark(lexeme, valenzBeiImplizitemSubjekt, pos,
-          VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN, POSITIV, stammNachETilgung,
+          VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN, KOMPARATION_POSITIV, stammNachETilgung,
           GenMaskNeutrSgModus.NUR_EN, NomSgMaskUndNomAkkSgNeutrModus.MIT_ENDUNG));
       res.addAll(adjSchwach(lexeme, VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN,
-          valenzBeiImplizitemSubjekt, pos, SCHWACH, stammNachETilgung));
+          valenzBeiImplizitemSubjekt, pos, STAERKE_SCHWACH, stammNachETilgung));
     }
 
     if (steigerbar) {
       // (ggf. Komparativ mit e-Tilgung)
       for (final String komparativ : komparativ(stamm)) {
         res.addAll(adjStark(lexeme, valenzBeiImplizitemSubjekt, pos,
-            VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN, KOMPARATIV, komparativ,
+            VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN, KOMPARATION_KOMPARATIV, komparativ,
             GenMaskNeutrSgModus.NUR_EN, NomSgMaskUndNomAkkSgNeutrModus.MIT_ENDUNG));
         res.addAll(adjSchwach(lexeme, VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN,
-            valenzBeiImplizitemSubjekt, pos, KOMPARATIV, komparativ));
+            valenzBeiImplizitemSubjekt, pos, KOMPARATION_KOMPARATIV, komparativ));
 
         for (final String superlativ : superlativ(komparativ)) {
           res.addAll(adjStark(lexeme, valenzBeiImplizitemSubjekt, pos,
-              VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN, SUPERLATIV, superlativ,
+              VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN, KOMPARATION_SUPERLATIV, superlativ,
               GenMaskNeutrSgModus.NUR_EN, NomSgMaskUndNomAkkSgNeutrModus.MIT_ENDUNG));
           res.addAll(adjSchwach(lexeme, VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN,
-              valenzBeiImplizitemSubjekt, pos, SUPERLATIV, superlativ));
+              valenzBeiImplizitemSubjekt, pos, KOMPARATION_SUPERLATIV, superlativ));
         }
       }
     }
@@ -227,52 +224,71 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
     return res.build();
   }
 
-  protected final ImmutableMap<String, IFeatureValue> buildFeatureMap(final String komparation,
-      final String staerke) {
-    return ImmutableMap.<String, IFeatureValue>of(KOMPARATION, StringFeatureValue.of(komparation),
-        STAERKE, StringFeatureValue.of(staerke));
+  protected final static ImmutableMap<String, IFeatureValue> buildFeatureMap(
+      final String komparation, final String staerke) {
+    return ImmutableMap.<String, IFeatureValue>of(KOMPARATION_KEY, StringFeatureValue.of(komparation),
+        STAERKE_KEY, StringFeatureValue.of(staerke));
   }
 
-  protected final ImmutableMap<String, IFeatureValue> buildFeatureMap(final String komparation,
-      final String staerke, final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlots) {
+  protected final static ImmutableMap<String, IFeatureValue> buildFeatureMap(
+      final String komparation, final String staerke,
+      final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlots) {
 
     final RoleFrame verbFrame = RoleFrame.of(ergaenzungenUndAngabenSlots);
 
-    return ImmutableMap.<String, IFeatureValue>of(WortformUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
-        RoleFrameCollection.of(verbFrame), KOMPARATION, StringFeatureValue.of(komparation), STAERKE,
+    return ImmutableMap.<String, IFeatureValue>of(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
+        RoleFrameCollection.of(verbFrame), KOMPARATION_KEY, StringFeatureValue.of(komparation),
+        STAERKE_KEY,
         StringFeatureValue.of(staerke));
   }
 
-  protected final ImmutableMap<String, IFeatureValue> buildFeatureMap(final String staerke,
+  protected final static ImmutableMap<String, IFeatureType> buildFeatureTypeMap(
+      final String komparation, final String staerke) {
+
+    return ImmutableMap.<String, IFeatureType>of(KOMPARATION_KEY, KOMPARATION_FEATURE_TYPE,
+        STAERKE_KEY, STAERKE_FEATURE_TYPE);
+  }
+
+  protected final static ImmutableMap<String, IFeatureValue> buildFeatureMap(
+      final @Nullable String staerke,
       final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlots) {
 
     final RoleFrame verbFrame = RoleFrame.of(ergaenzungenUndAngabenSlots);
 
     if (staerke == null) {
-      return ImmutableMap.<String, IFeatureValue>of(WortformUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
+      return ImmutableMap.<String, IFeatureValue>of(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
           RoleFrameCollection.of(verbFrame));
     }
 
-    return ImmutableMap.<String, IFeatureValue>of(WortformUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
-        RoleFrameCollection.of(verbFrame), STAERKE, StringFeatureValue.of(staerke));
+    return ImmutableMap.<String, IFeatureValue>of(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
+        RoleFrameCollection.of(verbFrame), STAERKE_KEY, StringFeatureValue.of(staerke));
+  }
+
+  protected final static ImmutableMap<String, IFeatureType> buildFeatureTypeMap(
+      final @Nullable String staerke) {
+    if (staerke == null) {
+      return ImmutableMap.of();
+    }
+
+    return ImmutableMap.<String, IFeatureType>of(STAERKE_KEY, STAERKE_FEATURE_TYPE);
   }
 
   /**
    * @param staerke <code>null</code> erlaubt - dann fällt dieses Merkmal aus
    */
-  protected final ImmutableMap<String, IFeatureValue> buildFeatureMap(final String staerke) {
+  protected final static ImmutableMap<String, IFeatureValue> buildFeatureMap(final String staerke) {
     if (staerke == null) {
       return ImmutableMap.of();
     }
 
-    return ImmutableMap.<String, IFeatureValue>of(STAERKE, StringFeatureValue.of(staerke));
+    return ImmutableMap.<String, IFeatureValue>of(STAERKE_KEY, StringFeatureValue.of(staerke));
   }
 
-  protected final ImmutableMap<String, IFeatureValue> buildFeatureMap(
+  protected final static ImmutableMap<String, IFeatureValue> buildFeatureMap(
       final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlots) {
     final RoleFrame verbFrame = RoleFrame.of(ergaenzungenUndAngabenSlots);
 
-    return ImmutableMap.<String, IFeatureValue>of(WortformUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
+    return ImmutableMap.<String, IFeatureValue>of(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
         RoleFrameCollection.of(verbFrame));
   }
 
@@ -363,7 +379,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
   /**
    * Dies hier ist etwas heuristisch...
    */
-  private boolean ersteSuperlativRegelErfuellt(final String stamm) {
+  private static boolean ersteSuperlativRegelErfuellt(final String stamm) {
     if (StringUtil.endsWith(stamm, "d", "t", "s", // "ss", "ß",
         "z", // "tz",
         "x", "sk", "sch")) {
@@ -453,7 +469,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
   public Collection<IWordForm> stdSchwach(final Lexeme lexeme, final String pos,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv,
       final String stammNichtSteigerbar) {
-    return adjSchwach(lexeme, vorgabeFuerNachfolgendesAdjektiv, Valenz.LEER, pos, POSITIV,
+    return adjSchwach(lexeme, vorgabeFuerNachfolgendesAdjektiv, Valenz.LEER, pos, KOMPARATION_POSITIV,
         stammNichtSteigerbar);
   }
 
@@ -480,7 +496,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
         pos, komparativ, stammInKomparation, eTilgungImSuffixEnUndEmErlaubt));
 
     final ImmutableMap<String, IFeatureValue> additionalFeaturesPl =
-        buildFeatureMap(komparativ, SCHWACH,
+        buildFeatureMap(komparativ, STAERKE_SCHWACH,
             valenzBeiImplizitemSubjekt.buildErgaenzungenUndAngabenSlots("3", // Person
                 null,
                 // die IHRER selbst gedenkende Männer /
@@ -490,8 +506,11 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
     // die ihrer selbst gedenkenden Männer,
     // NICHT JEDOCH: *die Ihrer selbst gedenkenden Männer!
 
+    final ImmutableMap<String, IFeatureType> additionalFeatureTypesPl =
+        buildFeatureTypeMap(komparativ, STAERKE_SCHWACH);
+
     res.addAll(adjSchwachPl(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
-        eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesPl));
+        eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesPl, additionalFeatureTypesPl));
 
     return res.build();
   }
@@ -501,27 +520,32 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
       final Valenz valenzBeiImplizitemSubjekt, final String pos, final String komparativ,
       final String stammInKomparation, final boolean eTilgungImSuffixEnUndEmErlaubt) {
     final ImmutableMap<String, IFeatureValue> additionalFeaturesSg =
-        buildFeatureMap(komparativ, SCHWACH);
+        buildFeatureMap(komparativ, STAERKE_SCHWACH);
+
+    final ImmutableMap<String, IFeatureType> additionalFeatureTypesSg =
+        buildFeatureTypeMap(komparativ, STAERKE_SCHWACH);
 
     return ImmutableList.copyOf(
         adjSchwachSg(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
-        eTilgungImSuffixEnUndEmErlaubt, valenzBeiImplizitemSubjekt, additionalFeaturesSg));
+            eTilgungImSuffixEnUndEmErlaubt, valenzBeiImplizitemSubjekt, additionalFeaturesSg,
+            additionalFeatureTypesSg));
   }
 
   protected ImmutableList<IWordForm> adjSchwachPl(final Lexeme lexeme,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation, final boolean eTilgungImSuffixEnUndEmErlaubt,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesPl) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesPl,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesPl) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
     res.addAll(adjSchwachPl(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
-        eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesPl, NOMINATIV));
+        eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesPl, additionalFeatureTypesPl, NOMINATIV));
     res.addAll(adjSchwachPl(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
-        eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesPl, GENITIV));
+        eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesPl, additionalFeatureTypesPl, GENITIV));
     res.addAll(adjSchwachPl(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
-        eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesPl, DATIV));
+        eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesPl, additionalFeatureTypesPl, DATIV));
     res.addAll(adjSchwachPl(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
-        eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesPl, AKKUSATIV));
+        eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesPl, additionalFeatureTypesPl, AKKUSATIV));
 
     return res.build();
   }
@@ -529,21 +553,22 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
   public ImmutableList<IWordForm> adjSchwachPl(final Lexeme lexeme,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation, final boolean eTilgungImSuffixEnUndEmErlaubt,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesPl, Kasus kasus) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesPl,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesPl, final Kasus kasus) {
     switch (kasus) {
       case NOMINATIV:
         return adjSchwachNomPl(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
-            eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesPl);
+            eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesPl, additionalFeatureTypesPl);
       case GENITIV:
         return adjSchwachGenPl(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
-            eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesPl);
+            eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesPl, additionalFeatureTypesPl);
       case DATIV:
         return adjSchwachOderStarkDatPl(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos,
-            stammInKomparation,
-            eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesPl);
+            stammInKomparation, eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesPl,
+            additionalFeatureTypesPl);
       case AKKUSATIV:
         return adjSchwachAkkPl(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
-            eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesPl);
+            eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesPl, additionalFeatureTypesPl);
       default:
         throw new IllegalStateException("Unerwarteter Kasus: " + kasus);
     }
@@ -552,13 +577,14 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
   private ImmutableList<IWordForm> adjSchwachNomPl(final Lexeme lexeme,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation, final boolean eTilgungImSuffixEnUndEmErlaubt,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesPl) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesPl,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesPl) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
     res.add(buildWortform(lexeme, pos, KasusInfo.NOM_KEIN_NOMEN, vorgabeFuerNachfolgendesAdjektiv,
-        PLURAL, null, additionalFeaturesPl, stammInKomparation + "en"));
+        PLURAL, null, additionalFeaturesPl, additionalFeatureTypesPl, stammInKomparation + "en"));
     if (eTilgungImSuffixEnUndEmErlaubt) {
       res.add(buildWortform(lexeme, pos, KasusInfo.NOM_KEIN_NOMEN, vorgabeFuerNachfolgendesAdjektiv,
-          PLURAL, null, additionalFeaturesPl, stammInKomparation + "n"));
+          PLURAL, null, additionalFeaturesPl, additionalFeatureTypesPl, stammInKomparation + "n"));
     }
     return res.build();
   }
@@ -566,14 +592,16 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
   private ImmutableList<IWordForm> adjSchwachGenPl(final Lexeme lexeme,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation, final boolean eTilgungImSuffixEnUndEmErlaubt,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesPl) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesPl,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesPl) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
     res.add(buildWortform(lexeme, pos, KasusInfo.GEN_OHNE_S_UND_R, vorgabeFuerNachfolgendesAdjektiv,
-        PLURAL, null, additionalFeaturesPl, stammInKomparation + "en"));
+        PLURAL, null, additionalFeaturesPl, additionalFeatureTypesPl, stammInKomparation + "en"));
     if (eTilgungImSuffixEnUndEmErlaubt) {
       res.add(
           buildWortform(lexeme, pos, KasusInfo.GEN_OHNE_S_UND_R, vorgabeFuerNachfolgendesAdjektiv,
-              PLURAL, null, additionalFeaturesPl, stammInKomparation + "n"));
+              PLURAL, null, additionalFeaturesPl, additionalFeatureTypesPl,
+              stammInKomparation + "n"));
     }
     return res.build();
   }
@@ -581,13 +609,14 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
   private ImmutableList<IWordForm> adjSchwachOderStarkDatPl(final Lexeme lexeme,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation, final boolean eTilgungImSuffixEnUndEmErlaubt,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesPl) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesPl,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesPl) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
     res.add(buildWortform(lexeme, pos, KasusInfo.DAT, vorgabeFuerNachfolgendesAdjektiv, PLURAL,
-        null, additionalFeaturesPl, stammInKomparation + "en"));
+        null, additionalFeaturesPl, additionalFeatureTypesPl, stammInKomparation + "en"));
     if (eTilgungImSuffixEnUndEmErlaubt) {
       res.add(buildWortform(lexeme, pos, KasusInfo.DAT, vorgabeFuerNachfolgendesAdjektiv, PLURAL,
-          null, additionalFeaturesPl, stammInKomparation + "n"));
+          null, additionalFeaturesPl, additionalFeatureTypesPl, stammInKomparation + "n"));
     }
     return res.build();
   }
@@ -595,13 +624,14 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
   private ImmutableList<IWordForm> adjSchwachAkkPl(final Lexeme lexeme,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation, final boolean eTilgungImSuffixEnUndEmErlaubt,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesPl) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesPl,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesPl) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
     res.add(buildWortform(lexeme, pos, KasusInfo.AKK, vorgabeFuerNachfolgendesAdjektiv, PLURAL,
-        null, additionalFeaturesPl, stammInKomparation + "en"));
+        null, additionalFeaturesPl, additionalFeatureTypesPl, stammInKomparation + "en"));
     if (eTilgungImSuffixEnUndEmErlaubt) {
       res.add(buildWortform(lexeme, pos, KasusInfo.AKK, vorgabeFuerNachfolgendesAdjektiv, PLURAL,
-          null, additionalFeaturesPl, stammInKomparation + "n"));
+          null, additionalFeaturesPl, additionalFeatureTypesPl, stammInKomparation + "n"));
     }
     return res.build();
   }
@@ -610,20 +640,21 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation, final boolean eTilgungImSuffixEnUndEmErlaubt,
       final Valenz valenzBeiImplizitemSubjekt,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgOhneVerbFrame) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgOhneVerbFrame,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesSg) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
     res.addAll(adjSchwachSg(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
         eTilgungImSuffixEnUndEmErlaubt, valenzBeiImplizitemSubjekt,
-        additionalFeaturesSgOhneVerbFrame, MASKULINUM));
+        additionalFeaturesSgOhneVerbFrame, additionalFeatureTypesSg, MASKULINUM));
 
     res.addAll(adjSchwachSg(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
         eTilgungImSuffixEnUndEmErlaubt, valenzBeiImplizitemSubjekt,
-        additionalFeaturesSgOhneVerbFrame, FEMININUM));
+        additionalFeaturesSgOhneVerbFrame, additionalFeatureTypesSg, FEMININUM));
 
     res.addAll(adjSchwachSg(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
         eTilgungImSuffixEnUndEmErlaubt, valenzBeiImplizitemSubjekt,
-        additionalFeaturesSgOhneVerbFrame, NEUTRUM));
+        additionalFeaturesSgOhneVerbFrame, additionalFeatureTypesSg, NEUTRUM));
 
     return res.build();
   }
@@ -632,28 +663,31 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation, final boolean eTilgungImSuffixEnUndEmErlaubt,
       final Valenz valenzBeiImplizitemSubjekt,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesSg, Kasus kasus) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesSg,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesSg, final Kasus kasus) {
 
     final RoleFrameCollection verbRoleFrameCollection =
         buildVerbRoleFrameP3(valenzBeiImplizitemSubjekt, NEUTRUM, SINGULAR);
 
     final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame =
-        ImmutableMap.<String, IFeatureValue>builder().putAll(additionalFeaturesSg)
-            .put(WortformUtil.ROLE_FRAME_COLLECTION_NAME_VERB, verbRoleFrameCollection).build();
+        ImmutableMap.<String, IFeatureValue>builder().putAll(additionalFeaturesSg).put(
+            GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB, verbRoleFrameCollection).build();
 
     switch (kasus) {
       case NOMINATIV:
         return ImmutableList.of(adjSchwachNomSgNeutr(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos,
-            stammInKomparation, additionalFeaturesSgMitVerbFrame));
+            stammInKomparation, additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSg));
       case GENITIV:
         return adjSchwachGenSgNeutr(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos,
-            stammInKomparation, eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesSgMitVerbFrame);
+            stammInKomparation, eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesSgMitVerbFrame,
+            additionalFeatureTypesSg);
       case DATIV:
         return adjSchwachDatSgNeutr(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos,
-            stammInKomparation, eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesSgMitVerbFrame);
+            stammInKomparation, eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesSgMitVerbFrame,
+            additionalFeatureTypesSg);
       case AKKUSATIV:
         return ImmutableList.of(adjSchwachAkkSgNeutr(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos,
-            stammInKomparation, additionalFeaturesSgMitVerbFrame));
+            stammInKomparation, additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSg));
       default:
         throw new IllegalStateException("Unerwarteter Kasus: " + kasus);
     }
@@ -662,22 +696,27 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
   private Wortform adjSchwachNomSgNeutr(final Lexeme lexeme,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesSgMitVerbFrame) {
     return buildWortform(lexeme, pos, KasusInfo.NOM_KEIN_NOMEN, vorgabeFuerNachfolgendesAdjektiv,
-        SINGULAR, NEUTRUM, additionalFeaturesSgMitVerbFrame, stammInKomparation + "e");
+        SINGULAR, NEUTRUM, additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSgMitVerbFrame,
+        stammInKomparation + "e");
   }
 
   private ImmutableList<IWordForm> adjSchwachGenSgNeutr(final Lexeme lexeme,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation, final boolean eTilgungImSuffixEnUndEmErlaubt,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesSgMitVerbFrame) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
     res.add(buildWortform(lexeme, pos, KasusInfo.GEN_OHNE_S_UND_R, vorgabeFuerNachfolgendesAdjektiv,
-        SINGULAR, NEUTRUM, additionalFeaturesSgMitVerbFrame, stammInKomparation + "en"));
+        SINGULAR, NEUTRUM, additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSgMitVerbFrame,
+        stammInKomparation + "en"));
     if (eTilgungImSuffixEnUndEmErlaubt) {
       res.add(
           buildWortform(lexeme, pos, KasusInfo.GEN_OHNE_S_UND_R, vorgabeFuerNachfolgendesAdjektiv,
-              SINGULAR, NEUTRUM, additionalFeaturesSgMitVerbFrame, stammInKomparation + "n"));
+              SINGULAR, NEUTRUM, additionalFeaturesSgMitVerbFrame,
+              additionalFeatureTypesSgMitVerbFrame, stammInKomparation + "n"));
     }
     return res.build();
   }
@@ -685,13 +724,16 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
   private ImmutableList<IWordForm> adjSchwachDatSgNeutr(final Lexeme lexeme,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation, final boolean eTilgungImSuffixEnUndEmErlaubt,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesSgMitVerbFrame) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
     res.add(buildWortform(lexeme, pos, KasusInfo.DAT, vorgabeFuerNachfolgendesAdjektiv, SINGULAR,
-        NEUTRUM, additionalFeaturesSgMitVerbFrame, stammInKomparation + "en"));
+        NEUTRUM, additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSgMitVerbFrame,
+        stammInKomparation + "en"));
     if (eTilgungImSuffixEnUndEmErlaubt) {
       res.add(buildWortform(lexeme, pos, KasusInfo.DAT, vorgabeFuerNachfolgendesAdjektiv, SINGULAR,
-          NEUTRUM, additionalFeaturesSgMitVerbFrame, stammInKomparation + "n"));
+          NEUTRUM, additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSgMitVerbFrame,
+          stammInKomparation + "n"));
     }
     return res.build();
   }
@@ -699,28 +741,35 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
   public IWordForm adjSchwachAkkSgNeutr(final Lexeme lexeme,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesSgMitVerbFrame) {
     return buildWortform(lexeme, pos, KasusInfo.AKK, vorgabeFuerNachfolgendesAdjektiv, SINGULAR,
-        NEUTRUM, additionalFeaturesSgMitVerbFrame, stammInKomparation + "e");
+        NEUTRUM, additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSgMitVerbFrame,
+        stammInKomparation + "e");
   }
 
   public ImmutableList<IWordForm> adjSchwachSg(final Lexeme lexeme,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation, final boolean eTilgungImSuffixEnUndEmErlaubt,
       final Valenz valenzBeiImplizitemSubjekt,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesSg, Kasus kasus, Genus genus) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesSg,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesSg, final Kasus kasus,
+      final Genus genus) {
     switch (genus) {
       case MASKULINUM:
         return adjSchwachSgMask(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
             eTilgungImSuffixEnUndEmErlaubt, valenzBeiImplizitemSubjekt, additionalFeaturesSg,
+            additionalFeatureTypesSg,
             kasus);
       case FEMININUM:
         return adjSchwachSgFem(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
             eTilgungImSuffixEnUndEmErlaubt, valenzBeiImplizitemSubjekt, additionalFeaturesSg,
+            additionalFeatureTypesSg,
             kasus);
       case NEUTRUM:
         return adjSchwachSgNeutr(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
             eTilgungImSuffixEnUndEmErlaubt, valenzBeiImplizitemSubjekt, additionalFeaturesSg,
+            additionalFeatureTypesSg,
             kasus);
       default:
         throw new IllegalStateException("Unerwartetes Genus: " + genus);
@@ -731,27 +780,30 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation, final boolean eTilgungImSuffixEnUndEmErlaubt,
       final Valenz valenzBeiImplizitemSubjekt,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesSg, Kasus kasus) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesSg,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesSg, final Kasus kasus) {
     final RoleFrameCollection verbRoleFrameCollection =
         buildVerbRoleFrameP3(valenzBeiImplizitemSubjekt, FEMININUM, SINGULAR);
 
     final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame =
-        ImmutableMap.<String, IFeatureValue>builder().putAll(additionalFeaturesSg)
-            .put(WortformUtil.ROLE_FRAME_COLLECTION_NAME_VERB, verbRoleFrameCollection).build();
+        ImmutableMap.<String, IFeatureValue>builder().putAll(additionalFeaturesSg).put(
+            GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB, verbRoleFrameCollection).build();
 
     switch (kasus) {
       case NOMINATIV:
         return ImmutableList.of(adjSchwachNomSgFem(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos,
-            stammInKomparation, additionalFeaturesSgMitVerbFrame));
+            stammInKomparation, additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSg));
       case GENITIV:
         return adjSchwachGenSgFem(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
-            eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesSgMitVerbFrame);
+            eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesSgMitVerbFrame,
+            additionalFeatureTypesSg);
       case DATIV:
         return adjSchwachDatSgFem(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
-            eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesSgMitVerbFrame);
+            eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesSgMitVerbFrame,
+            additionalFeatureTypesSg);
       case AKKUSATIV:
-        return ImmutableList.of(adjSchwachAkkSgFem(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
-            additionalFeaturesSgMitVerbFrame));
+        return ImmutableList.of(adjSchwachAkkSgFem(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos,
+            stammInKomparation, additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSg));
       default:
         throw new IllegalStateException("Unerwarteter Kasus " + kasus);
     }
@@ -760,22 +812,27 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
   private Wortform adjSchwachNomSgFem(final Lexeme lexeme,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesSgMitVerbFrame) {
     return buildWortform(lexeme, pos, KasusInfo.NOM_KEIN_NOMEN, vorgabeFuerNachfolgendesAdjektiv,
-        SINGULAR, FEMININUM, additionalFeaturesSgMitVerbFrame, stammInKomparation + "e");
+        SINGULAR, FEMININUM, additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSgMitVerbFrame,
+        stammInKomparation + "e");
   }
 
   private ImmutableList<IWordForm> adjSchwachGenSgFem(final Lexeme lexeme,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation, final boolean eTilgungImSuffixEnUndEmErlaubt,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesSgMitVerbFrame) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
     res.add(buildWortform(lexeme, pos, KasusInfo.GEN_OHNE_S_UND_R, vorgabeFuerNachfolgendesAdjektiv,
-        SINGULAR, FEMININUM, additionalFeaturesSgMitVerbFrame, stammInKomparation + "en"));
+        SINGULAR, FEMININUM, additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSgMitVerbFrame,
+        stammInKomparation + "en"));
     if (eTilgungImSuffixEnUndEmErlaubt) {
       res.add(
           buildWortform(lexeme, pos, KasusInfo.GEN_OHNE_S_UND_R, vorgabeFuerNachfolgendesAdjektiv,
-              SINGULAR, FEMININUM, additionalFeaturesSgMitVerbFrame, stammInKomparation + "n"));
+              SINGULAR, FEMININUM, additionalFeaturesSgMitVerbFrame,
+              additionalFeatureTypesSgMitVerbFrame, stammInKomparation + "n"));
     }
     return res.build();
   }
@@ -783,14 +840,17 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
   private ImmutableList<IWordForm> adjSchwachDatSgFem(final Lexeme lexeme,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation, final boolean eTilgungImSuffixEnUndEmErlaubt,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesSgMitVerbFrame) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
     res.add(buildWortform(lexeme, pos, KasusInfo.DAT, vorgabeFuerNachfolgendesAdjektiv, SINGULAR,
-        FEMININUM, additionalFeaturesSgMitVerbFrame, stammInKomparation + "en"));
+        FEMININUM, additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSgMitVerbFrame,
+        stammInKomparation + "en"));
     if (eTilgungImSuffixEnUndEmErlaubt) {
       res.add(buildWortform(lexeme, pos, KasusInfo.DAT, vorgabeFuerNachfolgendesAdjektiv, SINGULAR,
-          FEMININUM, additionalFeaturesSgMitVerbFrame, stammInKomparation + "n"));
+          FEMININUM, additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSgMitVerbFrame,
+          stammInKomparation + "n"));
     }
 
     return res.build();
@@ -799,30 +859,37 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
   private Wortform adjSchwachAkkSgFem(final Lexeme lexeme,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesSgMitVerbFrame) {
     return buildWortform(lexeme, pos, KasusInfo.AKK, vorgabeFuerNachfolgendesAdjektiv, SINGULAR,
-        FEMININUM, additionalFeaturesSgMitVerbFrame, stammInKomparation + "e");
+        FEMININUM, additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSgMitVerbFrame,
+        stammInKomparation + "e");
   }
 
   private ImmutableList<IWordForm> adjSchwachSg(final Lexeme lexeme,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation, final boolean eTilgungImSuffixEnUndEmErlaubt,
       final Valenz valenzBeiImplizitemSubjekt,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesSg, final Genus genus) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesSg,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesSg, final Genus genus) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
     res.addAll(adjSchwachSg(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
         eTilgungImSuffixEnUndEmErlaubt, valenzBeiImplizitemSubjekt, additionalFeaturesSg,
-        NOMINATIV, genus));
+        additionalFeatureTypesSg, NOMINATIV,
+        genus));
     res.addAll(adjSchwachSg(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
         eTilgungImSuffixEnUndEmErlaubt, valenzBeiImplizitemSubjekt, additionalFeaturesSg,
-        GENITIV, genus));
+        additionalFeatureTypesSg, GENITIV,
+        genus));
     res.addAll(adjSchwachSg(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
         eTilgungImSuffixEnUndEmErlaubt, valenzBeiImplizitemSubjekt, additionalFeaturesSg,
-        DATIV, genus));
-    res.addAll(adjSchwachSg(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos,
-        stammInKomparation, eTilgungImSuffixEnUndEmErlaubt, valenzBeiImplizitemSubjekt,
-        additionalFeaturesSg, AKKUSATIV, genus));
+        additionalFeatureTypesSg, DATIV,
+        genus));
+    res.addAll(adjSchwachSg(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
+        eTilgungImSuffixEnUndEmErlaubt, valenzBeiImplizitemSubjekt, additionalFeaturesSg,
+        additionalFeatureTypesSg, AKKUSATIV,
+        genus));
 
     return res.build();
   }
@@ -831,7 +898,8 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation, final boolean eTilgungImSuffixEnUndEmErlaubt,
       final Valenz valenzBeiImplizitemSubjekt,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesSg, final Kasus kasus) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesSg,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesSg, final Kasus kasus) {
     final RoleFrameCollection verbRoleFrameCollection =
         buildVerbRoleFrameP3(valenzBeiImplizitemSubjekt, MASKULINUM, // der
             // SEINER
@@ -844,22 +912,25 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
             SINGULAR);
 
     final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame =
-        ImmutableMap.<String, IFeatureValue>builder().putAll(additionalFeaturesSg)
-            .put(WortformUtil.ROLE_FRAME_COLLECTION_NAME_VERB, verbRoleFrameCollection).build();
+        ImmutableMap.<String, IFeatureValue>builder().putAll(additionalFeaturesSg).put(
+            GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB, verbRoleFrameCollection).build();
 
     switch (kasus) {
       case NOMINATIV:
         return ImmutableList.of(adjSchwachNomSgMask(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos,
-            stammInKomparation, additionalFeaturesSgMitVerbFrame));
+            stammInKomparation, additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSg));
       case GENITIV:
         return adjSchwachGenSgMask(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos,
-            stammInKomparation, eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesSgMitVerbFrame);
+            stammInKomparation, eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesSgMitVerbFrame,
+            additionalFeatureTypesSg);
       case DATIV:
         return adjSchwachDatSgMask(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos,
-            stammInKomparation, eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesSgMitVerbFrame);
+            stammInKomparation, eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesSgMitVerbFrame,
+            additionalFeatureTypesSg);
       case AKKUSATIV:
         return adjSchwachOderStarkAkkSgMask(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos,
-            stammInKomparation, eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesSgMitVerbFrame);
+            stammInKomparation, eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesSgMitVerbFrame,
+            additionalFeatureTypesSg);
       default:
         throw new IllegalStateException("Unerwarteter Kasus " + kasus);
     }
@@ -868,9 +939,11 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
   private IWordForm adjSchwachNomSgMask(final Lexeme lexeme,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesSgMitVerbFrame) {
     return buildWortform(lexeme, pos, KasusInfo.NOM_KEIN_NOMEN, vorgabeFuerNachfolgendesAdjektiv,
-        SINGULAR, MASKULINUM, additionalFeaturesSgMitVerbFrame, stammInKomparation + "e");
+        SINGULAR, MASKULINUM, additionalFeaturesSgMitVerbFrame,
+        additionalFeatureTypesSgMitVerbFrame, stammInKomparation + "e");
   }
 
   /**
@@ -880,15 +953,17 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
   private ImmutableList<IWordForm> adjSchwachGenSgMask(final Lexeme lexeme,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation, final boolean eTilgungImSuffixEnUndEmErlaubt,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesSgMitVerbFrame) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
     res.add(buildWortform(lexeme, pos, KasusInfo.GEN_OHNE_S_UND_R, vorgabeFuerNachfolgendesAdjektiv,
-        SINGULAR, MASKULINUM, additionalFeaturesSgMitVerbFrame, stammInKomparation + "en"));
+        SINGULAR, MASKULINUM, additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSgMitVerbFrame, stammInKomparation + "en"));
     if (eTilgungImSuffixEnUndEmErlaubt) {
       res.add(
           buildWortform(lexeme, pos, KasusInfo.GEN_OHNE_S_UND_R, vorgabeFuerNachfolgendesAdjektiv,
-              SINGULAR, MASKULINUM, additionalFeaturesSgMitVerbFrame, stammInKomparation + "n")); // dunkeln
+              SINGULAR, MASKULINUM, additionalFeaturesSgMitVerbFrame,
+              additionalFeatureTypesSgMitVerbFrame, stammInKomparation + "n")); // dunkeln
     }
 
     return res.build();
@@ -901,14 +976,17 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
   private ImmutableList<IWordForm> adjSchwachDatSgMask(final Lexeme lexeme,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation, final boolean eTilgungImSuffixEnUndEmErlaubt,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesSgMitVerbFrame) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
     res.add(buildWortform(lexeme, pos, KasusInfo.DAT, vorgabeFuerNachfolgendesAdjektiv, SINGULAR,
-        MASKULINUM, additionalFeaturesSgMitVerbFrame, stammInKomparation + "en"));
+        MASKULINUM, additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSgMitVerbFrame,
+        stammInKomparation + "en"));
     if (eTilgungImSuffixEnUndEmErlaubt) {
       res.add(buildWortform(lexeme, pos, KasusInfo.DAT, vorgabeFuerNachfolgendesAdjektiv, SINGULAR,
-          MASKULINUM, additionalFeaturesSgMitVerbFrame, stammInKomparation + "n"));
+          MASKULINUM, additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSgMitVerbFrame,
+          stammInKomparation + "n"));
     }
 
     return res.build();
@@ -921,15 +999,18 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
   private ImmutableList<IWordForm> adjSchwachOderStarkAkkSgMask(final Lexeme lexeme,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation, final boolean eTilgungImSuffixEnUndEmErlaubt,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesSgMitVerbFrame) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
     res.add(buildWortform(lexeme, pos, KasusInfo.AKK, vorgabeFuerNachfolgendesAdjektiv, SINGULAR,
-        MASKULINUM, additionalFeaturesSgMitVerbFrame, stammInKomparation + "en"));
+        MASKULINUM, additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSgMitVerbFrame,
+        stammInKomparation + "en"));
 
     if (eTilgungImSuffixEnUndEmErlaubt) {
       res.add(buildWortform(lexeme, pos, KasusInfo.AKK, vorgabeFuerNachfolgendesAdjektiv, SINGULAR,
-          MASKULINUM, additionalFeaturesSgMitVerbFrame, stammInKomparation + "n"));
+          MASKULINUM, additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSgMitVerbFrame,
+          stammInKomparation + "n"));
     }
 
     return res.build();
@@ -943,7 +1024,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
             // Mann, aber nicht
             // *der IHRER selbst gedenkende Mann !
             numerusDesBezugsworts, StringFeatureLogicUtil.FALSE, // die ihrer
-                                                                  // selbst
+                                                                 // selbst
             true);
     // gedenkenden Männer,
     // ABER NICHT *die Ihrer selbst gedenkenden Männer!
@@ -992,18 +1073,20 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
 
     res.addAll(adjStarkSg(lexeme, pos, stammInKomparation, genMaskNeutrSgModus,
         nomSgMaskUndNomAkkSgNeutrModus, vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
-        valenzFuerImplizitesSubjekt, buildFeatureMap(komparation, STARK)));
+        valenzFuerImplizitesSubjekt, buildFeatureMap(komparation, STAERKE_STARK),
+        buildFeatureTypeMap(komparation, STAERKE_STARK)));
 
     res.addAll(adjStarkPl(lexeme, vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, pos,
         stammInKomparation,
-        buildFeatureMap(komparation, STARK,
+        buildFeatureMap(komparation, STAERKE_STARK,
             valenzFuerImplizitesSubjekt.buildErgaenzungenUndAngabenSlots("3", null,
                 // (IHRER selbst gedenkende) Männer /
                 // Frauen / Kinder,
                 // -> alle Genera möglich!
-                PLURAL, StringFeatureLogicUtil.FALSE, true))));
+                PLURAL, StringFeatureLogicUtil.FALSE, true)),
     // Die ihrer selbst gedenkenden Männer,
     // ABER NICHT die Ihrer selbst gedenkenden Männer!
+        buildFeatureTypeMap(komparation, STAERKE_STARK)));
 
     return res.build();
   }
@@ -1026,7 +1109,8 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
       final NomSgMaskUndNomAkkSgNeutrModus nomSgMaskUndNomAkkSgNeutrModus,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
       final Valenz valenzBeiImplizitemSubjekt,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesOhneVerbFrame) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesOhneVerbFrame,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypes) {
     final boolean eTilgungImSuffixEnUndEmErlaubt =
         GermanUtil.erlaubtAdjektivischeETilgungBeiSuffixEnUndEm(stammInKomparation);
 
@@ -1035,18 +1119,19 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
     // MASKULINUM
     res.addAll(adjStarkSgMask(lexeme, pos, stammInKomparation, genMaskNeutrSgModus,
         nomSgMaskUndNomAkkSgNeutrModus, vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
-        valenzBeiImplizitemSubjekt, additionalFeaturesOhneVerbFrame,
+        valenzBeiImplizitemSubjekt, additionalFeaturesOhneVerbFrame, additionalFeatureTypes,
         eTilgungImSuffixEnUndEmErlaubt));
 
     // FEMININUM
     res.addAll(adjStarkSgFem(lexeme, pos, stammInKomparation,
         vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, valenzBeiImplizitemSubjekt,
-        additionalFeaturesOhneVerbFrame));
+        additionalFeaturesOhneVerbFrame, additionalFeatureTypes));
 
     // NEUTRUM
     res.addAll(adjStarkSgNeutr(lexeme, pos, stammInKomparation, genMaskNeutrSgModus,
         nomSgMaskUndNomAkkSgNeutrModus, vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
         valenzBeiImplizitemSubjekt, additionalFeaturesOhneVerbFrame,
+        additionalFeatureTypes,
         eTilgungImSuffixEnUndEmErlaubt));
 
     return res.build();
@@ -1057,8 +1142,9 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
       final NomSgMaskUndNomAkkSgNeutrModus nomSgMaskUndNomAkkSgNeutrModus,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
       final Valenz valenzBeiImplizitemSubjekt,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesOhneVerbFrame, Kasus kasus,
-      Genus genus) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesOhneVerbFrame,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypes, final Kasus kasus,
+      final Genus genus) {
     final boolean eTilgungImSuffixEnUndEmErlaubt =
         GermanUtil.erlaubtAdjektivischeETilgungBeiSuffixEnUndEm(stammInKomparation);
 
@@ -1066,16 +1152,16 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
       case MASKULINUM:
         return adjStarkSgMask(lexeme, pos, stammInKomparation, genMaskNeutrSgModus,
             nomSgMaskUndNomAkkSgNeutrModus, vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
-            valenzBeiImplizitemSubjekt, additionalFeaturesOhneVerbFrame,
+            valenzBeiImplizitemSubjekt, additionalFeaturesOhneVerbFrame, additionalFeatureTypes,
             eTilgungImSuffixEnUndEmErlaubt, kasus);
       case FEMININUM:
         return ImmutableList.of(adjStarkSgFem(lexeme, pos, stammInKomparation,
             vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, valenzBeiImplizitemSubjekt,
-            additionalFeaturesOhneVerbFrame, kasus));
+            additionalFeaturesOhneVerbFrame, additionalFeatureTypes, kasus));
       case NEUTRUM:
         return adjStarkSgNeutr(lexeme, pos, stammInKomparation, genMaskNeutrSgModus,
             nomSgMaskUndNomAkkSgNeutrModus, vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
-            valenzBeiImplizitemSubjekt, additionalFeaturesOhneVerbFrame,
+            valenzBeiImplizitemSubjekt, additionalFeaturesOhneVerbFrame, additionalFeatureTypes,
             eTilgungImSuffixEnUndEmErlaubt, kasus);
       default:
         throw new IllegalStateException("Unerwartetes Genus: " + genus);
@@ -1088,27 +1174,32 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
       final Valenz valenzBeiImplizitemSubjekt,
       final ImmutableMap<String, IFeatureValue> additionalFeaturesOhneVerbFrame,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypes,
       final boolean eTilgungImSuffixEnUndEmErlaubt) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
     res.addAll(adjStarkSgNeutr(lexeme, pos, stammInKomparation, genMaskNeutrSgModus,
         nomSgMaskUndNomAkkSgNeutrModus, vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
-        valenzBeiImplizitemSubjekt, additionalFeaturesOhneVerbFrame, eTilgungImSuffixEnUndEmErlaubt,
+        valenzBeiImplizitemSubjekt, additionalFeaturesOhneVerbFrame, additionalFeatureTypes,
+        eTilgungImSuffixEnUndEmErlaubt,
         Kasus.NOMINATIV));
 
     res.addAll(adjStarkSgNeutr(lexeme, pos, stammInKomparation, genMaskNeutrSgModus,
         nomSgMaskUndNomAkkSgNeutrModus, vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
-        valenzBeiImplizitemSubjekt, additionalFeaturesOhneVerbFrame, eTilgungImSuffixEnUndEmErlaubt,
+        valenzBeiImplizitemSubjekt, additionalFeaturesOhneVerbFrame, additionalFeatureTypes,
+        eTilgungImSuffixEnUndEmErlaubt,
         Kasus.GENITIV));
 
     res.addAll(adjStarkSgNeutr(lexeme, pos, stammInKomparation, genMaskNeutrSgModus,
         nomSgMaskUndNomAkkSgNeutrModus, vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
-        valenzBeiImplizitemSubjekt, additionalFeaturesOhneVerbFrame, eTilgungImSuffixEnUndEmErlaubt,
+        valenzBeiImplizitemSubjekt, additionalFeaturesOhneVerbFrame, additionalFeatureTypes,
+        eTilgungImSuffixEnUndEmErlaubt,
         Kasus.DATIV));
 
     res.addAll(adjStarkSgNeutr(lexeme, pos, stammInKomparation, genMaskNeutrSgModus,
         nomSgMaskUndNomAkkSgNeutrModus, vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
-        valenzBeiImplizitemSubjekt, additionalFeaturesOhneVerbFrame, eTilgungImSuffixEnUndEmErlaubt,
+        valenzBeiImplizitemSubjekt, additionalFeaturesOhneVerbFrame, additionalFeatureTypes,
+        eTilgungImSuffixEnUndEmErlaubt,
         Kasus.AKKUSATIV));
 
     return res.build();
@@ -1120,6 +1211,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
       final Valenz valenzBeiImplizitemSubjekt,
       final ImmutableMap<String, IFeatureValue> additionalFeaturesOhneVerbFrame,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesSg,
       final boolean eTilgungImSuffixEnUndEmErlaubt, final Kasus kasus) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
@@ -1135,28 +1227,28 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
             SINGULAR);
 
     final ImmutableMap<String, IFeatureValue> additionalFeaturesMitVerbFrame =
-        ImmutableMap.<String, IFeatureValue>builder().putAll(additionalFeaturesOhneVerbFrame)
-            .put(WortformUtil.ROLE_FRAME_COLLECTION_NAME_VERB, verbRoleFrameCollection).build();
+        ImmutableMap.<String, IFeatureValue>builder().putAll(additionalFeaturesOhneVerbFrame).put(
+            GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB, verbRoleFrameCollection).build();
 
     switch (kasus) {
       case NOMINATIV:
         if (nomSgMaskUndNomAkkSgNeutrModus.equals(NomSgMaskUndNomAkkSgNeutrModus.ENDUNGSLOS)) {
           res.add(buildWortform(lexeme, pos, KasusInfo.NOM_KEIN_NOMEN,
               VorgabeFuerNachfolgendesAdjektiv.ERLAUBT_NUR_STARK, SINGULAR, NEUTRUM,
-              additionalFeaturesMitVerbFrame, stammInKomparation)); // sein
+              additionalFeaturesMitVerbFrame, additionalFeatureTypesSg, stammInKomparation)); // sein
         }
         if (nomSgMaskUndNomAkkSgNeutrModus.equals(NomSgMaskUndNomAkkSgNeutrModus.MIT_ENDUNG)
             || nomSgMaskUndNomAkkSgNeutrModus.equals(
                 NomSgMaskUndNomAkkSgNeutrModus.MIT_ENDUNG_UND_NOM_AKK_AUCH_NUR_MIT_S_STATT_ES)) {
           res.add(buildWortform(lexeme, pos, KasusInfo.NOM_KEIN_NOMEN,
               vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, SINGULAR, NEUTRUM,
-              additionalFeaturesMitVerbFrame, stammInKomparation + "es")); // seines
+              additionalFeaturesMitVerbFrame, additionalFeatureTypesSg, stammInKomparation + "es")); // seines
         }
         if (nomSgMaskUndNomAkkSgNeutrModus.equals(
             NomSgMaskUndNomAkkSgNeutrModus.MIT_ENDUNG_UND_NOM_AKK_AUCH_NUR_MIT_S_STATT_ES)) {
           res.add(buildWortform(lexeme, pos, KasusInfo.NOM_KEIN_NOMEN,
               vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, SINGULAR, NEUTRUM,
-              additionalFeaturesMitVerbFrame, stammInKomparation + "s")); // seins
+              additionalFeaturesMitVerbFrame, additionalFeatureTypesSg, stammInKomparation + "s")); // seins
         }
         return res.build();
       case GENITIV:
@@ -1164,36 +1256,37 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
             || genMaskNeutrSgModus.equals(GenMaskNeutrSgModus.ES_UND_EN)) {
           res.add(buildWortform(lexeme, pos, KasusInfo.GEN_S,
               vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, SINGULAR, NEUTRUM,
-              additionalFeaturesMitVerbFrame, stammInKomparation + "es"));
+              additionalFeaturesMitVerbFrame, additionalFeatureTypesSg, stammInKomparation + "es"));
         }
 
         if (genMaskNeutrSgModus.equals(GenMaskNeutrSgModus.NUR_EN)
             || genMaskNeutrSgModus.equals(GenMaskNeutrSgModus.ES_UND_EN)) {
           res.add(buildWortform(lexeme, pos, KasusInfo.GEN_OHNE_S_UND_R,
               vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, SINGULAR, NEUTRUM,
-              additionalFeaturesMitVerbFrame, stammInKomparation + "en"));
+              additionalFeaturesMitVerbFrame, additionalFeatureTypesSg, stammInKomparation + "en"));
           if (eTilgungImSuffixEnUndEmErlaubt) {
             res.add(buildWortform(lexeme, pos, KasusInfo.GEN_OHNE_S_UND_R,
                 vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, SINGULAR, NEUTRUM,
-                additionalFeaturesMitVerbFrame, stammInKomparation + "n"));
+                additionalFeaturesMitVerbFrame, additionalFeatureTypesSg,
+                stammInKomparation + "n"));
           }
         }
         return res.build();
       case DATIV:
         res.add(buildWortform(lexeme, pos, KasusInfo.DAT,
             vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, SINGULAR, NEUTRUM,
-            additionalFeaturesMitVerbFrame, stammInKomparation + "em"));
+            additionalFeaturesMitVerbFrame, additionalFeatureTypesSg, stammInKomparation + "em"));
         if (eTilgungImSuffixEnUndEmErlaubt) {
           res.add(buildWortform(lexeme, pos, KasusInfo.DAT,
               vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, SINGULAR, NEUTRUM,
-              additionalFeaturesMitVerbFrame, stammInKomparation + "m"));
+              additionalFeaturesMitVerbFrame, additionalFeatureTypesSg, stammInKomparation + "m"));
         }
         return res.build();
       case AKKUSATIV:
         if (nomSgMaskUndNomAkkSgNeutrModus.equals(NomSgMaskUndNomAkkSgNeutrModus.ENDUNGSLOS)) {
           res.add(buildWortform(lexeme, pos, KasusInfo.AKK,
               VorgabeFuerNachfolgendesAdjektiv.ERLAUBT_NUR_STARK, SINGULAR, NEUTRUM,
-              additionalFeaturesMitVerbFrame, stammInKomparation)); // sein
+              additionalFeaturesMitVerbFrame, additionalFeatureTypesSg, stammInKomparation)); // sein
         }
 
         if (nomSgMaskUndNomAkkSgNeutrModus.equals(NomSgMaskUndNomAkkSgNeutrModus.MIT_ENDUNG)
@@ -1201,13 +1294,13 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
                 NomSgMaskUndNomAkkSgNeutrModus.MIT_ENDUNG_UND_NOM_AKK_AUCH_NUR_MIT_S_STATT_ES)) {
           res.add(buildWortform(lexeme, pos, KasusInfo.AKK,
               vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, SINGULAR, NEUTRUM,
-              additionalFeaturesMitVerbFrame, stammInKomparation + "es")); // seines
+              additionalFeaturesMitVerbFrame, additionalFeatureTypesSg, stammInKomparation + "es")); // seines
         }
         if (nomSgMaskUndNomAkkSgNeutrModus.equals(
             NomSgMaskUndNomAkkSgNeutrModus.MIT_ENDUNG_UND_NOM_AKK_AUCH_NUR_MIT_S_STATT_ES)) {
           res.add(buildWortform(lexeme, pos, KasusInfo.AKK,
               vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, SINGULAR, NEUTRUM,
-              additionalFeaturesMitVerbFrame, stammInKomparation + "s")); // seins
+              additionalFeaturesMitVerbFrame, additionalFeatureTypesSg, stammInKomparation + "s")); // seins
         }
         return res.build();
       default:
@@ -1219,24 +1312,25 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
       final String stammInKomparation,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
       final Valenz valenzBeiImplizitemSubjekt,
-      final ImmutableMap<String, IFeatureValue> additionalFeaturesOhneVerbFrame) {
+      final ImmutableMap<String, IFeatureValue> additionalFeaturesOhneVerbFrame,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypes) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
     res.add(adjStarkSgFem(lexeme, pos, stammInKomparation,
         vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, valenzBeiImplizitemSubjekt,
-        additionalFeaturesOhneVerbFrame, Kasus.NOMINATIV));
+        additionalFeaturesOhneVerbFrame, additionalFeatureTypes, Kasus.NOMINATIV));
 
     res.add(adjStarkSgFem(lexeme, pos, stammInKomparation,
         vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, valenzBeiImplizitemSubjekt,
-        additionalFeaturesOhneVerbFrame, Kasus.GENITIV));
+        additionalFeaturesOhneVerbFrame, additionalFeatureTypes, Kasus.GENITIV));
 
     res.add(adjStarkSgFem(lexeme, pos, stammInKomparation,
         vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, valenzBeiImplizitemSubjekt,
-        additionalFeaturesOhneVerbFrame, Kasus.DATIV));
+        additionalFeaturesOhneVerbFrame, additionalFeatureTypes, Kasus.DATIV));
 
     res.add(adjStarkSgFem(lexeme, pos, stammInKomparation,
         vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, valenzBeiImplizitemSubjekt,
-        additionalFeaturesOhneVerbFrame, Kasus.AKKUSATIV));
+        additionalFeaturesOhneVerbFrame, additionalFeatureTypes, Kasus.AKKUSATIV));
 
     return res.build();
   }
@@ -1245,29 +1339,30 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
       final String stammInKomparation,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
       final Valenz valenzBeiImplizitemSubjekt,
-      final ImmutableMap<String, IFeatureValue> additionalFeatures, Kasus kasus) {
+      final ImmutableMap<String, IFeatureValue> additionalFeatures,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypes, final Kasus kasus) {
     final RoleFrameCollection verbRoleFrameCollection =
         buildVerbRoleFrameP3(valenzBeiImplizitemSubjekt, FEMININUM, SINGULAR);
 
     final ImmutableMap<String, IFeatureValue> additionalFeaturesMitVerbFrame =
-        ImmutableMap.<String, IFeatureValue>builder().putAll(additionalFeatures)
-            .put(WortformUtil.ROLE_FRAME_COLLECTION_NAME_VERB, verbRoleFrameCollection).build();
+        ImmutableMap.<String, IFeatureValue>builder().putAll(additionalFeatures).put(
+            GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB, verbRoleFrameCollection).build();
 
     switch (kasus) {
       case NOMINATIV:
         return adjSchwachNomSgFem(lexeme, vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, pos,
-            stammInKomparation, additionalFeaturesMitVerbFrame);
+            stammInKomparation, additionalFeaturesMitVerbFrame, additionalFeatureTypes);
       case GENITIV:
         return buildWortform(lexeme, pos, KasusInfo.GEN_R,
             vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, SINGULAR, FEMININUM,
-            additionalFeaturesMitVerbFrame, stammInKomparation + "er");
+            additionalFeaturesMitVerbFrame, additionalFeatureTypes, stammInKomparation + "er");
       case DATIV:
         return buildWortform(lexeme, pos, KasusInfo.DAT,
             vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, SINGULAR, FEMININUM,
-            additionalFeaturesMitVerbFrame, stammInKomparation + "er");
+            additionalFeaturesMitVerbFrame, additionalFeatureTypes, stammInKomparation + "er");
       case AKKUSATIV:
         return adjSchwachAkkSgFem(lexeme, vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, pos,
-            stammInKomparation, additionalFeaturesMitVerbFrame);
+            stammInKomparation, additionalFeaturesMitVerbFrame, additionalFeatureTypes);
       default:
         throw new IllegalStateException("Unerwarteter Kasus: " + kasus);
     }
@@ -1279,27 +1374,32 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
       final Valenz valenzBeiImplizitemSubjekt,
       final ImmutableMap<String, IFeatureValue> additionalFeaturesSg,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesSg,
       final boolean eTilgungImSuffixEnUndEmErlaubt) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
     res.addAll(adjStarkSgMask(lexeme, pos, stammInKomparation, genMaskNeutrSgModus,
         nomSgMaskUndNomAkkSgNeutrModus, vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
-        valenzBeiImplizitemSubjekt, additionalFeaturesSg, eTilgungImSuffixEnUndEmErlaubt,
+        valenzBeiImplizitemSubjekt, additionalFeaturesSg, additionalFeatureTypesSg,
+        eTilgungImSuffixEnUndEmErlaubt,
         Kasus.NOMINATIV));
 
     res.addAll(adjStarkSgMask(lexeme, pos, stammInKomparation, genMaskNeutrSgModus,
         nomSgMaskUndNomAkkSgNeutrModus, vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
-        valenzBeiImplizitemSubjekt, additionalFeaturesSg, eTilgungImSuffixEnUndEmErlaubt,
+        valenzBeiImplizitemSubjekt, additionalFeaturesSg, additionalFeatureTypesSg,
+        eTilgungImSuffixEnUndEmErlaubt,
         Kasus.GENITIV));
 
     res.addAll(adjStarkSgMask(lexeme, pos, stammInKomparation, genMaskNeutrSgModus,
         nomSgMaskUndNomAkkSgNeutrModus, vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
-        valenzBeiImplizitemSubjekt, additionalFeaturesSg, eTilgungImSuffixEnUndEmErlaubt,
+        valenzBeiImplizitemSubjekt, additionalFeaturesSg, additionalFeatureTypesSg,
+        eTilgungImSuffixEnUndEmErlaubt,
         Kasus.DATIV));
 
     res.addAll(adjStarkSgMask(lexeme, pos, stammInKomparation, genMaskNeutrSgModus,
         nomSgMaskUndNomAkkSgNeutrModus, vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
-        valenzBeiImplizitemSubjekt, additionalFeaturesSg, eTilgungImSuffixEnUndEmErlaubt,
+        valenzBeiImplizitemSubjekt, additionalFeaturesSg, additionalFeatureTypesSg,
+        eTilgungImSuffixEnUndEmErlaubt,
         Kasus.AKKUSATIV));
 
     return res.build();
@@ -1311,7 +1411,8 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
       final Valenz valenzBeiImplizitemSubjekt,
       final ImmutableMap<String, IFeatureValue> additionalFeaturesSg,
-      final boolean eTilgungImSuffixEnUndEmErlaubt, Kasus kasus) {
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypesSg,
+      final boolean eTilgungImSuffixEnUndEmErlaubt, final Kasus kasus) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
     final RoleFrameCollection verbRoleFrameCollection =
@@ -1326,8 +1427,8 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
             SINGULAR);
 
     final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame =
-        ImmutableMap.<String, IFeatureValue>builder().putAll(additionalFeaturesSg)
-            .put(WortformUtil.ROLE_FRAME_COLLECTION_NAME_VERB, verbRoleFrameCollection).build();
+        ImmutableMap.<String, IFeatureValue>builder().putAll(additionalFeaturesSg).put(
+            GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB, verbRoleFrameCollection).build();
 
     // TODO schön Heinrich, schön Heinrichs (generell unflektiert)
 
@@ -1336,14 +1437,15 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
         if (nomSgMaskUndNomAkkSgNeutrModus.equals(NomSgMaskUndNomAkkSgNeutrModus.ENDUNGSLOS)) {
           res.add(buildWortform(lexeme, pos, KasusInfo.NOM_KEIN_NOMEN,
               VorgabeFuerNachfolgendesAdjektiv.ERLAUBT_NUR_STARK, SINGULAR, MASKULINUM,
-              additionalFeaturesSgMitVerbFrame, stammInKomparation));
+              additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSg, stammInKomparation));
         }
         if (nomSgMaskUndNomAkkSgNeutrModus.equals(NomSgMaskUndNomAkkSgNeutrModus.MIT_ENDUNG)
             || nomSgMaskUndNomAkkSgNeutrModus.equals(
                 NomSgMaskUndNomAkkSgNeutrModus.MIT_ENDUNG_UND_NOM_AKK_AUCH_NUR_MIT_S_STATT_ES)) {
           res.add(buildWortform(lexeme, pos, KasusInfo.NOM_KEIN_NOMEN,
               vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, SINGULAR, MASKULINUM,
-              additionalFeaturesSgMitVerbFrame, stammInKomparation + "er"));
+              additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSg,
+              stammInKomparation + "er"));
         }
         return res.build();
       case GENITIV:
@@ -1351,35 +1453,40 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
             || genMaskNeutrSgModus.equals(GenMaskNeutrSgModus.ES_UND_EN)) {
           res.add(buildWortform(lexeme, pos, KasusInfo.GEN_S,
               vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, SINGULAR, MASKULINUM,
-              additionalFeaturesSgMitVerbFrame, stammInKomparation + "es"));
+              additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSg,
+              stammInKomparation + "es"));
         }
 
         if (genMaskNeutrSgModus.equals(GenMaskNeutrSgModus.NUR_EN)
             || genMaskNeutrSgModus.equals(GenMaskNeutrSgModus.ES_UND_EN)) {
           res.add(buildWortform(lexeme, pos, KasusInfo.GEN_OHNE_S_UND_R,
               vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, SINGULAR, MASKULINUM,
-              additionalFeaturesSgMitVerbFrame, stammInKomparation + "en"));
+              additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSg,
+              stammInKomparation + "en"));
           if (eTilgungImSuffixEnUndEmErlaubt) {
             res.add(buildWortform(lexeme, pos, KasusInfo.GEN_OHNE_S_UND_R,
                 vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, SINGULAR, MASKULINUM,
-                additionalFeaturesSgMitVerbFrame, stammInKomparation + "n")); // dunkeln
+                additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSg,
+                stammInKomparation + "n")); // dunkeln
           }
         }
         return res.build();
       case DATIV:
         res.add(buildWortform(lexeme, pos, KasusInfo.DAT,
             vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, SINGULAR, MASKULINUM,
-            additionalFeaturesSgMitVerbFrame, stammInKomparation + "em"));
+            additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSg, stammInKomparation + "em"));
         if (eTilgungImSuffixEnUndEmErlaubt) {
           res.add(buildWortform(lexeme, pos, KasusInfo.DAT,
               vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, SINGULAR, MASKULINUM,
-              additionalFeaturesSgMitVerbFrame, stammInKomparation + "m"));
+              additionalFeaturesSgMitVerbFrame, additionalFeatureTypesSg,
+              stammInKomparation + "m"));
         }
         return res.build();
       case AKKUSATIV:
         return adjSchwachOderStarkAkkSgMask(lexeme,
             vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung, pos, stammInKomparation,
-            eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesSgMitVerbFrame);
+            eTilgungImSuffixEnUndEmErlaubt, additionalFeaturesSgMitVerbFrame,
+            additionalFeatureTypesSg);
       default:
         throw new IllegalStateException("Unerwarteter Kasus: " + kasus);
     }
@@ -1395,28 +1502,21 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
   protected Collection<IWordForm> adjStarkPl(final Lexeme lexeme,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
       final String stammInKomparation,
-      final ImmutableMap<String, IFeatureValue> additionalFeatures) {
+      final ImmutableMap<String, IFeatureValue> additionalFeatures,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypes) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
-    res.addAll(adjStarkPl(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos,
-        stammInKomparation,
-        additionalFeatures,
-        Kasus.NOMINATIV));
+    res.addAll(adjStarkPl(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
+        additionalFeatures, additionalFeatureTypes, Kasus.NOMINATIV));
 
-    res.addAll(adjStarkPl(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos,
-        stammInKomparation,
-        additionalFeatures,
-        Kasus.GENITIV));
+    res.addAll(adjStarkPl(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
+        additionalFeatures, additionalFeatureTypes, Kasus.GENITIV));
 
-    res.addAll(adjStarkPl(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos,
-        stammInKomparation,
-        additionalFeatures,
-        Kasus.DATIV));
+    res.addAll(adjStarkPl(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
+        additionalFeatures, additionalFeatureTypes, Kasus.DATIV));
 
-    res.addAll(adjStarkPl(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos,
-        stammInKomparation,
-        additionalFeatures,
-        Kasus.AKKUSATIV));
+    res.addAll(adjStarkPl(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos, stammInKomparation,
+        additionalFeatures, additionalFeatureTypes, Kasus.AKKUSATIV));
 
     return res.build();
   }
@@ -1431,8 +1531,9 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
    */
   protected ImmutableList<IWordForm> adjStarkPl(final Lexeme lexeme,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv, final String pos,
-      final String stammInKomparation,
-      final ImmutableMap<String, IFeatureValue> additionalFeatures, Kasus kasus) {
+      final String stammInKomparation, final ImmutableMap<String, IFeatureValue> additionalFeatures,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypes,
+      final Kasus kasus) {
     final boolean eTilgungImSuffixEnUndEmErlaubt =
         GermanUtil.erlaubtAdjektivischeETilgungBeiSuffixEnUndEm(stammInKomparation);
 
@@ -1440,18 +1541,20 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
       case NOMINATIV:
         return ImmutableList.of(
             buildWortform(lexeme, pos, KasusInfo.NOM_KEIN_NOMEN, vorgabeFuerNachfolgendesAdjektiv,
-                PLURAL, null, additionalFeatures, stammInKomparation + "e"));
+                PLURAL, null, additionalFeatures, additionalFeatureTypes,
+                stammInKomparation + "e"));
       case GENITIV:
-        return ImmutableList
-            .of(buildWortform(lexeme, pos, KasusInfo.GEN_R, vorgabeFuerNachfolgendesAdjektiv,
-                PLURAL, null, additionalFeatures, stammInKomparation + "er"));
+        return ImmutableList.of(
+            buildWortform(lexeme, pos, KasusInfo.GEN_R, vorgabeFuerNachfolgendesAdjektiv, PLURAL,
+                null, additionalFeatures, additionalFeatureTypes, stammInKomparation + "er"));
       case DATIV:
         return adjSchwachOderStarkDatPl(lexeme, vorgabeFuerNachfolgendesAdjektiv, pos,
-            stammInKomparation, eTilgungImSuffixEnUndEmErlaubt, additionalFeatures);
+            stammInKomparation, eTilgungImSuffixEnUndEmErlaubt, additionalFeatures,
+            additionalFeatureTypes);
       case AKKUSATIV:
-        return ImmutableList
-            .of(buildWortform(lexeme, pos, KasusInfo.AKK, vorgabeFuerNachfolgendesAdjektiv, PLURAL,
-                null, additionalFeatures, stammInKomparation + "e"));
+        return ImmutableList.of(
+            buildWortform(lexeme, pos, KasusInfo.AKK, vorgabeFuerNachfolgendesAdjektiv, PLURAL,
+                null, additionalFeatures, additionalFeatureTypes, stammInKomparation + "e"));
       default:
         throw new IllegalStateException("Unerwarteter Kasus " + kasus);
     }
@@ -1465,20 +1568,24 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
   Wortform buildWortform(final Lexeme lexeme, final String pos, final KasusInfo kasusInfo,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv,
       final Numerus numerus, final @Nullable Genus genus,
-      final ImmutableMap<String, IFeatureValue> additionalFeatures, final String string) {
+      final ImmutableMap<String, IFeatureValue> additionalFeatures,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypes, final String string) {
 
     final FeatureStructure features = buildFeatures(kasusInfo, vorgabeFuerNachfolgendesAdjektiv,
-        numerus, genus, additionalFeatures);
+        numerus, genus, additionalFeatures, additionalFeatureTypes);
 
     return new Wortform(lexeme, pos, string, features, NothingInParticularSemantics.INSTANCE);
   }
 
-  private FeatureStructure buildFeatures(final KasusInfo kasusInfo,
+  private static FeatureStructure buildFeatures(final KasusInfo kasusInfo,
       final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektiv,
       final Numerus numerus, final Genus genus,
-      final ImmutableMap<String, IFeatureValue> additionalFeatures) {
-    final ImmutableMap.Builder<String, IFeatureValue> builder = ImmutableMap.builder();
-    builder
+      final ImmutableMap<String, IFeatureValue> additionalFeatures,
+      final ImmutableMap<String, IFeatureType> additionalFeatureTypes) {
+    final ImmutableMap.Builder<String, IFeatureValue> featureBuilder = ImmutableMap.builder();
+
+    // @formatter:off
+    featureBuilder
         .put("kasus",
             FeatureStructure
                 .toFeatureValue(FeatureStringConverter.toFeatureString(kasusInfo.getKasus())))
@@ -1491,16 +1598,20 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
                 StringFeatureLogicUtil.booleanToString(kasusInfo.isGenitivSichtbarDurchR())))
         .put(GermanUtil.GENITIV_SICHTBAR_DURCH_S_KEY, FeatureStructure.toFeatureValue(
             StringFeatureLogicUtil.booleanToString(kasusInfo.isGenitivSichtbarDurchS())));
+
     if (vorgabeFuerNachfolgendesAdjektiv.isErzeugen()) {
-      builder.put(GermanUtil.ERLAUBT_NACHGESTELLTES_SCHWACH_FLEKTIERTES_ADJEKTIV_KEY,
+      featureBuilder
+        .put(GermanUtil.ERLAUBT_NACHGESTELLTES_SCHWACH_FLEKTIERTES_ADJEKTIV_KEY,
           FeatureStructure.toFeatureValue(StringFeatureLogicUtil
-              .booleanToString(vorgabeFuerNachfolgendesAdjektiv.isErlaubtSchwach())));
-      builder.put(GermanUtil.ERLAUBT_NACHGESTELLTES_STARK_FLEKTIERTES_ADJEKTIV_KEY,
+              .booleanToString(vorgabeFuerNachfolgendesAdjektiv.isErlaubtSchwach())))
+        .put(GermanUtil.ERLAUBT_NACHGESTELLTES_STARK_FLEKTIERTES_ADJEKTIV_KEY,
           FeatureStructure.toFeatureValue(StringFeatureLogicUtil
               .booleanToString(vorgabeFuerNachfolgendesAdjektiv.isErlaubtStark())));
     }
-    builder.putAll(additionalFeatures);
 
-    return FeatureStructure.fromValues(builder.build());
+    featureBuilder.putAll(additionalFeatures);
+    // @formatter:on
+
+    return FeatureStructure.fromValues(featureBuilder.build());
   }
 }

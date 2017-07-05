@@ -28,82 +28,60 @@ import de.nb.federkiel.semantik.NothingInParticularSemantics;
 @Immutable
 @ThreadSafe
 public final class WortformUtil {
-	public static final String ROLE_FRAME_COLLECTION_NAME_VERB = "verb";
+  private WortformUtil() {
+    super();
+  }
 
-	private static final String NUMERUS = "numerus";
+  /**
+   * @param slots will NOT be copied (hand-over)
+   */
+  public static Wortform buildVerbFormFin(final Lexeme lexeme, final String pos,
+      final String tempus, final String modus, final String string, final RoleFrameSlot... slots) {
+    final RoleFrame verbFrame = RoleFrame.of(slots);
 
-	private static final String MODUS = "modus";
+    final FeatureStructure features =
+        FeatureStructure.fromValues(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
+            RoleFrameCollection.of(verbFrame), GermanUtil.TEMPUS, StringFeatureValue.of(tempus),
+            GermanUtil.MODUS_KEY,
+            StringFeatureValue.of(modus));
 
-	private static final String TEMPUS = "tempus";
+    return new Wortform(lexeme, pos, string, features,
+        NothingInParticularSemantics.INSTANCE);
+  }
 
-	private WortformUtil() {
-		super();
-	}
+  /**
+   * @param slots will NOT be copied (hand-over)
+   */
+  public static Wortform buildVerbFormImp(final Lexeme lexeme, final String pos,
+      final Numerus numerus, final String string, final RoleFrameSlot... slots) {
+    final RoleFrame verbFrame = RoleFrame.of(slots);
 
-	/**
-	 * @param slots
-	 *            will NOT be copied (hand-over)
-	 */
-	public static Wortform buildVerbFormFin(final Lexeme lexeme,
-			final String pos,
-			final String tempus, final String modus,
-			final String string, final RoleFrameSlot... slots) {
-		final RoleFrame verbFrame = RoleFrame.of(slots);
-
-		final FeatureStructure features =
-				FeatureStructure.fromValues(
-							ROLE_FRAME_COLLECTION_NAME_VERB,
-								RoleFrameCollection.of(verbFrame),
-								TEMPUS, StringFeatureValue.of(tempus),
-								MODUS, StringFeatureValue.of(modus));
-
-		return new Wortform(lexeme, pos, string, features,
-				NothingInParticularSemantics.INSTANCE);
-	}
-
-	/**
-	 * @param slots
-	 *            will NOT be copied (hand-over)
-	 */
-	public static Wortform buildVerbFormImp(final Lexeme lexeme,
-      final String pos, final Numerus numerus,
-			final String string, final RoleFrameSlot... slots) {
-		final RoleFrame verbFrame = RoleFrame.of(slots);
-
-		final FeatureStructure features =
-				FeatureStructure.fromValues(
-							ROLE_FRAME_COLLECTION_NAME_VERB,
-								RoleFrameCollection.of(verbFrame),
-        NUMERUS,
+    final FeatureStructure features = FeatureStructure.fromValues(
+        GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB, RoleFrameCollection.of(verbFrame), GermanUtil.NUMERUS_KEY,
         StringFeatureValue.of(FeatureStringConverter.toFeatureString(numerus)));
 
-		return new Wortform(lexeme, pos, string, features,
-				NothingInParticularSemantics.INSTANCE);
-	}
+    return new Wortform(lexeme, pos, string, features,
+        NothingInParticularSemantics.INSTANCE);
+  }
 
-	/**
-	 * @param slots
-	 *            will NOT be copied (hand-over)
-	 */
-	public static Wortform buildVerbFormInf(final Lexeme lexeme,
-			final String pos, final RoleFrameSlot... slots) {
-		final RoleFrame verbFrame = RoleFrame.of(slots);
+  /**
+   * @param slots will NOT be copied (hand-over)
+   */
+  public static Wortform buildVerbFormInf(final Lexeme lexeme, final String pos,
+      final RoleFrameSlot... slots) {
+    final RoleFrame verbFrame = RoleFrame.of(slots);
 
-		final FeatureStructure features =
-				FeatureStructure.fromValues(
-								ROLE_FRAME_COLLECTION_NAME_VERB,
-								RoleFrameCollection.of(verbFrame));
+    final FeatureStructure features = FeatureStructure.fromValues(
+        GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB, RoleFrameCollection.of(verbFrame));
 
-		return new Wortform(lexeme, pos, lexeme.getCanonicalizedForm(),
-				features,
-				NothingInParticularSemantics.INSTANCE);
-	}
+    return new Wortform(lexeme, pos, lexeme.getCanonicalizedForm(), features,
+        NothingInParticularSemantics.INSTANCE);
+  }
 
-	public static Collection<IWordForm> expandToUpperLowerCaseForms(
-			final Iterable<IWordForm> wordForms,
-			final boolean alsoAllowLowerCaseAtSentenceStart,
-			final Locale locale) {
-      // "abends" / "Haus"
+  public static Collection<IWordForm> expandToUpperLowerCaseForms(
+      final Iterable<IWordForm> wordForms,
+      final boolean alsoAllowLowerCaseAtSentenceStart, final Locale locale) {
+    // "abends" / "Haus"
     // @formatter:off
 	  return Streams.stream(wordForms)
 	      .flatMap(wordForm -> wordForm
@@ -112,5 +90,5 @@ public final class WortformUtil {
                             locale).stream())
 	      .collect(ImmutableList.toImmutableList());
       // @formatter:on
-	}
+  }
 }

@@ -3,6 +3,7 @@ package de.nb.federkiel.feature;
 import de.nb.federkiel.logic.ITerm;
 import de.nb.federkiel.logic.UnaryCompoundTerm;
 import de.nb.federkiel.logic.UnassignedVariableException;
+import de.nb.federkiel.logic.YieldsNoResultException;
 
 /**
  * A term, of which the value is a role frame COLLECTION,
@@ -30,9 +31,10 @@ UnaryCompoundTerm<RoleFrameCollection, RoleFrame, FeatureAssignment> {
 
 	@Override
 	public RoleFrameCollection evaluate(final FeatureAssignment variableAssignment)
-	throws UnassignedVariableException {
+      throws UnassignedVariableException, YieldsNoResultException {
 		final RoleFrame roleFrame =
-			getSubTerm().evaluate(variableAssignment); // UnassignedVariableException
+        getSubTerm().evaluate(variableAssignment); // UnassignedVariableException,
+                                                   // YieldsNoResultException
 
 		return RoleFrameCollection.of(roleFrame);
 	}

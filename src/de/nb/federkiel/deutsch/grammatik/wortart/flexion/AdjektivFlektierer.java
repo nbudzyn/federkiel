@@ -5,6 +5,12 @@ import static de.nb.federkiel.deutsch.grammatik.kategorie.Genus.MASKULINUM;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Genus.NEUTRUM;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Numerus.PLURAL;
 import static de.nb.federkiel.deutsch.grammatik.kategorie.Numerus.SINGULAR;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.KOMPARATION_KOMPARATIV;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.KOMPARATION_POSITIV;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.KOMPARATION_SUPERLATIV;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.STAERKE_SCHWACH;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.STAERKE_STARK;
+import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil.STAERKE_UNFLEKTIERT;
 
 import java.util.Collection;
 
@@ -24,6 +30,7 @@ import de.nb.federkiel.deutsch.grammatik.valenz.Valenz;
 import de.nb.federkiel.deutsch.lexikon.GermanPOS;
 import de.nb.federkiel.feature.RoleFrameSlot;
 import de.nb.federkiel.feature.StringFeatureLogicUtil;
+import de.nb.federkiel.interfaces.IFeatureType;
 import de.nb.federkiel.interfaces.IFeatureValue;
 import de.nb.federkiel.interfaces.IWordForm;
 import de.nb.federkiel.lexikon.Lexeme;
@@ -61,42 +68,42 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
             true);
 
     // Ich glaube, Formen auf -er lassen sich nicht steigern.
-    res.add(buildWortform(lexeme, pos, POSITIV, KasusInfo.NOM_KEIN_NOMEN, SINGULAR, MASKULINUM,
-        UNFLEKTIERT, ergaenzungenUndAngabenSlotsSgMask, wordForm));
-    res.add(buildWortform(lexeme, pos, POSITIV, KasusInfo.GEN_OHNE_S_UND_R, SINGULAR, MASKULINUM,
-        UNFLEKTIERT, ergaenzungenUndAngabenSlotsSgMask, wordForm));
-    res.add(buildWortform(lexeme, pos, POSITIV, KasusInfo.DAT, SINGULAR, MASKULINUM, UNFLEKTIERT,
+    res.add(buildWortform(lexeme, pos, KOMPARATION_POSITIV, KasusInfo.NOM_KEIN_NOMEN, SINGULAR, MASKULINUM,
+        STAERKE_UNFLEKTIERT, ergaenzungenUndAngabenSlotsSgMask, wordForm));
+    res.add(buildWortform(lexeme, pos, KOMPARATION_POSITIV, KasusInfo.GEN_OHNE_S_UND_R, SINGULAR, MASKULINUM,
+        STAERKE_UNFLEKTIERT, ergaenzungenUndAngabenSlotsSgMask, wordForm));
+    res.add(buildWortform(lexeme, pos, KOMPARATION_POSITIV, KasusInfo.DAT, SINGULAR, MASKULINUM, STAERKE_UNFLEKTIERT,
         ergaenzungenUndAngabenSlotsSgMask, wordForm));
-    res.add(buildWortform(lexeme, pos, POSITIV, KasusInfo.AKK, SINGULAR, MASKULINUM, UNFLEKTIERT,
+    res.add(buildWortform(lexeme, pos, KOMPARATION_POSITIV, KasusInfo.AKK, SINGULAR, MASKULINUM, STAERKE_UNFLEKTIERT,
         ergaenzungenUndAngabenSlotsSgMask, wordForm));
 
     final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlotsSgFem = valenz
         .buildErgaenzungenUndAngabenSlots("3", FEMININUM, SINGULAR, StringFeatureLogicUtil.FALSE,
             true);
 
-    res.add(buildWortform(lexeme, pos, POSITIV, KasusInfo.NOM_KEIN_NOMEN, SINGULAR, FEMININUM,
-        UNFLEKTIERT, ergaenzungenUndAngabenSlotsSgFem, wordForm));
-    res.add(buildWortform(lexeme, pos, POSITIV, KasusInfo.GEN_OHNE_S_UND_R, SINGULAR, FEMININUM,
-        UNFLEKTIERT, ergaenzungenUndAngabenSlotsSgFem, wordForm));
-    res.add(buildWortform(lexeme, pos, POSITIV, KasusInfo.DAT, SINGULAR, FEMININUM, UNFLEKTIERT,
+    res.add(buildWortform(lexeme, pos, KOMPARATION_POSITIV, KasusInfo.NOM_KEIN_NOMEN, SINGULAR, FEMININUM,
+        STAERKE_UNFLEKTIERT, ergaenzungenUndAngabenSlotsSgFem, wordForm));
+    res.add(buildWortform(lexeme, pos, KOMPARATION_POSITIV, KasusInfo.GEN_OHNE_S_UND_R, SINGULAR, FEMININUM,
+        STAERKE_UNFLEKTIERT, ergaenzungenUndAngabenSlotsSgFem, wordForm));
+    res.add(buildWortform(lexeme, pos, KOMPARATION_POSITIV, KasusInfo.DAT, SINGULAR, FEMININUM, STAERKE_UNFLEKTIERT,
         ergaenzungenUndAngabenSlotsSgFem, wordForm));
-    res.add(buildWortform(lexeme, pos, POSITIV, KasusInfo.AKK, SINGULAR, FEMININUM, UNFLEKTIERT,
+    res.add(buildWortform(lexeme, pos, KOMPARATION_POSITIV, KasusInfo.AKK, SINGULAR, FEMININUM, STAERKE_UNFLEKTIERT,
         ergaenzungenUndAngabenSlotsSgFem, wordForm));
 
     final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlotsSgNeutr = valenz
         .buildErgaenzungenUndAngabenSlots("3", NEUTRUM, SINGULAR, StringFeatureLogicUtil.FALSE,
             true);
 
-    res.add(buildWortform(lexeme, pos, POSITIV, KasusInfo.NOM_KEIN_NOMEN, SINGULAR, NEUTRUM,
-        UNFLEKTIERT, ergaenzungenUndAngabenSlotsSgNeutr, wordForm));
-    res.add(buildWortform(lexeme, pos, POSITIV, KasusInfo.GEN_OHNE_S_UND_R, SINGULAR, NEUTRUM,
-        UNFLEKTIERT, ergaenzungenUndAngabenSlotsSgNeutr, wordForm));
-    res.add(buildWortform(lexeme, pos, POSITIV, KasusInfo.DAT, SINGULAR, NEUTRUM, UNFLEKTIERT,
+    res.add(buildWortform(lexeme, pos, KOMPARATION_POSITIV, KasusInfo.NOM_KEIN_NOMEN, SINGULAR, NEUTRUM,
+        STAERKE_UNFLEKTIERT, ergaenzungenUndAngabenSlotsSgNeutr, wordForm));
+    res.add(buildWortform(lexeme, pos, KOMPARATION_POSITIV, KasusInfo.GEN_OHNE_S_UND_R, SINGULAR, NEUTRUM,
+        STAERKE_UNFLEKTIERT, ergaenzungenUndAngabenSlotsSgNeutr, wordForm));
+    res.add(buildWortform(lexeme, pos, KOMPARATION_POSITIV, KasusInfo.DAT, SINGULAR, NEUTRUM, STAERKE_UNFLEKTIERT,
         ergaenzungenUndAngabenSlotsSgNeutr, wordForm));
-    res.add(buildWortform(lexeme, pos, POSITIV, KasusInfo.AKK, SINGULAR, NEUTRUM, UNFLEKTIERT,
+    res.add(buildWortform(lexeme, pos, KOMPARATION_POSITIV, KasusInfo.AKK, SINGULAR, NEUTRUM, STAERKE_UNFLEKTIERT,
         ergaenzungenUndAngabenSlotsSgNeutr, wordForm));
 
-    res.addAll(unveraendertPl(lexeme, valenz, pos, UNFLEKTIERT, wordForm));
+    res.addAll(unveraendertPl(lexeme, valenz, pos, STAERKE_UNFLEKTIERT, wordForm));
 
     return res.build();
   }
@@ -133,19 +140,19 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
 
   private IWordForm unveraendertPl(final Lexeme lexeme, final String pos, final String starkSchwach,
       final String wordForm, final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlotsPl,
-      Kasus kasus) {
+      final Kasus kasus) {
     switch (kasus) {
       case NOMINATIV:
-        return buildWortform(lexeme, pos, POSITIV, KasusInfo.NOM_KEIN_NOMEN, PLURAL, null,
+        return buildWortform(lexeme, pos, KOMPARATION_POSITIV, KasusInfo.NOM_KEIN_NOMEN, PLURAL, null,
             starkSchwach, ergaenzungenUndAngabenSlotsPl, wordForm);
       case GENITIV:
-        return buildWortform(lexeme, pos, POSITIV, guessGenitivAdjektivInfoPl(wordForm), PLURAL,
+        return buildWortform(lexeme, pos, KOMPARATION_POSITIV, guessGenitivAdjektivInfoPl(wordForm), PLURAL,
             null, starkSchwach, ergaenzungenUndAngabenSlotsPl, wordForm);
       case DATIV:
-        return buildWortform(lexeme, pos, POSITIV, KasusInfo.DAT, PLURAL, null, starkSchwach,
+        return buildWortform(lexeme, pos, KOMPARATION_POSITIV, KasusInfo.DAT, PLURAL, null, starkSchwach,
             ergaenzungenUndAngabenSlotsPl, wordForm);
       case AKKUSATIV:
-        return buildWortform(lexeme, pos, POSITIV, KasusInfo.AKK, PLURAL, null, starkSchwach,
+        return buildWortform(lexeme, pos, KOMPARATION_POSITIV, KasusInfo.AKK, PLURAL, null, starkSchwach,
             ergaenzungenUndAngabenSlotsPl, wordForm);
       default:
         throw new IllegalStateException("Unerwarteter Kasus " + kasus);
@@ -165,6 +172,7 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
 
     return buildWortform(lexeme, pos, kasusInfo, VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN,
         numerus, genus, buildFeatureMap(komparation, starkSchwach, ergaenzungenUndAngabenSlots),
+        buildFeatureTypeMap(komparation, starkSchwach),
         string);
   }
 
@@ -174,9 +182,9 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
    * Lexem und Stamm können in Einzelfällen voneinander abweichen, etwa <i>hoch</i> vs. <i>hoh</i>,
    * <i>anders</i> vs. <i>ander</i>.
    */
-  public ImmutableList<IWordForm> adjPositivStark(final Lexeme lexeme, String stamm, Kasus kasus,
-      final Numerus numerus, Genus genus) {
-    return adjStark(lexeme, stamm, POSITIV, kasus, numerus, genus);
+  public ImmutableList<IWordForm> adjPositivStark(final Lexeme lexeme, final String stamm, final Kasus kasus,
+      final Numerus numerus, final Genus genus) {
+    return adjStark(lexeme, stamm, KOMPARATION_POSITIV, kasus, numerus, genus);
   }
 
   /**
@@ -187,7 +195,7 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
    * <i>anders</i> vs. <i>ander</i>.
    */
   private ImmutableList<IWordForm> adjStark(final Lexeme lexeme, final String stamm,
-      final String komparation, final Kasus kasus, final Numerus numerus, Genus genus) {
+      final String komparation, final Kasus kasus, final Numerus numerus, final Genus genus) {
     switch (numerus) {
       case SINGULAR:
         return adjStarkSg(lexeme, stamm, komparation, kasus, genus);
@@ -206,12 +214,13 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
    * <i>anders</i> vs. <i>ander</i>.
    */
   private ImmutableList<IWordForm> adjStarkSg(final Lexeme lexeme, final String stamm,
-      final String komparation, final Kasus kasus, Genus genus) {
+      final String komparation, final Kasus kasus, final Genus genus) {
     return stammInKomparationGgfAuchNachETilgung(stamm, komparation).stream()
         .map(stammInKomparation -> adjStarkSg(lexeme, GermanPOS.ADJA.toString(),
             stammInKomparation, GenMaskNeutrSgModus.NUR_EN, NomSgMaskUndNomAkkSgNeutrModus.MIT_ENDUNG,
             VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN,
-            Valenz.LEER, buildFeatureMap(komparation, STARK), kasus, genus))
+            Valenz.LEER, buildFeatureMap(komparation, STAERKE_STARK),
+            buildFeatureTypeMap(komparation, STAERKE_STARK), kasus, genus))
         .flatMap(Collection::stream)
         .collect(ImmutableList.toImmutableList());
   }
@@ -226,7 +235,7 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
   public ImmutableList<IWordForm> adjStarkPl(final Lexeme lexeme, final String stamm,
       final String komparation, final Kasus kasus) {
     final ImmutableMap<String, IFeatureValue> additionalFeaturesPl =
-        buildFeatureMap(komparation, STARK,
+        buildFeatureMap(komparation, STAERKE_STARK,
             Valenz.LEER.buildErgaenzungenUndAngabenSlots("3", null,
                 // (IHRER selbst gedenkende) Männer /
                 // Frauen / Kinder,
@@ -234,6 +243,8 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
                 PLURAL, StringFeatureLogicUtil.FALSE, true));
     // Die ihrer selbst gedenkenden Männer,
     // ABER NICHT die Ihrer selbst gedenkenden Männer!
+    final ImmutableMap<String, IFeatureType> additionalFeaturesTypesPl =
+        buildFeatureTypeMap(komparation, STAERKE_STARK);
 
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
@@ -241,7 +252,7 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
         .map(stammInKomparation -> adjStarkPl(lexeme,
             VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN, GermanPOS.ADJA.toString(),
             stammInKomparation,
-            additionalFeaturesPl, kasus))
+            additionalFeaturesPl, additionalFeaturesTypesPl, kasus))
         .forEach(t -> res.addAll(t));
 
     return res.build();
@@ -254,9 +265,9 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
    * Lexem und Stamm können in Einzelfällen voneinander abweichen, etwa <i>hoch</i> vs. <i>hoh</i>,
    * <i>anders</i> vs. <i>ander</i>.
    */
-  public ImmutableList<IWordForm> adjPositivSchwach(final Lexeme lexeme, String stamm, Kasus kasus,
-      final Numerus numerus, Genus genus) {
-    return adjSchwach(lexeme, stamm, POSITIV, kasus, numerus, genus);
+  public ImmutableList<IWordForm> adjPositivSchwach(final Lexeme lexeme, final String stamm, final Kasus kasus,
+      final Numerus numerus, final Genus genus) {
+    return adjSchwach(lexeme, stamm, KOMPARATION_POSITIV, kasus, numerus, genus);
   }
 
   /**
@@ -267,7 +278,7 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
    * <i>anders</i> vs. <i>ander</i>.
    */
   public ImmutableList<IWordForm> adjSchwach(final Lexeme lexeme, final String stamm,
-      final String komparation, final Kasus kasus, final Numerus numerus, Genus genus) {
+      final String komparation, final Kasus kasus, final Numerus numerus, final Genus genus) {
     switch(numerus) {
       case SINGULAR:
         return adjSchwachSg(lexeme, stamm, komparation, kasus, genus);
@@ -286,13 +297,14 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
    * <i>anders</i> vs. <i>ander</i>.
    */
   private ImmutableList<IWordForm> adjSchwachSg(final Lexeme lexeme, final String stamm,
-      final String komparation, final Kasus kasus, Genus genus) {
+      final String komparation, final Kasus kasus, final Genus genus) {
     return stammInKomparationGgfAuchNachETilgung(stamm, komparation).stream()
         .map(stammInKomparation -> adjSchwachSg(lexeme,
             VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN, GermanPOS.ADJA.toString(),
             stammInKomparation,
             GermanUtil.erlaubtAdjektivischeETilgungBeiSuffixEnUndEm(stammInKomparation),
-            Valenz.LEER, buildFeatureMap(komparation, SCHWACH), kasus, genus))
+            Valenz.LEER, buildFeatureMap(komparation, STAERKE_SCHWACH),
+            buildFeatureTypeMap(komparation, STAERKE_SCHWACH), kasus, genus))
         .flatMap(Collection::stream).collect(ImmutableList.toImmutableList());
   }
 
@@ -306,7 +318,7 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
   public ImmutableList<IWordForm> adjSchwachPl(final Lexeme lexeme, final String stamm,
       final String komparation, final Kasus kasus) {
     final ImmutableMap<String, IFeatureValue> additionalFeaturesPl =
-        buildFeatureMap(komparation, SCHWACH,
+        buildFeatureMap(komparation, STAERKE_SCHWACH,
             Valenz.LEER.buildErgaenzungenUndAngabenSlots("3", // Person
                 null,
                 // die IHRER selbst gedenkende Männer /
@@ -315,12 +327,16 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
                 PLURAL, StringFeatureLogicUtil.FALSE, true));
     // die ihrer selbst gedenkenden Männer,
     // NICHT JEDOCH: *die Ihrer selbst gedenkenden Männer!
+
+    final ImmutableMap<String, IFeatureType> additionalFeaturesTypesPl =
+        buildFeatureTypeMap(komparation, STAERKE_SCHWACH);
+
     return stammInKomparationGgfAuchNachETilgung(stamm, komparation).stream()
         .map(stammInKomparation -> adjSchwachPl(lexeme,
             VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN, GermanPOS.ADJA.toString(),
             stammInKomparation,
             GermanUtil.erlaubtAdjektivischeETilgungBeiSuffixEnUndEm(stammInKomparation),
-            additionalFeaturesPl, kasus))
+            additionalFeaturesPl, additionalFeaturesTypesPl, kasus))
         .flatMap(Collection::stream).collect(ImmutableList.toImmutableList());
   }
 
@@ -329,15 +345,15 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
    * Liefert den Stamm in der vorgegebenen Komparation, ggf. auch mehrere Alternativen (dann die
    * üblichste zuerst).
    */
-  private Collection<String> stammInKomparationGgfAuchNachETilgung(String stamm,
-      String komparation) {
+  private Collection<String> stammInKomparationGgfAuchNachETilgung(final String stamm,
+      final String komparation) {
     switch (komparation) {
-      case AbstractArtikelPronomenAdjektivFlektierer.POSITIV:
+      case KOMPARATION_POSITIV:
         final @Nullable String stammNachETilgung = GermanUtil.tilgeEAusStammWennMoeglich(stamm);
         return CollectionUtil.immmutableListSkipNulls(stamm, stammNachETilgung);
-      case AbstractArtikelPronomenAdjektivFlektierer.KOMPARATIV:
+      case KOMPARATION_KOMPARATIV:
         return komparativ(stamm);
-      case AbstractArtikelPronomenAdjektivFlektierer.SUPERLATIV:
+      case KOMPARATION_SUPERLATIV:
         final ImmutableList.Builder<String> res = ImmutableList.builder();
         komparativ(stamm).stream().map(komparativ -> superlativ(komparativ)).forEach(res::addAll);
         return res.build();

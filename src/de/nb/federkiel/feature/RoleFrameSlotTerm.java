@@ -11,6 +11,8 @@ import de.nb.federkiel.collection.CollectionUtil;
 import de.nb.federkiel.logic.IAssignment;
 import de.nb.federkiel.logic.ITerm;
 import de.nb.federkiel.logic.UnassignedVariableException;
+import de.nb.federkiel.logic.Variable;
+import de.nb.federkiel.logic.YieldsNoResultException;
 
 
 /**
@@ -124,13 +126,14 @@ public class RoleFrameSlotTerm implements ITerm<RoleFrameSlot, FeatureAssignment
    */
   @Override
   public RoleFrameSlot evaluate(final FeatureAssignment variableAssignment)
-      throws UnassignedVariableException {
+      throws UnassignedVariableException, YieldsNoResultException {
     // apply the evaluate() function to all fillingTerms
     final ImmutableSet.Builder<IHomogeneousConstituentAlternatives> fillingValues =
         ImmutableSet.builder();
 
     for (final ITerm<IHomogeneousConstituentAlternatives, FeatureAssignment> fillingTerm : fillingTerms) {
-      fillingValues.add(fillingTerm.evaluate(variableAssignment)); // UnassignedVariableException
+      fillingValues.add(fillingTerm.evaluate(variableAssignment)); // UnassignedVariableException,
+                                                                   // YieldsNoResultException
     }
 
     /*
@@ -149,10 +152,21 @@ public class RoleFrameSlotTerm implements ITerm<RoleFrameSlot, FeatureAssignment
      * });
      */
 
-
     return RoleFrameSlot.of(name, alternativeRequirements, fillingValues.build(), minFillings,
         maxFillings);
   }
+
+  @Override
+  public ImmutableSet<Variable<?, FeatureAssignment>> getAllVariables() {
+    final ImmutableSet.Builder<Variable<?, FeatureAssignment>> res = ImmutableSet.builder();
+
+    for (final ITerm<IHomogeneousConstituentAlternatives, FeatureAssignment> fillingTerm : fillingTerms) {
+      res.addAll(fillingTerm.getAllVariables());
+    }
+
+    return res.build();
+  }
+
 
   /**
    * Checks whether this (additional) filling term would be acceptable for this slot. If the filling
