@@ -58,7 +58,7 @@ public class RoleFrame
 	public static final RoleFrame EMPTY = of();
 
 	/**
-	 * Slot values
+	 * The slots with name and value.
 	 */
 	private final ImmutableMap<String, RoleFrameSlot> slots;
 
@@ -575,7 +575,7 @@ public class RoleFrame
 	}
 
 	/**
-	 * @return <code>true</code>, iff all slots are satisfied and there are no free
+	 * @return <code>true</code>, iff all slots are completed and there are no free
 	 *         fillings.
 	 */
 	public boolean isCompleted() {
@@ -584,7 +584,7 @@ public class RoleFrame
 		}
 
 		for (final RoleFrameSlot slot : slots.values()) {
-			if (!slot.isSatisfied()) {
+			if (!slot.isCompleted()) {
 				return false;
 			}
 		}

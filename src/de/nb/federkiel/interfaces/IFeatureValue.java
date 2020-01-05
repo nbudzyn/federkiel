@@ -10,7 +10,7 @@ package de.nb.federkiel.interfaces;
 @javax.annotation.concurrent.Immutable
 public interface IFeatureValue extends Comparable<IFeatureValue> {
 	/**
-	 * Whether this feature value is completed. For a role frame, for example, this
+	 * Whether this feature value is completed. For a role frame collection, for example, this
 	 * could mean, that all slot are filled and there are no free fillings...
 	 */
 	boolean isCompleted();

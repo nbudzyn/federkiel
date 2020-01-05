@@ -54,7 +54,7 @@ public class FeatureStructure implements IFeatureValue {
 	 */
 
 	/**
-	 * Die (grammatischen) Merkmale, jeweils mit Name und Wert
+	 * The featues with name and value.
 	 */
 	private final ImmutableMap<String, IFeatureValue> features;
 

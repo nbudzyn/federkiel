@@ -63,10 +63,14 @@ ITermBounds {
 			return null; // onlyRoleFrame.mergeBounds(other);
 		}
 
-		if (this.onlyValue instanceof RoleFrameCollection) {
-			final RoleFrameCollection onlyRoleFrameCollection = (RoleFrameCollection) this.onlyValue;
+		if (this.onlyValue instanceof RoleFrame) {
+			final RoleFrame onlyRoleFrame = (RoleFrame) this.onlyValue;
 
-			return mergeBounds(onlyRoleFrameCollection, other);
+			return null; // onlyRoleFrame.mergeBounds(other);
+		}
+
+		if (this.onlyValue instanceof RoleFrameSlot) {
+			...
 		}
 
 		 */
@@ -91,6 +95,10 @@ ITermBounds {
 				.mergeBoundsGivenAsRoleFrameCollections(
 						new RoleFrameCollection(otherOnlyRoleFrame)); *
 			}
+			if (otherOnlyValue instanceof RoleFrameSlot) {
+				...
+			}
+
 			if (otherOnlyValue instanceof RoleFrameCollection) {
 				final RoleFrameCollection otherOnlyRoleFrameCollection = (RoleFrameCollection) otherOnlyValue;
 
@@ -128,6 +136,9 @@ ITermBounds {
 			}
 			return false;
 			 */
+		}
+		if (this.onlyValue instanceof RoleFrameSlot) {
+			// ...
 		}
 		if (this.onlyValue instanceof RoleFrameCollection) {
 			/* FIXME (zurzeit nicht verwendet)

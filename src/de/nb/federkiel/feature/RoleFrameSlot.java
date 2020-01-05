@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableSet;
 
 import de.nb.federkiel.cache.WeakCache;
 import de.nb.federkiel.collection.CollectionUtil;
+import de.nb.federkiel.interfaces.IFeatureValue;
 
 /**
  * An slot in a <code>RoleFrame</code> - e.g. the slot for the <i>subject</i> in
@@ -21,7 +22,7 @@ import de.nb.federkiel.collection.CollectionUtil;
  */
 @Immutable
 @ThreadSafe
-public final class RoleFrameSlot implements Comparable<RoleFrameSlot> {
+public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureValue> {
 	/**
 	 * All generated values shall be cached - to minimize memory use. The cache
 	 * consists of weak references, so it will be cleared automatically, when a
@@ -236,7 +237,11 @@ public final class RoleFrameSlot implements Comparable<RoleFrameSlot> {
 		return maxFillings;
 	}
 
-	public boolean isSatisfied() {
+	/**
+	 * Returns whether the slot is completed.
+	 */
+	@Override
+	public boolean isCompleted() {
 		return fillings.size() >= minFillings;
 	}
 
@@ -318,7 +323,14 @@ public final class RoleFrameSlot implements Comparable<RoleFrameSlot> {
 	}
 
 	@Override
-	public int compareTo(final RoleFrameSlot other) {
+	public int compareTo(final IFeatureValue o) {
+		final int classNameCompared = this.getClass().getCanonicalName().compareTo(o.getClass().getCanonicalName());
+		if (classNameCompared != 0) {
+			return classNameCompared;
+		}
+
+		final RoleFrameSlot other = (RoleFrameSlot) o;
+
 		final int namesCompared = name.compareTo(other.name);
 		if (namesCompared != 0) {
 			return namesCompared;
@@ -366,7 +378,7 @@ public final class RoleFrameSlot implements Comparable<RoleFrameSlot> {
 	 *          if <code>true</code>, slot requirements are shown, even if the slot
 	 *          is filled.
 	 */
-	String toString(final boolean neverShowRequirements, final boolean forceShowRequirements) {
+	public String toString(final boolean neverShowRequirements, final boolean forceShowRequirements) {
 		if (neverShowRequirements && forceShowRequirements) {
 			throw new IllegalArgumentException("Unsensible combination! Never show and force show??");
 		}
