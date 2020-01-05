@@ -16,127 +16,125 @@ import de.nb.federkiel.deutsch.grammatik.wortart.flexion.SubstantivPronomenUtil;
 import de.nb.federkiel.deutsch.lexikon.GermanLexemeType;
 import de.nb.federkiel.deutsch.lexikon.GermanPOS;
 import de.nb.federkiel.feature.FeatureStructure;
+import de.nb.federkiel.feature.LexiconFeatureStructureUtil;
 import de.nb.federkiel.feature.StringFeatureLogicUtil;
 import de.nb.federkiel.interfaces.IWordForm;
 import de.nb.federkiel.lexikon.Lexeme;
 
 public abstract class Artikel {
-  public static final Artikel UNBESTIMMT = new UnbestimmterArtikel();
-  public static final Artikel BESTIMMT = new BestimmterArtikel();
+	public static final Artikel UNBESTIMMT = new UnbestimmterArtikel();
+	public static final Artikel BESTIMMT = new BestimmterArtikel();
 
-  final ArtikelFlektierer artikelFlekt = new ArtikelFlektierer();
+	final ArtikelFlektierer artikelFlekt = new ArtikelFlektierer();
 
-  private Artikel() {}
+	private Artikel() {
+	}
 
-  public static @Nullable Artikel createArtikel(final Artikeltyp artikeltyp, final Numerus numerus) {
-    switch (artikeltyp) {
-      case BESTIMMT:
-        return BESTIMMT;
-      case SG_UNBESTIMMT_PL_OHNE:
-        return numerus == Numerus.SINGULAR ? UNBESTIMMT : null;
-      case OHNE:
-        return null;
-      default:
-        throw new IllegalStateException("Unerwarteter Artikeltyp: " + artikeltyp);
-    }
-  }
+	public static @Nullable Artikel createArtikel(final Artikeltyp artikeltyp, final Numerus numerus) {
+		switch (artikeltyp) {
+		case BESTIMMT:
+			return BESTIMMT;
+		case SG_UNBESTIMMT_PL_OHNE:
+			return numerus == Numerus.SINGULAR ? UNBESTIMMT : null;
+		case OHNE:
+			return null;
+		default:
+			throw new IllegalStateException("Unerwarteter Artikeltyp: " + artikeltyp);
+		}
+	}
 
-  public abstract String getFlektiertAlsDeterminativFuer(final Kasus kasusBezugsphrase,
-      final Numerus numerusBezugsphrase, final Genus genusBezugsphrase, final boolean negiert);
+	public abstract String getFlektiertAlsDeterminativFuer(final Kasus kasusBezugsphrase,
+			final Numerus numerusBezugsphrase, final Genus genusBezugsphrase, final boolean negiert);
 
-  public abstract boolean hatFlexionsendung(Kasus kasusBezugsphrase, Numerus numerusBezugsphrase,
-      Genus genusBezugsphrase);
+	public abstract boolean hatFlexionsendung(Kasus kasusBezugsphrase, Numerus numerusBezugsphrase,
+			Genus genusBezugsphrase);
 
-  public abstract Lexeme getLexem();
+	public abstract Lexeme getLexem();
 
-  private static class UnbestimmterArtikel extends Artikel {
-    private final Lexeme lexemEin = new Lexeme(GermanLexemeType.ARTIKEL, "ein", FeatureStructure
-        .fromStringValues(ImmutableMap.of(GermanUtil.DEFINIT_KEY, StringFeatureLogicUtil.FALSE)));
+	private static class UnbestimmterArtikel extends Artikel {
+		private final Lexeme lexemEin = new Lexeme(GermanLexemeType.ARTIKEL, "ein", LexiconFeatureStructureUtil
+				.fromStringValues(ImmutableMap.of(GermanUtil.DEFINIT_KEY, StringFeatureLogicUtil.FALSE)));
 
-    private final Lexeme lexemKein =
-        SubstantivPronomenUtil.createIndefinitpronomen(GermanPOS.PIAT.toString(), "kein");
+		private final Lexeme lexemKein = SubstantivPronomenUtil.createIndefinitpronomen(GermanPOS.PIAT.toString(), "kein");
 
-    private final IndefinitpronomenFlektierer indefinitpronomenFlekt =
-        new IndefinitpronomenFlektierer();
+		private final IndefinitpronomenFlektierer indefinitpronomenFlekt = new IndefinitpronomenFlektierer();
 
-    @Override
-    public String getFlektiertAlsDeterminativFuer(final Kasus kasusBezugsphrase,
-        final Numerus numerusBezugsphrase, final Genus genusBezugsphrase, final boolean negiert) {
-      if (!negiert) {
-        if (numerusBezugsphrase != SINGULAR) {
-          throw new IllegalArgumentException("Plural des indefiniten Artikels gibt es nicht!");
-        }
+		@Override
+		public String getFlektiertAlsDeterminativFuer(final Kasus kasusBezugsphrase, final Numerus numerusBezugsphrase,
+				final Genus genusBezugsphrase, final boolean negiert) {
+			if (!negiert) {
+				if (numerusBezugsphrase != SINGULAR) {
+					throw new IllegalArgumentException("Plural des indefiniten Artikels gibt es nicht!");
+				}
 
-        return artikelFlekt
-            .indefinit(lexemEin, GermanPOS.ART.toString(), kasusBezugsphrase, genusBezugsphrase)
-            .get(0).getString();
-      }
+				return artikelFlekt.indefinit(lexemEin, GermanPOS.ART.toString(), kasusBezugsphrase, genusBezugsphrase).get(0)
+						.getString();
+			}
 
-      // negiert
+			// negiert
 
-      return wortformNegativ(numerusBezugsphrase, kasusBezugsphrase, genusBezugsphrase).getString();
-    }
+			return wortformNegativ(numerusBezugsphrase, kasusBezugsphrase, genusBezugsphrase).getString();
+		}
 
-    @Override
-    public boolean hatFlexionsendung(final Kasus kasusBezugsphrase, final Numerus numerusBezugsphrase,
-        final Genus genusBezugsphrase) {
-      final IWordForm wortform =
-          wortformNegativ(numerusBezugsphrase, kasusBezugsphrase, genusBezugsphrase);;
-      return FeatureStructure.toBoolean(
-          wortform.getFeatureValue(GermanUtil.ERLAUBT_NACHGESTELLTES_SCHWACH_FLEKTIERTES_ADJEKTIV_KEY));
-    }
+		@Override
+		public boolean hatFlexionsendung(final Kasus kasusBezugsphrase, final Numerus numerusBezugsphrase,
+				final Genus genusBezugsphrase) {
+			final IWordForm wortform = wortformNegativ(numerusBezugsphrase, kasusBezugsphrase, genusBezugsphrase);
+			;
+			return FeatureStructure
+					.toBoolean(wortform.getFeatureValue(GermanUtil.ERLAUBT_NACHGESTELLTES_SCHWACH_FLEKTIERTES_ADJEKTIV_KEY));
+		}
 
-    private IWordForm wortformNegativ(final Numerus numerus, final Kasus kasus, final Genus genus) {
-      return indefinitpronomenFlekt.einKeinUnser(lexemKein, GermanPOS.PIAT.toString(), true, // Trotz
-                                                                                             // Duden
-                                                                                             // 1526
-                                                                                             // -
-                                                                                             // *keine
-                                                                                             // bessere
-                                                                                             // Nachrichten
-                                                                                             // klingt
-                                                                                             // falsch
-          true, // kann als "stark" gelten
-          numerus, kasus, genus).get(0);
-    }
+		private IWordForm wortformNegativ(final Numerus numerus, final Kasus kasus, final Genus genus) {
+			return indefinitpronomenFlekt.einKeinUnser(lexemKein, GermanPOS.PIAT.toString(), true, // Trotz
+																																															// Duden
+																																															// 1526
+																																															// -
+																																															// *keine
+																																															// bessere
+																																															// Nachrichten
+																																															// klingt
+																																															// falsch
+					true, // kann als "stark" gelten
+					numerus, kasus, genus).get(0);
+		}
 
-    @Override
-    public Lexeme getLexem() {
-      return lexemEin;
-    }
-  }
+		@Override
+		public Lexeme getLexem() {
+			return lexemEin;
+		}
+	}
 
+	private static class BestimmterArtikel extends Artikel {
+		private final Lexeme lexeme = new Lexeme(GermanLexemeType.ARTIKEL, "der", LexiconFeatureStructureUtil
+				.fromStringValues(ImmutableMap.of(GermanUtil.DEFINIT_KEY, StringFeatureLogicUtil.TRUE)));
 
-  private static class BestimmterArtikel extends Artikel {
-    private final Lexeme lexeme = new Lexeme(GermanLexemeType.ARTIKEL, "der", FeatureStructure
-        .fromStringValues(ImmutableMap.of(GermanUtil.DEFINIT_KEY, StringFeatureLogicUtil.TRUE)));
+		@Override
+		public String getFlektiertAlsDeterminativFuer(final Kasus kasusBezugsphrase, final Numerus numerusBezugsphrase,
+				final Genus genusBezugsphrase, final boolean negiert) {
+			final StringBuilder res = new StringBuilder();
+			if (negiert) {
+				res.append("nicht ");
+			}
 
-    @Override
-    public String getFlektiertAlsDeterminativFuer(final Kasus kasusBezugsphrase,
-        final Numerus numerusBezugsphrase, final Genus genusBezugsphrase, final boolean negiert) {
-      final StringBuilder res = new StringBuilder();
-      if (negiert) {
-        res.append("nicht ");
-      }
+			res.append(wortform(kasusBezugsphrase, numerusBezugsphrase, genusBezugsphrase).getString());
 
-      res.append(wortform(kasusBezugsphrase, numerusBezugsphrase, genusBezugsphrase).getString());
+			return res.toString();
+		}
 
-      return res.toString();
-    }
+		@Override
+		public boolean hatFlexionsendung(final Kasus kasusBezugsphrase, final Numerus numerusBezugsphrase,
+				final Genus genusBezugsphrase) {
+			return true;
+		}
 
-    @Override
-    public boolean hatFlexionsendung(final Kasus kasusBezugsphrase, final Numerus numerusBezugsphrase,
-        final Genus genusBezugsphrase) {
-      return true;
-    }
+		private IWordForm wortform(final Kasus kasus, final Numerus numerus, final Genus genus) {
+			return artikelFlekt.definit(lexeme, GermanPOS.ART.toString(), true, kasus, numerus, genus);
+		}
 
-    private IWordForm wortform(final Kasus kasus, final Numerus numerus, final Genus genus) {
-      return artikelFlekt.definit(lexeme, GermanPOS.ART.toString(), true, kasus, numerus, genus);
-    }
-
-    @Override
-    public Lexeme getLexem() {
-      return lexeme;
-    }
-  }
+		@Override
+		public Lexeme getLexem() {
+			return lexeme;
+		}
+	}
 }

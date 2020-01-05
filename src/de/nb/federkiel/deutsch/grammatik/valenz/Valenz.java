@@ -197,10 +197,8 @@ public final class Valenz {
 	 * <p>
 	 * (<i>Reiner Infinitiv</i> meint <i>Infinitiv ohne zu</i>.)
 	 */
-	// TODO Implementierung noch in Arbeit
-	// public static final Valenz SUBJEKT_REINER_INFINITIV = new
-	// Valenz(ErgaenzungsOderAngabeTypen.SUBJEKT,
-	// ErgaenzungsOderAngabeTypen.REINER_INFINITIV_RF);
+	public static final Valenz SUBJEKT_REINER_INFINITIV = new Valenz(ErgaenzungsOderAngabeTypen.SUBJEKT,
+			ErgaenzungsOderAngabeTypen.REINER_INFINITIV);
 
 	/**
 	 * Alle möglichen Valenzen

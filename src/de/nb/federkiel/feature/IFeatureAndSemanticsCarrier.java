@@ -13,5 +13,5 @@ import de.nb.federkiel.interfaces.ISemantics;
 @Immutable
 @ThreadSafe
 public interface IFeatureAndSemanticsCarrier extends IFeatureCarrier {
-	public ISemantics getSemantics();
+	ISemantics getSemantics();
 }

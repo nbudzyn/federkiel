@@ -17,235 +17,233 @@ import de.nb.federkiel.deutsch.grammatik.kategorie.Kasus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.deutsch.lexikon.GermanLexemeType;
 import de.nb.federkiel.feature.FeatureStructure;
+import de.nb.federkiel.feature.LexiconFeatureStructureUtil;
 import de.nb.federkiel.interfaces.IWordForm;
 import de.nb.federkiel.lexikon.Lexeme;
 import de.nb.federkiel.lexikon.Wortform;
 import de.nb.federkiel.semantik.NothingInParticularSemantics;
 
 public class PraepositionsartikelverschmelzungFlektierer implements IFlektierer {
-  private static final String PRAEPOSITION_KEY = "praeposition";
+	private static final String PRAEPOSITION_KEY = "praeposition";
 
-  public static final String TYP = "mitArtikelVerschmolzenePraeposition";
+	public static final String TYP = "mitArtikelVerschmolzenePraeposition";
 
-  public PraepositionsartikelverschmelzungFlektierer() {
-    super();
-  }
+	public PraepositionsartikelverschmelzungFlektierer() {
+		super();
+	}
 
-  public ImmutableCollection<IWordForm> anDatVerschmelzung(final String pos) {
-    final Lexeme lexeme = buildAPPARTLexem("an", DATIV);
+	public ImmutableCollection<IWordForm> anDatVerschmelzung(final String pos) {
+		final Lexeme lexeme = buildAPPARTLexem("an", DATIV);
 
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
+		final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "am"));
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "am"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "am"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "am"));
 
-    return res.build();
-  }
+		return res.build();
+	}
 
-  public ImmutableCollection<IWordForm> anAkkVerschmelzung(final String pos) {
-    final Lexeme lexeme = buildAPPARTLexem("an", AKKUSATIV);
+	public ImmutableCollection<IWordForm> anAkkVerschmelzung(final String pos) {
+		final Lexeme lexeme = buildAPPARTLexem("an", AKKUSATIV);
 
-    return ImmutableList.of(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "ans"));
-  }
+		return ImmutableList.of(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "ans"));
+	}
 
-  public ImmutableCollection<IWordForm> aufAkkVerschmelzung(final String pos) {
-    final Lexeme lexeme = buildAPPARTLexem("auf", AKKUSATIV);
+	public ImmutableCollection<IWordForm> aufAkkVerschmelzung(final String pos) {
+		final Lexeme lexeme = buildAPPARTLexem("auf", AKKUSATIV);
 
-    return ImmutableList.of(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "aufs"));
-  }
+		return ImmutableList.of(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "aufs"));
+	}
 
-  public ImmutableCollection<IWordForm> beiDatVerschmelzung(final String pos) {
-    final Lexeme lexeme = buildAPPARTLexem("bei", DATIV);
+	public ImmutableCollection<IWordForm> beiDatVerschmelzung(final String pos) {
+		final Lexeme lexeme = buildAPPARTLexem("bei", DATIV);
 
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
+		final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "beim"));
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "beim"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "beim"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "beim"));
 
-    return res.build();
-  }
+		return res.build();
+	}
 
-  public ImmutableCollection<IWordForm> durchVerschmelzung(final String pos) {
-    final Lexeme lexeme = buildAPPARTLexem("durch", AKKUSATIV);
+	public ImmutableCollection<IWordForm> durchVerschmelzung(final String pos) {
+		final Lexeme lexeme = buildAPPARTLexem("durch", AKKUSATIV);
 
-    return ImmutableList.of(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "durchs"));
-  }
+		return ImmutableList.of(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "durchs"));
+	}
 
-  public ImmutableCollection<IWordForm> fuerVerschmelzung(final String pos) {
-    final Lexeme lexeme = buildAPPARTLexem("für", AKKUSATIV);
+	public ImmutableCollection<IWordForm> fuerVerschmelzung(final String pos) {
+		final Lexeme lexeme = buildAPPARTLexem("für", AKKUSATIV);
 
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
+		final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "fürn"));
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "fürs"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "fürn"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "fürs"));
 
-    return res.build();
-  }
+		return res.build();
+	}
 
-  public ImmutableCollection<IWordForm> hinterDatVerschmelzung(final String pos) {
-    final Lexeme lexeme = buildAPPARTLexem("hinter", DATIV);
+	public ImmutableCollection<IWordForm> hinterDatVerschmelzung(final String pos) {
+		final Lexeme lexeme = buildAPPARTLexem("hinter", DATIV);
 
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
+		final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "hinterm"));
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "hinterm"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "hinterm"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "hinterm"));
 
-    return res.build();
-  }
+		return res.build();
+	}
 
-  public ImmutableCollection<IWordForm> hinterAkkVerschmelzung(final String pos) {
-    final Lexeme lexeme = buildAPPARTLexem("hinter", AKKUSATIV);
+	public ImmutableCollection<IWordForm> hinterAkkVerschmelzung(final String pos) {
+		final Lexeme lexeme = buildAPPARTLexem("hinter", AKKUSATIV);
 
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
+		final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "hintern"));
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "hinters"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "hintern"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "hinters"));
 
-    return res.build();
-  }
+		return res.build();
+	}
 
-  public ImmutableCollection<IWordForm> inDatVerschmelzung(final String pos) {
-    final Lexeme lexeme = buildAPPARTLexem("in", DATIV);
+	public ImmutableCollection<IWordForm> inDatVerschmelzung(final String pos) {
+		final Lexeme lexeme = buildAPPARTLexem("in", DATIV);
 
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
+		final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "im"));
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "im"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "im"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "im"));
 
-    return res.build();
-  }
+		return res.build();
+	}
 
-  public ImmutableCollection<IWordForm> inAkkVerschmelzung(final String pos) {
-    final Lexeme lexeme = buildAPPARTLexem("in", AKKUSATIV);
+	public ImmutableCollection<IWordForm> inAkkVerschmelzung(final String pos) {
+		final Lexeme lexeme = buildAPPARTLexem("in", AKKUSATIV);
 
-    return ImmutableList.of(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "ins"));
-  }
+		return ImmutableList.of(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "ins"));
+	}
 
-  public ImmutableCollection<IWordForm> umAkkVerschmelzung(final String pos) {
-    final Lexeme lexeme = buildAPPARTLexem("um", DATIV);
+	public ImmutableCollection<IWordForm> umAkkVerschmelzung(final String pos) {
+		final Lexeme lexeme = buildAPPARTLexem("um", DATIV);
 
-    return ImmutableList.of(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "ums"));
-  }
+		return ImmutableList.of(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "ums"));
+	}
 
-  public ImmutableCollection<IWordForm> unterDatVerschmelzung(final String pos) {
-    final Lexeme lexeme = buildAPPARTLexem("unter", DATIV);
+	public ImmutableCollection<IWordForm> unterDatVerschmelzung(final String pos) {
+		final Lexeme lexeme = buildAPPARTLexem("unter", DATIV);
 
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
+		final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "unterm"));
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "unterm"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "unterm"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "unterm"));
 
-    return res.build();
-  }
+		return res.build();
+	}
 
-  public ImmutableCollection<IWordForm> unterAkkVerschmelzung(final String pos) {
-    final Lexeme lexeme = buildAPPARTLexem("unter", AKKUSATIV);
+	public ImmutableCollection<IWordForm> unterAkkVerschmelzung(final String pos) {
+		final Lexeme lexeme = buildAPPARTLexem("unter", AKKUSATIV);
 
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
+		final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "untern"));
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "unters"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "untern"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "unters"));
 
-    return res.build();
-  }
+		return res.build();
+	}
 
-  public ImmutableCollection<IWordForm> vonDatVerschmelzung(final String pos) {
-    final Lexeme lexeme = buildAPPARTLexem("von", DATIV);
+	public ImmutableCollection<IWordForm> vonDatVerschmelzung(final String pos) {
+		final Lexeme lexeme = buildAPPARTLexem("von", DATIV);
 
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
+		final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "vom"));
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "vom"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "vom"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "vom"));
 
-    return res.build();
-  }
+		return res.build();
+	}
 
-  public ImmutableCollection<IWordForm> vorDatVerschmelzung(final String pos) {
-    final Lexeme lexeme = buildAPPARTLexem("vor", DATIV);
+	public ImmutableCollection<IWordForm> vorDatVerschmelzung(final String pos) {
+		final Lexeme lexeme = buildAPPARTLexem("vor", DATIV);
 
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
+		final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "vorm"));
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "vorm"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "vorm"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "vorm"));
 
-    return res.build();
-  }
+		return res.build();
+	}
 
-  public ImmutableCollection<IWordForm> vorAkkVerschmelzung(final String pos) {
-    final Lexeme lexeme = buildAPPARTLexem("vor", AKKUSATIV);
+	public ImmutableCollection<IWordForm> vorAkkVerschmelzung(final String pos) {
+		final Lexeme lexeme = buildAPPARTLexem("vor", AKKUSATIV);
 
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
+		final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "vorn"));
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "vors"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "vorn"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "vors"));
 
-    return res.build();
-  }
+		return res.build();
+	}
 
-  public ImmutableCollection<IWordForm> zuVerschmelzung(final String pos) {
-    final Lexeme lexeme = buildAPPARTLexem("zu", DATIV);
+	public ImmutableCollection<IWordForm> zuVerschmelzung(final String pos) {
+		final Lexeme lexeme = buildAPPARTLexem("zu", DATIV);
 
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
+		final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "zum"));
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, FEMININUM, "zur"));
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "zum"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "zum"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, FEMININUM, "zur"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "zum"));
 
-    return res.build();
-  }
+		return res.build();
+	}
 
-  public ImmutableCollection<IWordForm> ueberDatVerschmelzung(final String pos) {
-    final Lexeme lexeme = buildAPPARTLexem("ueber", DATIV);
+	public ImmutableCollection<IWordForm> ueberDatVerschmelzung(final String pos) {
+		final Lexeme lexeme = buildAPPARTLexem("ueber", DATIV);
 
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
+		final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "ueberm"));
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "ueberm"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "ueberm"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "ueberm"));
 
-    return res.build();
-  }
+		return res.build();
+	}
 
-  public ImmutableCollection<IWordForm> ueberAkkVerschmelzung(final String pos) {
-    final Lexeme lexeme = buildAPPARTLexem("ueber", AKKUSATIV);
+	public ImmutableCollection<IWordForm> ueberAkkVerschmelzung(final String pos) {
+		final Lexeme lexeme = buildAPPARTLexem("ueber", AKKUSATIV);
 
-    final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
+		final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "uebern")); // (?)
-    res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "uebers"));
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, MASKULINUM, "uebern")); // (?)
+		res.add(buildAPPRARTWortform(lexeme, pos, SINGULAR, NEUTRUM, "uebers"));
 
-    return res.build();
-  }
+		return res.build();
+	}
 
-  // ----------------
-  // FOR PRIVATE USE
-  // ----------------
-  private static Lexeme buildAPPARTLexem(final String praeposition,
-      final Kasus regKasus) {
-    // @formatter:off
-    final FeatureStructure features = FeatureStructure
+	// ----------------
+	// FOR PRIVATE USE
+	// ----------------
+	private static Lexeme buildAPPARTLexem(final String praeposition, final Kasus regKasus) {
+		// @formatter:off
+    final FeatureStructure features = LexiconFeatureStructureUtil
         .fromStringValues(ImmutableMap.<String, String> builder()
               .put(REG_KASUS_KEY, FeatureStringConverter.toFeatureString(regKasus))
               .put(PRAEPOSITION_KEY, praeposition)
               .build());
     // @formatter:on
 
-    return new Lexeme(GermanLexemeType.PRAEPOSITION_MIT_INKORPORIERTEM_ARTIKEL,
-        praeposition + "-", features);
-  }
+		return new Lexeme(GermanLexemeType.PRAEPOSITION_MIT_INKORPORIERTEM_ARTIKEL, praeposition + "-", features);
+	}
 
-  private static Wortform buildAPPRARTWortform(final Lexeme lexeme, final String pos,
-      final Numerus numerus, final Genus genus, final String string) {
+	private static Wortform buildAPPRARTWortform(final Lexeme lexeme, final String pos, final Numerus numerus,
+			final Genus genus, final String string) {
 
-    final FeatureStructure features = FeatureStructure
-        // @formatter:off
+		final FeatureStructure features = LexiconFeatureStructureUtil
+		// @formatter:off
         .fromStringValues(ImmutableMap.<String, String> builder()
             .put("numerus", FeatureStringConverter.toFeatureString(numerus))
             .put("genus", FeatureStringConverter.toFeatureString(genus))
             .build());
     // @formatter:on
 
-    return new Wortform(lexeme, pos, string, features,
-        NothingInParticularSemantics.INSTANCE);
-  }
+		return new Wortform(lexeme, pos, string, features, NothingInParticularSemantics.INSTANCE);
+	}
 
 }

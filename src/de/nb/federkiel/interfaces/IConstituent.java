@@ -24,12 +24,6 @@ public interface IConstituent extends IConstituentOrEdge {
 	public ISemantics getSemantics();
 
 	/**
-	 * @return The number of words (from the input), that this realization
-	 *         encompasses.
-	 */
-	public int getLength();
-
-	/**
 	 * Returns the number of all parsings represented by this grammar symbol
 	 * realization, multiplying all possibilities (from the alternativity sets,
 	 * e.g.) with each other.
@@ -43,8 +37,8 @@ public interface IConstituent extends IConstituentOrEdge {
 	 * A pretty (easy-to read, informative) String representation.
 	 *
 	 * @param includeMultilineRecursiveDetails
-	 *            Whether it should recursively contain details - might span
-	 *            multiple lines.
+	 *          Whether it should recursively contain details - might span multiple
+	 *          lines.
 	 */
 	public String toPrettyString(boolean includeMultilineRecursiveDetails);
 }

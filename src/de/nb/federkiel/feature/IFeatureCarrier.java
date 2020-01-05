@@ -11,5 +11,5 @@ import javax.annotation.concurrent.ThreadSafe;
 @Immutable
 @ThreadSafe
 public interface IFeatureCarrier {
-	abstract FeatureStructure getFeatures();
+	FeatureStructure getFeatures();
 }

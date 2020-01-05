@@ -11,13 +11,14 @@ import de.nb.federkiel.interfaces.IGuessedWordForm;
 import de.nb.federkiel.interfaces.IWordFormVisitor;
 
 /**
- * A collection containing several alternative constituents (realizations for a grammar symbol in a
- * rule) - what the grammar symbol could stand for - the realizations are word forms, or passive
- * parsing edges, or <code>NullGrammarSymbolRepresentation</code>s (for optional symbol references,
- * that are left out).
+ * A collection containing several alternative constituents (realizations for a
+ * grammar symbol in a rule) - what the grammar symbol could stand for - the
+ * realizations are word forms, or passive parsing edges, or
+ * <code>NullGrammarSymbolRepresentation</code>s (for optional symbol
+ * references, that are left out).
  * <p>
- * (By using these alternatives, we try to avoid an exponentially growing number of edges, when
- * several combinations are possible.)
+ * (By using these alternatives, we try to avoid an exponentially growing number
+ * of edges, when several combinations are possible.)
  * <p>
  * All implementations must be IMMUTABLE
  *
@@ -25,8 +26,7 @@ import de.nb.federkiel.interfaces.IWordFormVisitor;
  */
 @Immutable
 @ThreadSafe
-public interface IConstituentAlternatives
-extends Iterable<IConstituent>, Comparable<IConstituentAlternatives> {
+public interface IConstituentAlternatives extends Iterable<IConstituent>, Comparable<IConstituentAlternatives> {
 
 	String getGrammarSymbol();
 
@@ -52,6 +52,7 @@ extends Iterable<IConstituent>, Comparable<IConstituentAlternatives> {
 	 * Split the parse alternative collection into several collections, each of
 	 * which is homogeneous.
 	 *
-	public abstract ImmutableCollection<IHomogeneousConstituentAlternatives> splitHomogeneously();
+	 * public abstract ImmutableCollection<IHomogeneousConstituentAlternatives>
+	 * splitHomogeneously();
 	 */
 }

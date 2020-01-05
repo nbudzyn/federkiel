@@ -11,4 +11,6 @@ import javax.annotation.concurrent.Immutable;
  */
 @Immutable
 public interface ISemantics extends Comparable<ISemantics> {
+	@Override
+	boolean equals(Object obj);
 }

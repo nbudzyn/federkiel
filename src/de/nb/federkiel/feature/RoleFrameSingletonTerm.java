@@ -6,35 +6,29 @@ import de.nb.federkiel.logic.UnassignedVariableException;
 import de.nb.federkiel.logic.YieldsNoResultException;
 
 /**
- * A term, of which the value is a role frame COLLECTION,
- * but which has only one argument (a role frame term).
- * So this is a kind of <i>singleton operator</i> for
- * role frame terms.
- *
- * <p>
+ * A term, of which the value is a role frame COLLECTION, but which has only one
+ * argument (a role frame term). So this is a kind of <i>singleton operator</i>
+ * for role frame terms.
  *
  * @author nbudzyn 2009
  */
 @SuppressWarnings("ucd")
-public final class RoleFrameSingletonTerm extends
-UnaryCompoundTerm<RoleFrameCollection, RoleFrame, FeatureAssignment> {
+public final class RoleFrameSingletonTerm extends UnaryCompoundTerm<RoleFrameCollection, RoleFrame, FeatureAssignment> {
 
 	/**
 	 * This class is currently not used.
 	 *
 	 * @param roleFrameTerm
 	 */
-	private RoleFrameSingletonTerm(
-			final ITerm<RoleFrame, FeatureAssignment> roleFrameTerm) {
+	private RoleFrameSingletonTerm(final ITerm<RoleFrame, FeatureAssignment> roleFrameTerm) {
 		super(roleFrameTerm);
 	}
 
 	@Override
 	public RoleFrameCollection evaluate(final FeatureAssignment variableAssignment)
-      throws UnassignedVariableException, YieldsNoResultException {
-		final RoleFrame roleFrame =
-        getSubTerm().evaluate(variableAssignment); // UnassignedVariableException,
-                                                   // YieldsNoResultException
+			throws UnassignedVariableException, YieldsNoResultException {
+		final RoleFrame roleFrame = getSubTerm().evaluate(variableAssignment); // UnassignedVariableException,
+																																						// YieldsNoResultException
 
 		return RoleFrameCollection.of(roleFrame);
 	}

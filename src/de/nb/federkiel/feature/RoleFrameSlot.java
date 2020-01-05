@@ -27,8 +27,7 @@ public final class RoleFrameSlot implements Comparable<RoleFrameSlot> {
 	 * consists of weak references, so it will be cleared automatically, when a
 	 * value is no longer (strongly) referenced.
 	 */
-	final private static WeakCache<RoleFrameSlot> cache =
-			new WeakCache<>();
+	final private static WeakCache<RoleFrameSlot> cache = new WeakCache<>();
 
 	/**
 	 * The name of the slot. (Shall be unique within the role frame.)
@@ -36,8 +35,8 @@ public final class RoleFrameSlot implements Comparable<RoleFrameSlot> {
 	private final String name;
 
 	/**
-	 * Requirements to an element that could fill this slot. These are
-	 * alternatives: The element only needs to fulfill <i>one</i> of these.
+	 * Requirements to an element that could fill this slot. These are alternatives:
+	 * The element only needs to fulfill <i>one</i> of these.
 	 * <p>
 	 * This collection has to be immutable!
 	 */
@@ -50,8 +49,8 @@ public final class RoleFrameSlot implements Comparable<RoleFrameSlot> {
 	private final int minFillings;
 
 	/**
-	 * The maximal number of fillings, that this slot accepts, or -1, if there
-	 * is no maximum.
+	 * The maximal number of fillings, that this slot accepts, or -1, if there is no
+	 * maximum.
 	 */
 	private final int maxFillings;
 
@@ -60,87 +59,64 @@ public final class RoleFrameSlot implements Comparable<RoleFrameSlot> {
 	 * <p>
 	 * Fillings are values
 	 */
-	private final ImmutableSet<IHomogeneousConstituentAlternatives> fillings;
+	private final ImmutableSet<IFillingInSlot> fillings;
 
 	/**
 	 * caching the hashCode
 	 */
 	private final int hashCode;
 
-	public static RoleFrameSlot of(final String name,
-			final boolean optional,
-			final boolean multiple,
+	public static RoleFrameSlot of(final String name, final boolean optional, final boolean multiple,
 			final SlotRequirements... requirementAlternatives) {
-		return cache.findOrInsert(new RoleFrameSlot(name, optional, multiple,
-				requirementAlternatives));
+		return cache.findOrInsert(new RoleFrameSlot(name, optional, multiple, requirementAlternatives));
 	}
 
-	public static RoleFrameSlot of(final String name,
-			final int minFillings,
-			final int maxFillings,
+	public static RoleFrameSlot of(final String name, final int minFillings, final int maxFillings,
 			final SlotRequirements... requirementAlternatives) {
-		return cache.findOrInsert(new RoleFrameSlot(name, minFillings,
-				maxFillings, requirementAlternatives));
+		return cache.findOrInsert(new RoleFrameSlot(name, minFillings, maxFillings, requirementAlternatives));
 	}
 
-	public static RoleFrameSlot of(final String name,
-			final SlotRequirements... requirementAlternatives) {
-		return cache.findOrInsert(new RoleFrameSlot(name,
-				requirementAlternatives));
+	public static RoleFrameSlot of(final String name, final SlotRequirements... requirementAlternatives) {
+		return cache.findOrInsert(new RoleFrameSlot(name, requirementAlternatives));
 	}
 
-	public static RoleFrameSlot of(
-			final String name,
-			final ImmutableCollection<SlotRequirements> alternativeRequirements,
-			final ImmutableSet<IHomogeneousConstituentAlternatives> fillings,
-			final int minFillings,
-			final int maxFillings) {
-		return cache.findOrInsert(new RoleFrameSlot(name,
-				alternativeRequirements, fillings, minFillings, maxFillings));
+	public static RoleFrameSlot of(final String name, final IFillingInSlot filling) {
+		return cache.findOrInsert(new RoleFrameSlot(name, filling));
+	}
+
+	public static RoleFrameSlot of(final String name, final ImmutableCollection<SlotRequirements> alternativeRequirements,
+			final ImmutableSet<IFillingInSlot> fillings, final int minFillings, final int maxFillings) {
+		return cache.findOrInsert(new RoleFrameSlot(name, alternativeRequirements, fillings, minFillings, maxFillings));
 	}
 
 	/**
 	 * Creates a frame slot with one filling, that only accepts one filling.
 	 */
-	private RoleFrameSlot(final String name,
-			final IHomogeneousConstituentAlternatives filling,
+	private RoleFrameSlot(final String name, final IFillingInSlot filling,
 			final SlotRequirements... requirementAlternatives) {
-		this(name,
-				ImmutableList
-						.<SlotRequirements> copyOf(requirementAlternatives),
-				ImmutableSet.<IHomogeneousConstituentAlternatives> of(filling),
-				1, 1);
+		this(name, ImmutableList.<SlotRequirements>copyOf(requirementAlternatives),
+				ImmutableSet.<IFillingInSlot>of(filling), 1, 1);
 	}
 
 	/**
 	 * Creates a mandatory frame slot, that only accepts one filling.
-	 *
-	 * @param name
-	 * @param requirementAlternatives
 	 */
-	private RoleFrameSlot(final String name,
-			final SlotRequirements... requirementAlternatives) {
-		this(name,
-				ImmutableList
-						.<SlotRequirements> copyOf(requirementAlternatives),
-				ImmutableSet.<IHomogeneousConstituentAlternatives> of(),
-				1, 1);
+	private RoleFrameSlot(final String name, final SlotRequirements... requirementAlternatives) {
+		this(name, ImmutableList.<SlotRequirements>copyOf(requirementAlternatives), ImmutableSet.<IFillingInSlot>of(), 1,
+				1);
 	}
 
 	/**
 	 * Creates a role frame slot.
 	 *
 	 * @param optional
-	 *            whether the slot is optional
+	 *          whether the slot is optional
 	 * @param multiple
-	 *            whether the slot accepts more than one filling
+	 *          whether the slot accepts more than one filling
 	 */
-	private RoleFrameSlot(final String name,
-			final boolean optional,
-			final boolean multiple,
+	private RoleFrameSlot(final String name, final boolean optional, final boolean multiple,
 			final SlotRequirements... requirementAlternatives) {
-		this(name,
-				optional ? 0 : 1, // min
+		this(name, optional ? 0 : 1, // min
 				multiple ? -1 : 1, // max
 				requirementAlternatives);
 	}
@@ -148,24 +124,14 @@ public final class RoleFrameSlot implements Comparable<RoleFrameSlot> {
 	/**
 	 * Creates a role frame slot.
 	 */
-	private RoleFrameSlot(final String name,
-			final int minFillings,
-			final int maxFillings,
+	private RoleFrameSlot(final String name, final int minFillings, final int maxFillings,
 			final SlotRequirements... requirementAlternatives) {
-		this(name,
-				ImmutableList
-						.<SlotRequirements> copyOf(requirementAlternatives),
-				ImmutableSet.<IHomogeneousConstituentAlternatives> of(),
-				minFillings,
-				maxFillings);
+		this(name, ImmutableList.<SlotRequirements>copyOf(requirementAlternatives), ImmutableSet.<IFillingInSlot>of(),
+				minFillings, maxFillings);
 	}
 
-	private RoleFrameSlot(
-			final String name,
-			final ImmutableCollection<SlotRequirements> alternativeRequirements,
-			final ImmutableSet<IHomogeneousConstituentAlternatives> fillings,
-			final int minFillings,
-			final int maxFillings) {
+	private RoleFrameSlot(final String name, final ImmutableCollection<SlotRequirements> alternativeRequirements,
+			final ImmutableSet<IFillingInSlot> fillings, final int minFillings, final int maxFillings) {
 		this.name = name;
 		this.alternativeRequirements = alternativeRequirements;
 		this.fillings = fillings;
@@ -178,19 +144,17 @@ public final class RoleFrameSlot implements Comparable<RoleFrameSlot> {
 	 * @return an copy of this which is empty (does not have any fillings)
 	 */
 	public RoleFrameSlot emptyCopy() {
-		return of(name, alternativeRequirements,
-				ImmutableSet.<IHomogeneousConstituentAlternatives> of(),
-				minFillings, maxFillings);
+		return of(name, alternativeRequirements, ImmutableSet.<IFillingInSlot>of(), minFillings, maxFillings);
 	}
 
 	/**
-	 * @return <code>true</code>, if the realization matches the requirements,
-	 *         that is, it matches any of the requirements alternatives
+	 * @return <code>true</code>, if the realization matches the requirements, that
+	 *         is, it matches any of the requirements alternatives
 	 *
 	 *         public boolean matchesRequirements( final String
 	 *         actualGrammarSymbolName, final List<ParseAlternatives>
-	 *         actualSymbolRealizations, final IFeatureProvider actualFeatures)
-	 *         { for (final SlotRequirements slotRequirementsAlternative :
+	 *         actualSymbolRealizations, final IFeatureProvider actualFeatures) {
+	 *         for (final SlotRequirements slotRequirementsAlternative :
 	 *         this.alternativeRequirements) { if
 	 *         (slotRequirementsAlternative.match( actualGrammarSymbolName,
 	 *         actualSymbolRealizations, actualFeatures)) { return true; } }
@@ -199,22 +163,14 @@ public final class RoleFrameSlot implements Comparable<RoleFrameSlot> {
 	 */
 
 	/**
-	 * Checks whether this (additional) filling would be acceptable for this
-	 * slot. If the filling would be acceptable, the methode returns a copy of
-	 * this slot with this filling added. Otherwise, the method returns
-	 * <code>null</code>.
+	 * Checks whether this (additional) filling would be acceptable for this slot.
+	 * If the filling would be acceptable, the methode returns a copy of this slot
+	 * with this filling added. Otherwise, the method returns <code>null</code>.
 	 */
-	RoleFrameSlot addFillingIfAccepted(
-			final IHomogeneousConstituentAlternatives freeFilling,
+	RoleFrameSlot addFillingIfAccepted(final IHomogeneousConstituentAlternatives freeFilling,
 			final IFillingUsageRestrictor fillingUsageRestrictor) {
 		if (maxFillings != -1
-				&&
-				fillings.size()
-						+ 1
-						+
-						fillingUsageRestrictor
-								.keepPlaceFreeForHowManyFillings(name)
-				> maxFillings) {
+				&& fillings.size() + 1 + fillingUsageRestrictor.keepPlaceFreeForHowManyFillings(name) > maxFillings) {
 			return null;
 		}
 
@@ -222,41 +178,35 @@ public final class RoleFrameSlot implements Comparable<RoleFrameSlot> {
 	}
 
 	/**
-	 * Checks whether this (additional) filling matches the requirements for
-	 * this slot (maxFillings is NOT checked!). If the filling mathches the
-	 * requirements, the methode returns a copy of this slot with this filling
-	 * added. Otherwise, the method returns <code>null</code>.
+	 * Checks whether this (additional) filling matches the requirements for this
+	 * slot (maxFillings is NOT checked!). If the filling mathches the requirements,
+	 * the methode returns a copy of this slot with this filling added. Otherwise,
+	 * the method returns <code>null</code>.
 	 */
-	private RoleFrameSlot addFillingIfMatchesRequirements(
-			final IHomogeneousConstituentAlternatives freeFilling) {
+	private RoleFrameSlot addFillingIfMatchesRequirements(final IHomogeneousConstituentAlternatives freeFilling) {
 		if (!matchesRequirements(freeFilling)) {
 			return null;
 		}
 
 		// accept filling and return new Role Frame Slot
-		return addFilling(freeFilling);
+		return addFilling(freeFilling.toFillingInSlot());
 	}
 
 	/**
 	 * @return a copy of this slot with this filling added (nothing is checked!)
 	 */
-	private RoleFrameSlot addFilling(
-			final IHomogeneousConstituentAlternatives freeFilling) {
-		final ImmutableSet.Builder<IHomogeneousConstituentAlternatives> resFillingsBuilder =
-				ImmutableSet.<IHomogeneousConstituentAlternatives> builder();
+	private RoleFrameSlot addFilling(final IFillingInSlot filling) {
+		final ImmutableSet.Builder<IFillingInSlot> resFillingsBuilder = ImmutableSet.<IFillingInSlot>builder();
 		resFillingsBuilder.addAll(fillings);
-		resFillingsBuilder.add(freeFilling);
+		resFillingsBuilder.add(filling);
 
-		return of(name, alternativeRequirements,
-				resFillingsBuilder.build(),
-				minFillings, maxFillings);
+		return of(name, alternativeRequirements, resFillingsBuilder.build(), minFillings, maxFillings);
 	}
 
 	/**
 	 * @return wether the free filling matches the slot requirements
 	 */
-	private boolean matchesRequirements(
-			final IHomogeneousConstituentAlternatives freeFilling) {
+	private boolean matchesRequirements(final IHomogeneousConstituentAlternatives freeFilling) {
 		for (final SlotRequirements slotRequirementsAlternative : alternativeRequirements) {
 			if (slotRequirementsAlternative.match(freeFilling)) {
 				return true;
@@ -266,8 +216,7 @@ public final class RoleFrameSlot implements Comparable<RoleFrameSlot> {
 		return false;
 	}
 
-	// FIXME Warum müssen die Filling homogeneous sein?
-	public Collection<IHomogeneousConstituentAlternatives> getFillings() {
+	public Collection<IFillingInSlot> getFillings() {
 		return Collections.unmodifiableCollection(fillings);
 	}
 
@@ -292,11 +241,11 @@ public final class RoleFrameSlot implements Comparable<RoleFrameSlot> {
 	}
 
 	/**
-	 * @return <code>true</code>, iff the slot contains any filling that is
-	 *         equal to a filling of the other slot
+	 * @return <code>true</code>, iff the slot contains any filling that is equal to
+	 *         a filling of the other slot
 	 */
 	boolean hasOneEqualFillingAs(final RoleFrameSlot other) {
-		for (final IHomogeneousConstituentAlternatives filling : fillings) {
+		for (final IFillingInSlot filling : fillings) {
 			if (other.containsFilling(filling)) {
 				return true;
 			}
@@ -306,12 +255,11 @@ public final class RoleFrameSlot implements Comparable<RoleFrameSlot> {
 	}
 
 	/**
-	 * @return <code>true</code>, iff the slot contains this filling - false, if
-	 *         it does not. This method does an equality check.
+	 * @return <code>true</code>, iff the slot contains this filling - false, if it
+	 *         does not. This method does an equality check.
 	 */
-	boolean containsFilling(
-			final IHomogeneousConstituentAlternatives fillingToCheckFor) {
-		for (final IHomogeneousConstituentAlternatives fillingContained : fillings) {
+	boolean containsFilling(final IFillingInSlot fillingToCheckFor) {
+		for (final IFillingInSlot fillingContained : fillings) {
 			if (fillingContained.equals(fillingToCheckFor)) {
 				return true; // =>
 			}
@@ -324,9 +272,7 @@ public final class RoleFrameSlot implements Comparable<RoleFrameSlot> {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + name.hashCode();
-		result = prime
-				* result
-				+ alternativeRequirements.hashCode();
+		result = prime * result + alternativeRequirements.hashCode();
 		result = prime * result + fillings.hashCode();
 		return result;
 	}
@@ -356,12 +302,10 @@ public final class RoleFrameSlot implements Comparable<RoleFrameSlot> {
 		if (!name.equals(other.name)) {
 			return false;
 		}
-		if (!fillings.
-				equals(other.fillings)) {
+		if (!fillings.equals(other.fillings)) {
 			return false;
 		}
-		if (!alternativeRequirements
-				.equals(other.alternativeRequirements)) {
+		if (!alternativeRequirements.equals(other.alternativeRequirements)) {
 			return false;
 		}
 		if (maxFillings != other.maxFillings) {
@@ -380,17 +324,12 @@ public final class RoleFrameSlot implements Comparable<RoleFrameSlot> {
 			return namesCompared;
 		}
 
-		final int reqsCompared =
-				CollectionUtil.compareCollections(
-						alternativeRequirements,
-						other.alternativeRequirements);
+		final int reqsCompared = CollectionUtil.compareCollections(alternativeRequirements, other.alternativeRequirements);
 		if (reqsCompared != 0) {
 			return reqsCompared;
 		}
 
-		final int fillingsCompared =
-				CollectionUtil
-						.compareCollections(fillings, other.fillings);
+		final int fillingsCompared = CollectionUtil.compareCollections(fillings, other.fillings);
 		if (fillingsCompared != 0) {
 			return fillingsCompared;
 		}
@@ -421,17 +360,15 @@ public final class RoleFrameSlot implements Comparable<RoleFrameSlot> {
 
 	/**
 	 * @param neverShowRequirements
-	 *            if <code>true</code>, requirements are never shown, even not
-	 *            if the slot is empty
+	 *          if <code>true</code>, requirements are never shown, even not if the
+	 *          slot is empty
 	 * @param forceShowRequirements
-	 *            if <code>true</code>, slot requirements are shown, even if the
-	 *            slot is filled.
+	 *          if <code>true</code>, slot requirements are shown, even if the slot
+	 *          is filled.
 	 */
-	String toString(final boolean neverShowRequirements,
-			final boolean forceShowRequirements) {
+	String toString(final boolean neverShowRequirements, final boolean forceShowRequirements) {
 		if (neverShowRequirements && forceShowRequirements) {
-			throw new IllegalArgumentException(
-					"Unsensible combination! Never show and force show??");
+			throw new IllegalArgumentException("Unsensible combination! Never show and force show??");
 		}
 
 		final StringBuilder res = new StringBuilder();
@@ -452,7 +389,7 @@ public final class RoleFrameSlot implements Comparable<RoleFrameSlot> {
 		if (!fillings.isEmpty()) {
 			res.append("[");
 			boolean first = true;
-			for (final IHomogeneousConstituentAlternatives filling : fillings) {
+			for (final IFillingInSlot filling : fillings) {
 				if (first == true) {
 					first = false;
 				} else {
@@ -467,8 +404,7 @@ public final class RoleFrameSlot implements Comparable<RoleFrameSlot> {
 			res.append(" ?");
 		}
 
-		if (!neverShowRequirements
-				&& (fillings.isEmpty() || forceShowRequirements)) {
+		if (!neverShowRequirements && (fillings.isEmpty() || forceShowRequirements)) {
 			boolean first = true;
 			for (final SlotRequirements requirements : alternativeRequirements) {
 				if (first == true) {
@@ -492,14 +428,11 @@ public final class RoleFrameSlot implements Comparable<RoleFrameSlot> {
 	}
 
 	/**
-	 * @return whether all fillings, that are still missing for completion, can
-	 *         be added in some later parsing step
+	 * @return whether all fillings, that are still missing for completion, can be
+	 *         added in some later parsing step
 	 */
-	boolean allFillingsMissingForCompletionCanBeAddedLater(
-			final IFillingUsageRestrictor fillingUsageRestrictor) {
-		final int howManyAdditionalFillingsAllowed =
-				fillingUsageRestrictor
-						.howManyAdditionalFillingsAreAllowed(name);
+	boolean allFillingsMissingForCompletionCanBeAddedLater(final IFillingUsageRestrictor fillingUsageRestrictor) {
+		final int howManyAdditionalFillingsAllowed = fillingUsageRestrictor.howManyAdditionalFillingsAreAllowed(name);
 
 		if (howManyAdditionalFillingsAllowed == -1) {
 			return true;
@@ -528,50 +461,37 @@ public final class RoleFrameSlot implements Comparable<RoleFrameSlot> {
 	}
 
 	/*
-	public boolean areUppermostAtomicFeaturesEqual(final RoleFrameSlot other) {
-		if (this.alternativeRequirements.equals(other.alternativeRequirements)) {
-			// "war", das 1. Person erwartetn != "war", das 3. Person erwartet
-			return false;
-		}
-
-		final int numMyFillings = this.fillings.size();
-		if (numMyFillings != other.fillings.size()) {
-			return false;
-		}
-
-		// they have the same number of role frames
-
-		if (numMyFillings == 0) {
-			// they both are empty
-			return true;
-		}
-
-
-		if (numMyFillings != 1) {
-			// I test for full equality - not sure how to make it better
-			return this.fillings.equals(other.fillings);
-		}
-
-		// they both have exactly one role frame
-		final IHomogeneousConstituentAlternatives myFilling = this.fillings.iterator().next();
-
-		final IHomogeneousConstituentAlternatives othersFilling =
-			other.fillings.iterator().next();
-
-		try {
-			final ParseAlternativesDifference singleDiff = myFilling.getFeatures().
-			findSinglePointOfDifferenceForRoleFrameCollFeaturesAndCheckAtomicFeatures(
-					othersFilling.getFeatures());
-			if (singleDiff != null) {
-				throw new TooManyDifferencesException("There was a difference between " +
-				"the feature structures");
-			}
-
-			return true;
-		} catch (final TooManyDifferencesException e) {
-			return false;
-		}
-	}
+	 * public boolean areUppermostAtomicFeaturesEqual(final RoleFrameSlot other) {
+	 * if (this.alternativeRequirements.equals(other.alternativeRequirements)) { //
+	 * "war", das 1. Person erwartetn != "war", das 3. Person erwartet return false;
+	 * }
+	 *
+	 * final int numMyFillings = this.fillings.size(); if (numMyFillings !=
+	 * other.fillings.size()) { return false; }
+	 *
+	 * // they have the same number of role frames
+	 *
+	 * if (numMyFillings == 0) { // they both are empty return true; }
+	 *
+	 *
+	 * if (numMyFillings != 1) { // I test for full equality - not sure how to make
+	 * it better return this.fillings.equals(other.fillings); }
+	 *
+	 * // they both have exactly one role frame final
+	 * IHomogeneousConstituentAlternatives myFilling =
+	 * this.fillings.iterator().next();
+	 *
+	 * final IHomogeneousConstituentAlternatives othersFilling =
+	 * other.fillings.iterator().next();
+	 *
+	 * try { final ParseAlternativesDifference singleDiff = myFilling.getFeatures().
+	 * findSinglePointOfDifferenceForRoleFrameCollFeaturesAndCheckAtomicFeatures(
+	 * othersFilling.getFeatures()); if (singleDiff != null) { throw new
+	 * TooManyDifferencesException("There was a difference between " +
+	 * "the feature structures"); }
+	 *
+	 * return true; } catch (final TooManyDifferencesException e) { return false; }
+	 * }
 	 */
 
 }
