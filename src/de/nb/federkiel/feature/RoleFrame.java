@@ -31,7 +31,7 @@ import de.nb.federkiel.plurivallogic.Plurival;
  * The frame has several <i>slots</i> (one for the subject, one for the direct
  * object, e.g.).
  * <p>
- * In Detail, there are three kinds of elements in a role frame:
+ * In Detail, there are two kinds of elements in a role frame:
  * <ul>
  * <li>slots, with a name and some Conditions for to be filled - some of them
  * may be empty, others may be filled
