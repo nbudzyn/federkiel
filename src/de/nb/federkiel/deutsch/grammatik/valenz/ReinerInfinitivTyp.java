@@ -75,7 +75,7 @@ public class ReinerInfinitivTyp extends AbstractErgaenzungsOderAngabenTyp {
 		// Letztlich braucht man ja eine ganze "potenziell diskontinuierlich Phrase"
 		// MIT VERB.
 
-		return RoleFrameSlot.of(SLOT_NAME, SlotRequirements.of(
+		return RoleFrameSlot.of(SlotRequirements.of(
 				// TODO richtige Bedingungen
 				"VERBALKOMPLEXRESTENDE", BooleanConstantTrue.getInstance()));
 
@@ -109,7 +109,7 @@ public class ReinerInfinitivTyp extends AbstractErgaenzungsOderAngabenTyp {
 	@Override
 	public RoleFrameSlot buildRestrictionSlot() {
 		// FIXME richtige Bedingung
-		return RoleFrameSlot.of("reinerInfinitiv", SlotRequirements.of(
+		return RoleFrameSlot.of(SlotRequirements.of(
 				// TODO richtige Bedingungen
 				"VERBALKOMPLEXREST", BooleanConstantTrue.getInstance()));
 	}

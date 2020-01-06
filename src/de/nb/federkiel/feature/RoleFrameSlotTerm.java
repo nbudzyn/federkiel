@@ -139,7 +139,7 @@ public class RoleFrameSlotTerm implements IPlurivalTerm<RoleFrameSlot, FeatureAs
 			throws UnassignedVariableException {
 		// apply the evaluate() function to the fillingTerm
 		if (fillingTerm == null) {
-			return Plurival.of(RoleFrameSlot.of(name, alternativeRequirements, ImmutableSet.of(), minFillings, maxFillings));
+			return Plurival.of(RoleFrameSlot.of(alternativeRequirements, ImmutableSet.of(), minFillings, maxFillings));
 		}
 
 		final Plurival<IFillingInSlot> fillingPlurival = fillingTerm.evaluate(variableAssignment);
@@ -149,7 +149,7 @@ public class RoleFrameSlotTerm implements IPlurivalTerm<RoleFrameSlot, FeatureAs
 
 		for (final IFillingInSlot filling : fillingPlurival) {
 			roleFrameSlotAlternatives
-					.add(RoleFrameSlot.of(name, alternativeRequirements, ImmutableSet.of(filling), minFillings, maxFillings));
+					.add(RoleFrameSlot.of(alternativeRequirements, ImmutableSet.of(filling), minFillings, maxFillings));
 		}
 
 		return Plurival.of(roleFrameSlotAlternatives.build());

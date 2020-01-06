@@ -31,11 +31,6 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 	final private static WeakCache<RoleFrameSlot> cache = new WeakCache<>();
 
 	/**
-	 * The name of the slot. (Shall be unique within the role frame.)
-	 */
-	private final String name;
-
-	/**
 	 * Requirements to an element that could fill this slot. These are alternatives:
 	 * The element only needs to fulfill <i>one</i> of these.
 	 * <p>
@@ -67,43 +62,43 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 	 */
 	private final int hashCode;
 
-	public static RoleFrameSlot of(final String name, final boolean optional, final boolean multiple,
+	public static RoleFrameSlot of(final boolean optional, final boolean multiple,
 			final SlotRequirements... requirementAlternatives) {
-		return cache.findOrInsert(new RoleFrameSlot(name, optional, multiple, requirementAlternatives));
+		return cache.findOrInsert(new RoleFrameSlot(optional, multiple, requirementAlternatives));
 	}
 
-	public static RoleFrameSlot of(final String name, final int minFillings, final int maxFillings,
+	public static RoleFrameSlot of(final int minFillings, final int maxFillings,
 			final SlotRequirements... requirementAlternatives) {
-		return cache.findOrInsert(new RoleFrameSlot(name, minFillings, maxFillings, requirementAlternatives));
+		return cache.findOrInsert(new RoleFrameSlot(minFillings, maxFillings, requirementAlternatives));
 	}
 
-	public static RoleFrameSlot of(final String name, final SlotRequirements... requirementAlternatives) {
-		return cache.findOrInsert(new RoleFrameSlot(name, requirementAlternatives));
+	public static RoleFrameSlot of(final SlotRequirements... requirementAlternatives) {
+		return cache.findOrInsert(new RoleFrameSlot(requirementAlternatives));
 	}
 
-	public static RoleFrameSlot of(final String name, final IFillingInSlot filling) {
-		return cache.findOrInsert(new RoleFrameSlot(name, filling));
+	public static RoleFrameSlot of(final IFillingInSlot filling) {
+		return cache.findOrInsert(new RoleFrameSlot(filling));
 	}
 
-	public static RoleFrameSlot of(final String name, final ImmutableCollection<SlotRequirements> alternativeRequirements,
+	public static RoleFrameSlot of(final ImmutableCollection<SlotRequirements> alternativeRequirements,
 			final ImmutableSet<IFillingInSlot> fillings, final int minFillings, final int maxFillings) {
-		return cache.findOrInsert(new RoleFrameSlot(name, alternativeRequirements, fillings, minFillings, maxFillings));
+		return cache.findOrInsert(new RoleFrameSlot(alternativeRequirements, fillings, minFillings, maxFillings));
 	}
 
 	/**
 	 * Creates a frame slot with one filling, that only accepts one filling.
 	 */
-	private RoleFrameSlot(final String name, final IFillingInSlot filling,
+	private RoleFrameSlot(final IFillingInSlot filling,
 			final SlotRequirements... requirementAlternatives) {
-		this(name, ImmutableList.<SlotRequirements>copyOf(requirementAlternatives),
+		this(ImmutableList.<SlotRequirements>copyOf(requirementAlternatives),
 				ImmutableSet.<IFillingInSlot>of(filling), 1, 1);
 	}
 
 	/**
 	 * Creates a mandatory frame slot, that only accepts one filling.
 	 */
-	private RoleFrameSlot(final String name, final SlotRequirements... requirementAlternatives) {
-		this(name, ImmutableList.<SlotRequirements>copyOf(requirementAlternatives), ImmutableSet.<IFillingInSlot>of(), 1,
+	private RoleFrameSlot(final SlotRequirements... requirementAlternatives) {
+		this(ImmutableList.<SlotRequirements>copyOf(requirementAlternatives), ImmutableSet.<IFillingInSlot>of(), 1,
 				1);
 	}
 
@@ -115,9 +110,9 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 	 * @param multiple
 	 *          whether the slot accepts more than one filling
 	 */
-	private RoleFrameSlot(final String name, final boolean optional, final boolean multiple,
+	private RoleFrameSlot(final boolean optional, final boolean multiple,
 			final SlotRequirements... requirementAlternatives) {
-		this(name, optional ? 0 : 1, // min
+		this(optional ? 0 : 1, // min
 				multiple ? -1 : 1, // max
 				requirementAlternatives);
 	}
@@ -125,15 +120,14 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 	/**
 	 * Creates a role frame slot.
 	 */
-	private RoleFrameSlot(final String name, final int minFillings, final int maxFillings,
+	private RoleFrameSlot(final int minFillings, final int maxFillings,
 			final SlotRequirements... requirementAlternatives) {
-		this(name, ImmutableList.<SlotRequirements>copyOf(requirementAlternatives), ImmutableSet.<IFillingInSlot>of(),
+		this(ImmutableList.<SlotRequirements>copyOf(requirementAlternatives), ImmutableSet.<IFillingInSlot>of(),
 				minFillings, maxFillings);
 	}
 
-	private RoleFrameSlot(final String name, final ImmutableCollection<SlotRequirements> alternativeRequirements,
+	private RoleFrameSlot(final ImmutableCollection<SlotRequirements> alternativeRequirements,
 			final ImmutableSet<IFillingInSlot> fillings, final int minFillings, final int maxFillings) {
-		this.name = name;
 		this.alternativeRequirements = alternativeRequirements;
 		this.fillings = fillings;
 		this.minFillings = minFillings;
@@ -145,7 +139,7 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 	 * @return an copy of this which is empty (does not have any fillings)
 	 */
 	public RoleFrameSlot emptyCopy() {
-		return of(name, alternativeRequirements, ImmutableSet.<IFillingInSlot>of(), minFillings, maxFillings);
+		return of(alternativeRequirements, ImmutableSet.<IFillingInSlot>of(), minFillings, maxFillings);
 	}
 
 	/**
@@ -169,9 +163,9 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 	 * with this filling added. Otherwise, the method returns <code>null</code>.
 	 */
 	RoleFrameSlot addFillingIfAccepted(final IHomogeneousConstituentAlternatives freeFilling,
-			final IFillingUsageRestrictor fillingUsageRestrictor) {
+			int keepPlaceFreeForHowManyFillings) {
 		if (maxFillings != -1
-				&& fillings.size() + 1 + fillingUsageRestrictor.keepPlaceFreeForHowManyFillings(name) > maxFillings) {
+				&& fillings.size() + 1 + keepPlaceFreeForHowManyFillings > maxFillings) {
 			return null;
 		}
 
@@ -201,7 +195,7 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 		resFillingsBuilder.addAll(fillings);
 		resFillingsBuilder.add(filling);
 
-		return of(name, alternativeRequirements, resFillingsBuilder.build(), minFillings, maxFillings);
+		return of(alternativeRequirements, resFillingsBuilder.build(), minFillings, maxFillings);
 	}
 
 	/**
@@ -223,10 +217,6 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 
 	public boolean isEmpty() {
 		return fillings.isEmpty();
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	public int getMinFillings() {
@@ -276,7 +266,6 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 	private int calcHash() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + name.hashCode();
 		result = prime * result + alternativeRequirements.hashCode();
 		result = prime * result + fillings.hashCode();
 		return result;
@@ -304,9 +293,6 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 			return false;
 		}
 
-		if (!name.equals(other.name)) {
-			return false;
-		}
 		if (!fillings.equals(other.fillings)) {
 			return false;
 		}
@@ -330,11 +316,6 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 		}
 
 		final RoleFrameSlot other = (RoleFrameSlot) o;
-
-		final int namesCompared = name.compareTo(other.name);
-		if (namesCompared != 0) {
-			return namesCompared;
-		}
 
 		final int reqsCompared = CollectionUtil.compareCollections(alternativeRequirements, other.alternativeRequirements);
 		if (reqsCompared != 0) {
@@ -385,18 +366,14 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 
 		final StringBuilder res = new StringBuilder();
 
-		res.append(name);
-
 		// (0..1), (1..*), ...
 		if (minFillings != 1 || maxFillings != 1) {
 			res.append("(");
 			res.append(formatFillingNumSpec(minFillings));
 			res.append("..");
 			res.append(formatFillingNumSpec(maxFillings));
-			res.append(")");
+			res.append(") ");
 		}
-
-		res.append(" : ");
 
 		if (!fillings.isEmpty()) {
 			res.append("[");
@@ -437,20 +414,6 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 
 	private static String formatFillingNumSpec(final int num) {
 		return num >= 0 ? Integer.toString(num) : "*";
-	}
-
-	/**
-	 * @return whether all fillings, that are still missing for completion, can be
-	 *         added in some later parsing step
-	 */
-	boolean allFillingsMissingForCompletionCanBeAddedLater(final IFillingUsageRestrictor fillingUsageRestrictor) {
-		final int howManyAdditionalFillingsAllowed = fillingUsageRestrictor.howManyAdditionalFillingsAreAllowed(name);
-
-		if (howManyAdditionalFillingsAllowed == -1) {
-			return true;
-		}
-
-		return howManyFillingsAreMissingUntilCompletion() <= howManyAdditionalFillingsAllowed;
 	}
 
 	/**

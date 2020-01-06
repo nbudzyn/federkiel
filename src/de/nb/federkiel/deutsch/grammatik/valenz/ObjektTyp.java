@@ -112,7 +112,7 @@ final class ObjektTyp extends AbstractErgaenzungsOderAngabenTyp {
               buildFeatureConditionForN_PRONOMEN_PHR_REIHUNGEinzelnesReflexivGebrauchtesPronomen(
                   person, genusDesSubjekts, numerusDesSubjekts, hoeflichkeitsformDesSubjekts));
 
-      return RoleFrameSlot.of(slotName, 1, // minFillings
+			return RoleFrameSlot.of(1, // minFillings
           maxFillings, // maxFillings
           reqsAlternativeReinReflexiv);
 
@@ -155,7 +155,7 @@ final class ObjektTyp extends AbstractErgaenzungsOderAngabenTyp {
         SlotRequirements.of("N_PRONOMEN_PHR_REIHUNG",
             buildFeatureConditionForN_PRONOMEN_PHR_REIHUNGNichtReinReflexiv(person,
                 genusDesSubjekts, numerusDesSubjekts, hoeflichkeitsformDesSubjekts));
-    return RoleFrameSlot.of(slotName, 1, // minFillings
+		return RoleFrameSlot.of(1, // minFillings
         maxFillings, // maxFillings
         reqsAlternativeNichtReinReflexiv);
   }

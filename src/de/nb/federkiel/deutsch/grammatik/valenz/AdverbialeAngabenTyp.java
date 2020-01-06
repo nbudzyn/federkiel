@@ -85,7 +85,7 @@ final class AdverbialeAngabenTyp extends AbstractErgaenzungsOderAngabenTyp {
     final SlotRequirements[] reqAlternatives = new SlotRequirements[] {praepositionalPhrReqs,
         adverbPhrReqs, adjektivPhrReqs, genitivePhrReqs, accusativePhrReqs};
 
-    return RoleFrameSlot.of(slotName, true, // optional
+		return RoleFrameSlot.of(true, // optional
         true, // multiple
         reqAlternatives);
   }

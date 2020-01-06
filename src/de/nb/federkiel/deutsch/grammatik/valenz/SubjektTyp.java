@@ -62,7 +62,7 @@ final class SubjektTyp extends AbstractErgaenzungsOderAngabenTyp {
         buildFeatureConditionForN_PRONOMEN_PHR_REIHUNG(person, genusDesSubjekts,
             numerusDesSubjekts, hoeflichkeitsformDesSubjekts));
 
-    return RoleFrameSlot.of(slotName, minFillings, // minFillings
+		return RoleFrameSlot.of(minFillings, // minFillings
         1, // max fillings
         reqsAlternative);
   }

@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -77,14 +78,6 @@ public class RoleFrame
 		return cache.findOrInsert(new RoleFrame(slots));
 	}
 
-	public static RoleFrame of(final RoleFrameSlot... slots) {
-		return cache.findOrInsert(new RoleFrame(slots));
-	}
-
-	public static RoleFrame of(final Collection<RoleFrameSlot> slots) {
-		return of(slots.toArray(new RoleFrameSlot[slots.size()]));
-	}
-
 	public static RoleFrame of(final ImmutableMap<String, RoleFrameSlot> slots) {
 		return cache.findOrInsert(new RoleFrame(slots));
 	}
@@ -102,18 +95,6 @@ public class RoleFrame
 		final ImmutableMap.Builder<String, RoleFrameSlot> slotMapBuilder = ImmutableMap.<String, RoleFrameSlot>builder();
 
 		slots.forEach((n, v) -> slotMapBuilder.put(n, (RoleFrameSlot) v));
-
-		this.slots = slotMapBuilder.build();
-		freeFillings = ImmutableSet.of();
-		hashCode = calcHashCode();
-	}
-
-	private RoleFrame(final RoleFrameSlot... slots) {
-		final ImmutableMap.Builder<String, RoleFrameSlot> slotMapBuilder = ImmutableMap.<String, RoleFrameSlot>builder();
-
-		for (final RoleFrameSlot slot : slots) {
-			slotMapBuilder.put(slot.getName(), slot);
-		}
 
 		this.slots = slotMapBuilder.build();
 		freeFillings = ImmutableSet.of();
@@ -430,13 +411,28 @@ public class RoleFrame
 	 */
 	private static boolean allFillingsMissingForCompletionCanBeAddedLater(final ImmutableMap<String, RoleFrameSlot> slots,
 			final IFillingUsageRestrictor fillingUsageRestrictor) {
-		for (final RoleFrameSlot slot : slots.values()) {
-			if (!slot.allFillingsMissingForCompletionCanBeAddedLater(fillingUsageRestrictor)) {
+		for (final Entry<String, RoleFrameSlot> entry : slots.entrySet()) {
+			if (!allFillingsMissingForCompletionCanBeAddedLater(entry.getKey(), entry.getValue(), fillingUsageRestrictor)) {
 				return false;
 			}
 		}
 
 		return true;
+	}
+
+	/**
+	 * @return whether all fillings, that are still missing for completion, can be
+	 *         added in some later parsing step
+	 */
+	private static boolean allFillingsMissingForCompletionCanBeAddedLater(String slotName, RoleFrameSlot slot,
+			final IFillingUsageRestrictor fillingUsageRestrictor) {
+		final int howManyAdditionalFillingsAllowed = fillingUsageRestrictor.howManyAdditionalFillingsAreAllowed(slotName);
+
+		if (howManyAdditionalFillingsAllowed == -1) {
+			return true;
+		}
+
+		return slot.howManyFillingsAreMissingUntilCompletion() <= howManyAdditionalFillingsAllowed;
 	}
 
 	/**
@@ -512,11 +508,11 @@ public class RoleFrame
 			if (onlyAllowedSlotName != null) {
 				final RoleFrameSlot onlyAllowedSlot = oldSlots.get(onlyAllowedSlotName);
 				if (onlyAllowedSlot != null) {
-					final RoleFrameSlot filledSlot = onlyAllowedSlot.addFillingIfAccepted(homogenousFilling,
+					final RoleFrameSlot filledSlot = addFillingIfAccepted(onlyAllowedSlotName, onlyAllowedSlot, homogenousFilling,
 							fillingUsageRestrictor);
 					if (filledSlot != null) {
 						// Filling was accepted -> so we have a new filling alternative
-						res.add(replaceOneSlot(oldSlots, filledSlot));
+						res.add(replaceOneSlot(oldSlots, onlyAllowedSlotName, filledSlot));
 					}
 					// else: filling - based on these oldSlots - is impossible -> try the next slot
 					// alternative
@@ -525,16 +521,29 @@ public class RoleFrame
 				// alternative
 			} else {
 				// No Filling restriction -> iterate over all slots in this alternative
-				for (final RoleFrameSlot slot : oldSlots.values()) {
-					final RoleFrameSlot filledSlot = slot.addFillingIfAccepted(homogenousFilling, fillingUsageRestrictor);
+				for (final Entry<String, RoleFrameSlot> entry : oldSlots.entrySet()) {
+					final RoleFrameSlot filledSlot = addFillingIfAccepted(entry.getKey(), entry.getValue(),
+							homogenousFilling, fillingUsageRestrictor);
 					if (filledSlot != null) {
 						// Filling was accepted -> so we have a new filling alternative
-						res.add(replaceOneSlot(oldSlots, filledSlot));
+						res.add(replaceOneSlot(oldSlots, entry.getKey(), filledSlot));
 					}
 				}
 			}
 		}
 		return res.build();
+	}
+
+	/**
+	 * Checks whether this (additional) filling would be acceptable for this slot.
+	 * If the filling would be acceptable, the methode returns a copy of this slot
+	 * with this filling added. Otherwise, the method returns <code>null</code>.
+	 */
+	private static RoleFrameSlot addFillingIfAccepted(String slotName, RoleFrameSlot slot,
+			final IHomogeneousConstituentAlternatives freeFilling,
+			final IFillingUsageRestrictor fillingUsageRestrictor) {
+		return slot.addFillingIfAccepted(freeFilling,
+				fillingUsageRestrictor.keepPlaceFreeForHowManyFillings(slotName));
 	}
 
 	/**
@@ -569,18 +578,17 @@ public class RoleFrame
 	 * Returns an immutable copy of the map with one slot replaced.
 	 */
 	private static ImmutableMap<String, RoleFrameSlot> replaceOneSlot(final Map<String, RoleFrameSlot> oldSlots,
+			String nameToReplace,
 			final RoleFrameSlot newSlot) {
 		final Builder<String, RoleFrameSlot> res = ImmutableMap.<String, RoleFrameSlot>builder();
 
-		final String nameToReplace = newSlot.getName();
-
-		for (final RoleFrameSlot oldSlot : oldSlots.values()) {
-			final String oldSlotName = oldSlot.getName();
+		for (final Entry<String, RoleFrameSlot> oldEntry : oldSlots.entrySet()) {
+			final String oldSlotName = oldEntry.getKey();
 
 			if (oldSlotName.equals(nameToReplace)) {
 				res.put(oldSlotName, newSlot);
 			} else {
-				res.put(oldSlotName, oldSlot);
+				res.put(oldSlotName, oldEntry.getValue());
 			}
 		}
 
@@ -619,13 +627,13 @@ public class RoleFrame
 	}
 
 	protected boolean containsTheSameFillingInADifferentSlot(final RoleFrame other) {
-		for (final RoleFrameSlot someSlot : slots.values()) {
-			for (final RoleFrameSlot otherSlot : other.slots.values()) {
-				if (someSlot.getName().equals(otherSlot.getName())) { // NOPMD by nbudzyn on 29.06.10 21:37
+		for (final Entry<String, RoleFrameSlot> someEntry : slots.entrySet()) {
+			for (final Entry<String, RoleFrameSlot> otherEntry : other.slots.entrySet()) {
+				if (someEntry.getKey().equals(otherEntry.getKey())) { // NOPMD by nbudzyn on 29.06.10 21:37
 					// all fine!
 				} else {
 					// slot names are different!
-					if (someSlot.hasOneEqualFillingAs(otherSlot)) {
+					if (someEntry.getValue().hasOneEqualFillingAs(otherEntry.getValue())) {
 						return true;
 					}
 				}
@@ -636,13 +644,14 @@ public class RoleFrame
 	}
 
 	/**
-	 * @return a slot that contains the <code>filling</code> - or <code>null</code>,
-	 *         if there is no such slot. (The method does an equality check.)
+	 * @return the name of a slot that contains the <code>filling</code> - or
+	 *         <code>null</code>, if there is no such slot. (The method does an
+	 *         equality check.)
 	 */
-	protected RoleFrameSlot findSlotContaining(final IFillingInSlot filling) {
-		for (final RoleFrameSlot slot : slots.values()) {
-			if (slot.containsFilling(filling)) {
-				return slot;
+	protected String findSlotNameContaining(final IFillingInSlot filling) {
+		for (final Entry<String, RoleFrameSlot> entry : slots.entrySet()) {
+			if (entry.getValue().containsFilling(filling)) {
+				return entry.getKey();
 			}
 		}
 
@@ -654,8 +663,8 @@ public class RoleFrame
 		return slots.containsKey(name);
 	}
 
-	public Iterator<RoleFrameSlot> slotIterator() {
-		return slots.values().iterator();
+	public Iterator<Map.Entry<String, RoleFrameSlot>> slotIterator() {
+		return slots.entrySet().iterator();
 	}
 
 	public int numSlots() { // NO_UCD
@@ -971,14 +980,18 @@ public class RoleFrame
 
 		boolean first = true;
 
-		for (final RoleFrameSlot slot : slots.values()) {
+		for (final Entry<String, RoleFrameSlot> entry : slots.entrySet()) {
 			if (first) {
 				first = false;
 			} else {
 				res.append(", ");
 			}
 
-			res.append(slot.toString(!full, // never show requirements?
+			res.append(entry.getKey());
+
+			res.append(" : ");
+
+			res.append(entry.getValue().toString(!full, // never show requirements?
 					full)); // force showing requirements?
 		}
 
@@ -1051,10 +1064,10 @@ public class RoleFrame
 		boolean semanticsAmbivalent = false;
 		ISemantics semantics = null;
 
-		for (final Iterator<RoleFrameSlot> slotIter = slotIterator(); slotIter.hasNext();) {
-			final RoleFrameSlot slot = slotIter.next();
+		for (final Iterator<Entry<String, RoleFrameSlot>> slotIter = slotIterator(); slotIter.hasNext();) {
+			final Entry<String, RoleFrameSlot> entry = slotIter.next();
 
-			final Collection<IFillingInSlot> slotFillings = slot.getFillings();
+			final Collection<IFillingInSlot> slotFillings = entry.getValue().getFillings();
 			if (slotFillings.size() > 1) {
 				return null;
 			}
@@ -1068,7 +1081,7 @@ public class RoleFrame
 					surfacePart.join(slotFilling.getFeatures().getSurfacePart());
 				}
 
-				features.put(slot.getName(), slotFilling);
+				features.put(entry.getKey(), slotFilling);
 
 				if (!semanticsAmbivalent) {
 					if (semantics == null) {

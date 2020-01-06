@@ -453,9 +453,9 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 		final IFillingInSlot fillingInSlot = homogeneousFilling.toFillingInSlot();
 
 		for (final RoleFrame roleFrame : roleFrames) {
-			final RoleFrameSlot slot = roleFrame.findSlotContaining(fillingInSlot);
-			if (slot != null) {
-				return slot.getName(); // ==>
+			final String slotName = roleFrame.findSlotNameContaining(fillingInSlot);
+			if (slotName != null) {
+				return slotName; // ==>
 			}
 		}
 
