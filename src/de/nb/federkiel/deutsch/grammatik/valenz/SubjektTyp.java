@@ -112,6 +112,11 @@ final class SubjektTyp extends AbstractErgaenzungsOderAngabenTyp {
   }
 
   @Override
+  public String getName() {
+  	return slotName;
+  }
+  
+  @Override
   public int hashCode() {
     final int prime = 31;
     int result = super.hashCode();

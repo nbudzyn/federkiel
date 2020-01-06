@@ -18,6 +18,7 @@ import de.nb.federkiel.logic.IFormula;
  * allerdings nicht als (kontinuierliche) Phrase, sondern als Rollenrahmen.
  */
 public class ReinerInfinitivTyp extends AbstractErgaenzungsOderAngabenTyp {
+	private static final String SLOT_NAME = "ReinerInfinitiv";
 	public static final ReinerInfinitivTyp INSTANCE = new ReinerInfinitivTyp();
 
 	/**
@@ -74,7 +75,7 @@ public class ReinerInfinitivTyp extends AbstractErgaenzungsOderAngabenTyp {
 		// Letztlich braucht man ja eine ganze "potenziell diskontinuierlich Phrase"
 		// MIT VERB.
 
-		return RoleFrameSlot.of("ReinerInfinitiv", SlotRequirements.of(
+		return RoleFrameSlot.of(SLOT_NAME, SlotRequirements.of(
 				// TODO richtige Bedingungen
 				"VERBALKOMPLEXRESTENDE", BooleanConstantTrue.getInstance()));
 
@@ -98,6 +99,11 @@ public class ReinerInfinitivTyp extends AbstractErgaenzungsOderAngabenTyp {
 		// diskontinuierlichen - reinen Infinitivphrase)
 		// eine Feature "verb" gibt, das
 
+	}
+	
+	@Override
+	public String getName() {
+		return SLOT_NAME;
 	}
 
 	@Override

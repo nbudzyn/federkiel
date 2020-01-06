@@ -25,6 +25,11 @@ import de.nb.federkiel.logic.IFormula;
  * @author nbudzyn 2011
  */
 abstract public class AbstractErgaenzungsOderAngabenTyp {
+	/**
+	 * Gibt etwas wie <code>Subjekt</code> oder <code>Dativobjekt</code> zurück.
+	 */
+	public abstract String getName();
+	
   /**
    * @param person
    *          kann <code>null</code> sein, wenn es sich <i>nicht</i> um einen

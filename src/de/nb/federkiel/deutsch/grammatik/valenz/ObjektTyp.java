@@ -89,6 +89,11 @@ final class ObjektTyp extends AbstractErgaenzungsOderAngabenTyp {
 
     restrictionSlot = buildSlot(null, null, null, null);
   }
+  
+  @Override
+  public String getName() {
+  	return slotName;
+  }
 
   @Override
   public RoleFrameSlot buildSlot(final @Nullable String person,

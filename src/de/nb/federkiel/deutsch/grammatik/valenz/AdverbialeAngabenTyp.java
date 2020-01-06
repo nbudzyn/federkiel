@@ -54,6 +54,11 @@ final class AdverbialeAngabenTyp extends AbstractErgaenzungsOderAngabenTyp {
   }
 
   @Override
+  public String getName() {
+  	return slotName;
+  }
+  
+  @Override
   public RoleFrameSlot buildSlot(final @Nullable String personDesSubjekts,
       final @Nullable Genus genusDesSubjekts, final @Nullable Numerus numerusDesSubjekts,
       final @Nullable String hoeflichkeitsformDesSubjekts) {

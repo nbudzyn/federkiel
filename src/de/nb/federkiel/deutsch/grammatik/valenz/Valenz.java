@@ -10,11 +10,14 @@ import java.util.LinkedList;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 import de.nb.federkiel.deutsch.grammatik.kategorie.Genus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
+import de.nb.federkiel.feature.FeatureStructure;
 import de.nb.federkiel.feature.RoleFrame;
 import de.nb.federkiel.feature.RoleFrameSlot;
+import de.nb.federkiel.interfaces.IFeatureValue;
 import de.nb.federkiel.reflection.ReflectionUtil;
 
 /**
@@ -360,20 +363,23 @@ public final class Valenz {
 	 *          <code>null</code> erlaubt, wenn es kein Subjekt - auch kein
 	 *          implizites(!!) - gibt
 	 */
-	public Collection<RoleFrameSlot> buildErgaenzungenUndAngabenSlots(final @Nullable String personDesSubjekts,
+	public FeatureStructure buildErgaenzungenUndAngabenSlots(final @Nullable String personDesSubjekts,
 			final @Nullable Genus genusDesSubjekts, final @Nullable Numerus numerusDesSubjekts,
 			final @Nullable String hoeflichkeitsformDesSubjekts, final boolean fuerAdjektivischeForm) {
-		final ImmutableList.Builder<RoleFrameSlot> res = ImmutableList.builder();
+		final ImmutableMap.Builder<String, IFeatureValue> ergaenzungstypBuilder = ImmutableMap.builder();
 
 		for (final AbstractErgaenzungsOderAngabenTyp ergaenzungstyp : ergaenzungstypen) {
-			res.add(ergaenzungstyp.buildSlot(personDesSubjekts, genusDesSubjekts, numerusDesSubjekts,
+			ergaenzungstypBuilder.put(ergaenzungstyp.getName(),
+					ergaenzungstyp.buildSlot(personDesSubjekts, genusDesSubjekts, numerusDesSubjekts,
 					hoeflichkeitsformDesSubjekts));
 		}
 
-		res.addAll(ErgaenzungsOderAngabeTypen.buildAngabenSlots(personDesSubjekts, genusDesSubjekts, numerusDesSubjekts,
-				hoeflichkeitsformDesSubjekts, fuerAdjektivischeForm));
-
-		return res.build();
+		FeatureStructure ergaenzungstypFeatures = FeatureStructure.fromValues(null, ergaenzungstypBuilder.build());
+		
+		return FeatureStructure.disjunctUnion(
+				ergaenzungstypFeatures, 
+				ErgaenzungsOderAngabeTypen.buildAngabenSlots(personDesSubjekts, genusDesSubjekts, numerusDesSubjekts,
+						hoeflichkeitsformDesSubjekts, fuerAdjektivischeForm));
 	}
 
 	/**
@@ -389,15 +395,16 @@ public final class Valenz {
 	}
 
 	private RoleFrame calcRestrictions() {
-		final ImmutableList.Builder<RoleFrameSlot> restrictionSlots = ImmutableList.builder();
+		final ImmutableMap.Builder<String, IFeatureValue> restrictionSlotsBuilder = ImmutableMap.builder();
 
 		for (final AbstractErgaenzungsOderAngabenTyp ergaenzungstyp : ergaenzungstypen) {
-			restrictionSlots.add(ergaenzungstyp.buildRestrictionSlot());
+			restrictionSlotsBuilder.put(ergaenzungstyp.getName(), ergaenzungstyp.buildRestrictionSlot());
 		}
 
-		restrictionSlots.addAll(ErgaenzungsOderAngabeTypen.buildAngabenRestrictionSlots());
+		FeatureStructure restrictionSlots = FeatureStructure.fromValues(null, restrictionSlotsBuilder.build());
 
-		return RoleFrame.of(restrictionSlots.build());
+		return RoleFrame.of(
+				FeatureStructure.disjunctUnion(restrictionSlots, ErgaenzungsOderAngabeTypen.buildAngabenRestrictionSlots()));
 	}
 
 	/**

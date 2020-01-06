@@ -6,10 +6,9 @@ import static de.nb.federkiel.deutsch.grammatik.kategorie.Kasus.GENITIV;
 
 import java.util.Collection;
 
-import com.google.common.collect.ImmutableList;
-
 import de.nb.federkiel.deutsch.grammatik.kategorie.Genus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
+import de.nb.federkiel.feature.FeatureStructure;
 import de.nb.federkiel.feature.RoleFrameSlot;
 import de.nb.federkiel.reflection.ReflectionUtil;
 
@@ -103,11 +102,13 @@ public final class ErgaenzungsOderAngabeTypen {
 		super();
 	}
 
-	public static Collection<RoleFrameSlot> buildAngabenSlots(final String person, final Genus genusDesSubjekts,
+	public static FeatureStructure buildAngabenSlots(final String person, final Genus genusDesSubjekts,
 			final Numerus numerusDesSubjekts, final String hoeflichkeitsformDesSubjekts,
 			final boolean fuerAdjektivischeForm) {
-		return ImmutableList.of(getAdverbialeAngabenTyp(fuerAdjektivischeForm).buildSlot(person, genusDesSubjekts,
-				numerusDesSubjekts, hoeflichkeitsformDesSubjekts));
+		AbstractErgaenzungsOderAngabenTyp typ = getAdverbialeAngabenTyp(fuerAdjektivischeForm);
+
+		return FeatureStructure.fromValues(null, typ.getName(),
+				typ.buildSlot(person, genusDesSubjekts, numerusDesSubjekts, hoeflichkeitsformDesSubjekts));
 	}
 
 	private static AbstractErgaenzungsOderAngabenTyp getAdverbialeAngabenTyp(final boolean fuerAdjektivischeForm) {
@@ -122,10 +123,11 @@ public final class ErgaenzungsOderAngabeTypen {
 	 * Erzeugt die {@link RoleFrameSlot}s, die angeben, welche Angaben (unabhängig
 	 * von Person und Numerus des Subjekts) möglich sind.
 	 */
-	public static Collection<RoleFrameSlot> buildAngabenRestrictionSlots() {
+	public static FeatureStructure buildAngabenRestrictionSlots() {
 		// ADVERBIALE_ANGABEN_FUER_VERBFORM ist weniger restritiv als
 		// ADVERBIALE_ANGABEN_FUER_ADJEKTIVISCHE_FORM
-		return ImmutableList.of(ADVERBIALE_ANGABEN_FUER_VERBFORM.buildRestrictionSlot());
+		return FeatureStructure.fromValues(null, ADVERBIALE_ANGABEN_FUER_VERBFORM.getName(),
+				ADVERBIALE_ANGABEN_FUER_VERBFORM.buildRestrictionSlot());
 	}
 
 }

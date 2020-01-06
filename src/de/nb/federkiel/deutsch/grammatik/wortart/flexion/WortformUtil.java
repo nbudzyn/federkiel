@@ -14,7 +14,6 @@ import de.nb.federkiel.feature.FeatureStructure;
 import de.nb.federkiel.feature.LexiconFeatureStructureUtil;
 import de.nb.federkiel.feature.RoleFrame;
 import de.nb.federkiel.feature.RoleFrameCollection;
-import de.nb.federkiel.feature.RoleFrameSlot;
 import de.nb.federkiel.feature.StringFeatureValue;
 import de.nb.federkiel.interfaces.IWordForm;
 import de.nb.federkiel.lexikon.Lexeme;
@@ -38,7 +37,7 @@ public final class WortformUtil {
 	 *          will NOT be copied (hand-over)
 	 */
 	public static Wortform buildVerbFormFin(final Lexeme lexeme, final String pos, final String tempus,
-			final String modus, final String string, final RoleFrameSlot... slots) {
+			final String modus, final String string, FeatureStructure slots) {
 		final RoleFrame verbFrame = RoleFrame.of(slots);
 
 		final FeatureStructure features = LexiconFeatureStructureUtil.fromValues(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
@@ -53,7 +52,7 @@ public final class WortformUtil {
 	 *          will NOT be copied (hand-over)
 	 */
 	public static Wortform buildVerbFormImp(final Lexeme lexeme, final String pos, final Numerus numerus,
-			final String string, final RoleFrameSlot... slots) {
+			final String string, final FeatureStructure slots) {
 		final RoleFrame verbFrame = RoleFrame.of(slots);
 
 		final FeatureStructure features = LexiconFeatureStructureUtil.fromValues(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
@@ -67,7 +66,7 @@ public final class WortformUtil {
 	 * @param slots
 	 *          will NOT be copied (hand-over)
 	 */
-	public static Wortform buildVerbFormInf(final Lexeme lexeme, final String pos, final RoleFrameSlot... slots) {
+	public static Wortform buildVerbFormInf(final Lexeme lexeme, final String pos, final FeatureStructure slots) {
 		final RoleFrame verbFrame = RoleFrame.of(slots);
 
 		final FeatureStructure features = LexiconFeatureStructureUtil.fromValues(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,

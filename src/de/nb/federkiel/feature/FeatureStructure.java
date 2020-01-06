@@ -17,6 +17,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
@@ -27,12 +28,12 @@ import de.nb.federkiel.collection.CollectionUtil;
 import de.nb.federkiel.interfaces.IFeatureValue;
 
 /**
- * A structure of (grammatical) features. Features could be:
- * <ol>
- * <li>Strings
- * <li>Role frame collections
- * <li>... (and others)
- * </ol>
+ * A structure for (grammatical) features (for the genus, the subject,
+ * objects, e.g.).
+ * <p>
+ * There can also be <i>Free Fillings</i>, that could be used to 
+ * fill (not-yet existing) empty feature slots.
+ * Each free filling is a set of realization alternatives.
  *
  * @author nbudzyn 2009
  */
@@ -45,19 +46,17 @@ public class FeatureStructure implements IFeatureValue {
 	 */
 	final private static WeakCache<FeatureStructure> cache = new WeakCache<>();
 
-	/*
-	 * IDEA FeatureStructures could be organized in hierarchies: Each feature
-	 * structure could have a parent. It could inherits the parents' values, but
-	 * also could override them.
-	 *
-	 * private final FeatureStructure parent;
-	 */
-
 	/**
-	 * The featues with name and value.
+	 * The (slotted) features with name and value.
 	 */
 	private final ImmutableMap<String, IFeatureValue> features;
 
+	/**
+	 * Free filling values. There can only be free fillings, if there are NO (slotted)
+	 * features at all!
+	 */
+	private final ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings;
+	
 	/**
 	 * The part of the surface - if any
 	 */
@@ -115,6 +114,7 @@ public class FeatureStructure implements IFeatureValue {
 			final ImmutableMap<String, IFeatureValue> features) {
 		this.surfacePart = surfacePart;
 		this.features = features;
+		this.freeFillings = ImmutableSet.of();
 
 		hashCode = calcHashCode(this.surfacePart, this.features);
 	}

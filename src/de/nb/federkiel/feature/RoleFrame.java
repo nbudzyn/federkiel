@@ -55,7 +55,7 @@ public class RoleFrame
 	 */
 	final private static WeakCache<RoleFrame> cache = new WeakCache<>();
 
-	public static final RoleFrame EMPTY = of();
+	public static final RoleFrame EMPTY = of(FeatureStructure.empty(null));
 
 	/**
 	 * The slots with name and value.
@@ -66,13 +66,16 @@ public class RoleFrame
 	 * Free filling values. There can only be free fillings, if there are NO slots
 	 * at all!
 	 */
-
 	private final ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings;
 
 	/**
 	 * caching the hashCode
 	 */
 	private final int hashCode;
+
+	public static RoleFrame of(final FeatureStructure slots) {
+		return cache.findOrInsert(new RoleFrame(slots));
+	}
 
 	public static RoleFrame of(final RoleFrameSlot... slots) {
 		return cache.findOrInsert(new RoleFrame(slots));
@@ -93,6 +96,16 @@ public class RoleFrame
 	public static RoleFrame of(final ImmutableMap<String, RoleFrameSlot> slots,
 			final ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings) {
 		return cache.findOrInsert(new RoleFrame(slots, freeFillings));
+	}
+
+	private RoleFrame(final FeatureStructure slots) {
+		final ImmutableMap.Builder<String, RoleFrameSlot> slotMapBuilder = ImmutableMap.<String, RoleFrameSlot>builder();
+
+		slots.forEach((n, v) -> slotMapBuilder.put(n, (RoleFrameSlot) v));
+
+		this.slots = slotMapBuilder.build();
+		freeFillings = ImmutableSet.of();
+		hashCode = calcHashCode();
 	}
 
 	private RoleFrame(final RoleFrameSlot... slots) {

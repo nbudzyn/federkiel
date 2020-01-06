@@ -24,9 +24,11 @@ import de.nb.federkiel.logic.IFormula;
  */
 @Immutable
 final class PraedikativumTyp extends AbstractErgaenzungsOderAngabenTyp {
-  public static final PraedikativumTyp INSTANCE = new PraedikativumTyp();
+  private static final String SLOT_NAME = "Praedikativum";
 
-  private static final RoleFrameSlot RESTRICTION_SLOT = RoleFrameSlot.of("Praedikativum",
+	public static final PraedikativumTyp INSTANCE = new PraedikativumTyp();
+
+  private static final RoleFrameSlot RESTRICTION_SLOT = RoleFrameSlot.of(SLOT_NAME,
       SlotRequirements.of("N_PRONOMEN_PHR_REIHUNG", buildPraedikatsnomenFeatureCondition(null)), // "ein
                                                                                                  // Esel"
       SlotRequirements.of("ADJEKTIV_PHR_UNFLEKT_REIHUNG",
@@ -44,7 +46,7 @@ final class PraedikativumTyp extends AbstractErgaenzungsOderAngabenTyp {
   @Override
   public RoleFrameSlot buildSlot(final String person, final Genus genusDesSubjekts,
       final @Nullable Numerus numerusDesSubjekts, final String hoeflichkeitsformDesSubjekts) {
-    return RoleFrameSlot.of("Praedikativum",
+    return RoleFrameSlot.of(SLOT_NAME,
         SlotRequirements.of("N_PRONOMEN_PHR_REIHUNG",
             buildPraedikatsnomenFeatureCondition(numerusDesSubjekts)), // "ein Esel"
         SlotRequirements.of("ADJEKTIV_PHR_UNFLEKT_REIHUNG",
@@ -56,6 +58,11 @@ final class PraedikativumTyp extends AbstractErgaenzungsOderAngabenTyp {
   @Override
   public RoleFrameSlot buildRestrictionSlot() {
     return RESTRICTION_SLOT;
+  }
+
+  @Override
+  public String getName() {
+  	return SLOT_NAME;
   }
 
   private static IFormula<FeatureAssignment> buildPraedikatsnomenFeatureCondition(

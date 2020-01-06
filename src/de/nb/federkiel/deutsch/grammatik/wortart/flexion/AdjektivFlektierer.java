@@ -28,7 +28,7 @@ import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.VorgabeFuerNachfolgendesAdjektiv;
 import de.nb.federkiel.deutsch.grammatik.valenz.Valenz;
 import de.nb.federkiel.deutsch.lexikon.GermanPOS;
-import de.nb.federkiel.feature.RoleFrameSlot;
+import de.nb.federkiel.feature.FeatureStructure;
 import de.nb.federkiel.feature.StringFeatureLogicUtil;
 import de.nb.federkiel.interfaces.IFeatureType;
 import de.nb.federkiel.interfaces.IFeatureValue;
@@ -63,7 +63,7 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
 
     final String wordForm = lexeme.getCanonicalizedForm();
 
-    final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlotsSgMask = valenz
+		final FeatureStructure ergaenzungenUndAngabenSlotsSgMask = valenz
         .buildErgaenzungenUndAngabenSlots("3", MASKULINUM, SINGULAR, StringFeatureLogicUtil.FALSE,
             true);
 
@@ -77,7 +77,7 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
     res.add(buildWortform(lexeme, pos, KOMPARATION_POSITIV, KasusInfo.AKK, SINGULAR, MASKULINUM, STAERKE_UNFLEKTIERT,
         ergaenzungenUndAngabenSlotsSgMask, wordForm));
 
-    final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlotsSgFem = valenz
+		final FeatureStructure ergaenzungenUndAngabenSlotsSgFem = valenz
         .buildErgaenzungenUndAngabenSlots("3", FEMININUM, SINGULAR, StringFeatureLogicUtil.FALSE,
             true);
 
@@ -90,7 +90,7 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
     res.add(buildWortform(lexeme, pos, KOMPARATION_POSITIV, KasusInfo.AKK, SINGULAR, FEMININUM, STAERKE_UNFLEKTIERT,
         ergaenzungenUndAngabenSlotsSgFem, wordForm));
 
-    final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlotsSgNeutr = valenz
+		final FeatureStructure ergaenzungenUndAngabenSlotsSgNeutr = valenz
         .buildErgaenzungenUndAngabenSlots("3", NEUTRUM, SINGULAR, StringFeatureLogicUtil.FALSE,
             true);
 
@@ -114,7 +114,7 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
    */
   private ImmutableList<IWordForm> unveraendertPl(final Lexeme lexeme, final Valenz valenz,
       final String pos, final @Nullable String starkSchwach, final String wordForm) {
-    final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlotsPl =
+		final FeatureStructure ergaenzungenUndAngabenSlotsPl =
         valenz.buildErgaenzungenUndAngabenSlots("3", null, PLURAL, StringFeatureLogicUtil.FALSE,
             true);
     // Die ihrer selbst gedenkenden Männer, aber nicht
@@ -125,7 +125,7 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
 
   private ImmutableList<IWordForm> unveraendertPl(final Lexeme lexeme, final String pos,
       final String starkSchwach, final String wordForm,
-      final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlotsPl) {
+			final FeatureStructure ergaenzungenUndAngabenSlotsPl) {
     final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
     res.add(unveraendertPl(lexeme, pos, starkSchwach, wordForm, ergaenzungenUndAngabenSlotsPl,
         Kasus.NOMINATIV));
@@ -139,7 +139,7 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
   }
 
   private IWordForm unveraendertPl(final Lexeme lexeme, final String pos, final String starkSchwach,
-      final String wordForm, final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlotsPl,
+			final String wordForm, final FeatureStructure ergaenzungenUndAngabenSlotsPl,
       final Kasus kasus) {
     switch (kasus) {
       case NOMINATIV:
@@ -167,7 +167,7 @@ public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektiere
    */
   private IWordForm buildWortform(final Lexeme lexeme, final String pos, final String komparation,
       final KasusInfo kasusInfo, final Numerus numerus, final Genus genus,
-      final String starkSchwach, final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlots,
+			final String starkSchwach, final FeatureStructure ergaenzungenUndAngabenSlots,
       final String string) {
 
     return buildWortform(lexeme, pos, kasusInfo, VorgabeFuerNachfolgendesAdjektiv.NICHT_ERZEUGEN,

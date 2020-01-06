@@ -39,7 +39,6 @@ import de.nb.federkiel.feature.FeatureStructure;
 import de.nb.federkiel.feature.LexiconFeatureStructureUtil;
 import de.nb.federkiel.feature.RoleFrame;
 import de.nb.federkiel.feature.RoleFrameCollection;
-import de.nb.federkiel.feature.RoleFrameSlot;
 import de.nb.federkiel.feature.StringFeatureLogicUtil;
 import de.nb.federkiel.feature.StringFeatureValue;
 import de.nb.federkiel.interfaces.IFeatureType;
@@ -230,7 +229,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
 	}
 
 	protected final static ImmutableMap<String, IFeatureValue> buildFeatureMap(final String komparation,
-			final String staerke, final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlots) {
+			final String staerke, final FeatureStructure ergaenzungenUndAngabenSlots) {
 
 		final RoleFrame verbFrame = RoleFrame.of(ergaenzungenUndAngabenSlots);
 
@@ -247,7 +246,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
 	}
 
 	protected final static ImmutableMap<String, IFeatureValue> buildFeatureMap(final @Nullable String staerke,
-			final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlots) {
+			final FeatureStructure ergaenzungenUndAngabenSlots) {
 
 		final RoleFrame verbFrame = RoleFrame.of(ergaenzungenUndAngabenSlots);
 
@@ -281,7 +280,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
 	}
 
 	protected final static ImmutableMap<String, IFeatureValue> buildFeatureMap(
-			final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlots) {
+			final FeatureStructure ergaenzungenUndAngabenSlots) {
 		final RoleFrame verbFrame = RoleFrame.of(ergaenzungenUndAngabenSlots);
 
 		return ImmutableMap.<String, IFeatureValue>of(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
@@ -967,7 +966,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
 
 	protected RoleFrameCollection buildVerbRoleFrameP3(final Valenz valenzBeiImplizitemSubjekt,
 			final Genus genusDesBezugsworts, final Numerus numerusDesBezugsworts) {
-		final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlots = valenzBeiImplizitemSubjekt
+		final FeatureStructure ergaenzungenUndAngabenSlots = valenzBeiImplizitemSubjekt
 				.buildErgaenzungenUndAngabenSlots("3", // Person
 						genusDesBezugsworts, // der SEINER selbst gedenkende
 						// Mann, aber nicht

@@ -29,7 +29,7 @@ import de.nb.federkiel.deutsch.grammatik.kategorie.Genus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.deutsch.grammatik.valenz.Valenz;
 import de.nb.federkiel.deutsch.grammatik.valenz.Valenzvariante;
-import de.nb.federkiel.feature.RoleFrameSlot;
+import de.nb.federkiel.feature.FeatureStructure;
 import de.nb.federkiel.feature.StringFeatureLogicUtil;
 import de.nb.federkiel.interfaces.IWordForm;
 import de.nb.federkiel.lexikon.Lexeme;
@@ -1914,7 +1914,7 @@ public final class VerbFlektierer implements IFlektierer {
       return null;
     }
 
-    final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlots =
+		final FeatureStructure ergaenzungenUndAngabenSlots =
         valenzBeiImplizitemSubjekt.buildErgaenzungenUndAngabenSlots(personDesImplizitenSubjekts,
             // Die Person ist offenbar für REFLEXIVE
             // Verben relevant:
@@ -1942,7 +1942,7 @@ public final class VerbFlektierer implements IFlektierer {
       return null;
     }
 
-    final Collection<RoleFrameSlot> ergaenzungenUndAngabenSlots =
+		final FeatureStructure ergaenzungenUndAngabenSlots =
         valenzBeiImplizitemSubjekt.buildErgaenzungenUndAngabenSlots("2", // vgl. "Zeig DICH!",
                                                                          // "Zeigt EUCH!"!!
             null, numerus, StringFeatureLogicUtil.FALSE, false);
@@ -1951,22 +1951,21 @@ public final class VerbFlektierer implements IFlektierer {
   }
 
   public static Wortform stdFin(final Lexeme lexeme, final String pos, final String tempus,
-      final String modus, final Collection<RoleFrameSlot> ergaenzungenUndAngaben,
+			final String modus, final FeatureStructure ergaenzungenUndAngaben,
       final String string) {
     return WortformUtil.buildVerbFormFin(lexeme, pos, tempus, modus, string,
-        ergaenzungenUndAngaben.toArray(new RoleFrameSlot[] {}));
+				ergaenzungenUndAngaben);
   }
 
   public static Wortform stdImp(final Lexeme lexeme, final String pos, final Numerus numerus,
-      final Collection<RoleFrameSlot> ergaenzungenUndAngaben, final String string) {
+			final FeatureStructure ergaenzungenUndAngaben, final String string) {
     return WortformUtil.buildVerbFormImp(lexeme, pos, numerus, string,
-        ergaenzungenUndAngaben.toArray(new RoleFrameSlot[] {}));
+				ergaenzungenUndAngaben);
   }
 
   public static Wortform stdInf(final Lexeme lexeme, final String pos,
-      final Collection<RoleFrameSlot> ergaenzungenUndAngabenFuerInf) {
-    return WortformUtil.buildVerbFormInf(lexeme, pos, ergaenzungenUndAngabenFuerInf.toArray(
-        new RoleFrameSlot[ergaenzungenUndAngabenFuerInf.size()]));
+			final FeatureStructure ergaenzungenUndAngabenFuerInf) {
+		return WortformUtil.buildVerbFormInf(lexeme, pos, ergaenzungenUndAngabenFuerInf);
   }
 
   private static enum Perfektbildung {
