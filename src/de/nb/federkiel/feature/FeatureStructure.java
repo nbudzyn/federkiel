@@ -17,8 +17,8 @@ import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.UnmodifiableIterator;
@@ -112,12 +112,22 @@ public class FeatureStructure implements IFeatureValue {
 	 */
 	private FeatureStructure(@Nullable final SurfacePart surfacePart,
 			final ImmutableMap<String, IFeatureValue> features) {
+		this(surfacePart, features, ImmutableSet.of());
+	}
+
+	/**
+	 * When calling this, always use <code>cache.findOrInsert(...)</code>, to
+	 * minimize memory use!
+	 */
+	private FeatureStructure(@Nullable final SurfacePart surfacePart, final ImmutableMap<String, IFeatureValue> features,
+			ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings) {
 		this.surfacePart = surfacePart;
 		this.features = features;
-		this.freeFillings = ImmutableSet.of();
+		this.freeFillings = freeFillings;
 
-		hashCode = calcHashCode(this.surfacePart, this.features);
+		hashCode = calcHashCode(this.surfacePart, this.features, this.freeFillings);
 	}
+
 
 	/**
 	 * @param a
@@ -199,6 +209,20 @@ public class FeatureStructure implements IFeatureValue {
   public static FeatureStructure fromValues(@Nullable final SurfacePart surfacePart, final ImmutableMap<String, IFeatureValue> features) {
     return cache.findOrInsert(new FeatureStructure(surfacePart, features));
   }
+
+	public static FeatureStructure fromFreeFillings(
+			@Nullable final SurfacePart surfacePart,
+			final ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings) {
+		return cache
+				.findOrInsert(new FeatureStructure(surfacePart, ImmutableMap.<String, IFeatureValue>of(), freeFillings));
+	}
+
+	public static FeatureStructure from(@Nullable final SurfacePart surfacePart,
+			final ImmutableMap<String, IFeatureValue> slots,
+			final ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings) {
+		return cache.findOrInsert(new FeatureStructure(surfacePart, slots, freeFillings));
+	}
+
 
 	public FeatureStructure sameValuesFor(final SurfacePart otherSurfacePart) {
 		return cache.findOrInsert(new FeatureStructure(otherSurfacePart, features));
@@ -335,7 +359,7 @@ public class FeatureStructure implements IFeatureValue {
 			return false;
 		}
 
-		return features.equals(other.features);
+		return freeFillings.equals(other.freeFillings);
 	}
 
 	/**
@@ -473,16 +497,16 @@ public class FeatureStructure implements IFeatureValue {
 	}
 
 	private final static int calcHashCode(@Nullable final SurfacePart surfacePart,
-			final ImmutableMap<String, IFeatureValue> features) {
+			final ImmutableMap<String, IFeatureValue> features,
+			ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings) {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + features.hashCode();
+		result = prime * result + freeFillings.hashCode();
 
 		// IDEA: Teuer? könnte man per entrySet /iterator auf einige wenige Einträge
 		// beschränken!
 		// (die HashMap-Sets sind clever!)
-		// Feature structure type nicht berücksichtigen. Wenn die features gleich sind,
-		// wird in den allermeisten Fällen der feature structure type gleich sein.
 
 		result = prime * result + (surfacePart == null ? 0 : surfacePart.hashCode());
 		return result;
@@ -502,7 +526,12 @@ public class FeatureStructure implements IFeatureValue {
 			return surfacePartsCompared;
 		}
 
-		return CollectionUtil.compareMaps(features, other.features);
+		final int featuresCompared = CollectionUtil.compareMaps(features, other.features);
+		if (featuresCompared != 0) {
+			return featuresCompared;
+		}
+
+		return CollectionUtil.compareCollections(freeFillings, other.freeFillings);
 	}
 
 	private int compareSurfacePart(@Nullable final SurfacePart otherSurfacePart) {
