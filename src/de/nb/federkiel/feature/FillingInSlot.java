@@ -12,7 +12,7 @@ import net.jcip.annotations.Immutable;
  */
 @Immutable
 @org.checkthread.annotations.ThreadSafe
-public class FillingInSlot implements IFillingInSlot {
+public class FillingInSlot implements Comparable<IFeatureValue>, IFeatureAndSemanticsCarrier, IFeatureValue {
 	/**
 	 * The features
 	 */
@@ -88,7 +88,7 @@ public class FillingInSlot implements IFillingInSlot {
 			return classNameCompared;
 		}
 
-		final IFillingInSlot other = (IFillingInSlot) o;
+		final FillingInSlot other = (FillingInSlot) o;
 
 		final int featuresCompared = features.compareTo(other.getFeatures());
 		if (featuresCompared != 0) {

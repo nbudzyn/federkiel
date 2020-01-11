@@ -12,13 +12,13 @@ import de.nb.federkiel.logic.YieldsNoResultException;
  * @author nbudzyn 2009
  */
 public class ToFillingInSlotTerm
-		extends UnaryCompoundTerm<IFillingInSlot, IHomogeneousConstituentAlternatives, FeatureAssignment> {
+		extends UnaryCompoundTerm<FillingInSlot, IHomogeneousConstituentAlternatives, FeatureAssignment> {
 	public ToFillingInSlotTerm(final ITerm<IHomogeneousConstituentAlternatives, FeatureAssignment> subTerm) {
 		super(subTerm);
 	}
 
 	@Override
-	public IFillingInSlot evaluate(final FeatureAssignment variableAssignment)
+	public FillingInSlot evaluate(final FeatureAssignment variableAssignment)
 			throws UnassignedVariableException, YieldsNoResultException {
 		final IHomogeneousConstituentAlternatives subValue = getSubTerm().evaluate(variableAssignment);
 		// UnassignedVariableException, YieldsNoResultException

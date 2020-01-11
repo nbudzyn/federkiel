@@ -648,7 +648,7 @@ public class RoleFrame
 	 *         <code>null</code>, if there is no such slot. (The method does an
 	 *         equality check.)
 	 */
-	protected String findSlotNameContaining(final IFillingInSlot filling) {
+	protected String findSlotNameContaining(final FillingInSlot filling) {
 		for (final Entry<String, RoleFrameSlot> entry : slots.entrySet()) {
 			if (entry.getValue().containsFilling(filling)) {
 				return entry.getKey();
@@ -1067,13 +1067,13 @@ public class RoleFrame
 		for (final Iterator<Entry<String, RoleFrameSlot>> slotIter = slotIterator(); slotIter.hasNext();) {
 			final Entry<String, RoleFrameSlot> entry = slotIter.next();
 
-			final Collection<IFillingInSlot> slotFillings = entry.getValue().getFillings();
+			final Collection<FillingInSlot> slotFillings = entry.getValue().getFillings();
 			if (slotFillings.size() > 1) {
 				return null;
 			}
 
 			if (!slotFillings.isEmpty()) {
-				final IFillingInSlot slotFilling = slotFillings.iterator().next();
+				final FillingInSlot slotFilling = slotFillings.iterator().next();
 
 				if (surfacePart == null) {
 					surfacePart = slotFilling.getFeatures().getSurfacePart();

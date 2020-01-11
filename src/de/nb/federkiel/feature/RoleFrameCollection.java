@@ -450,7 +450,7 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 	 */
 	@Override
 	public String getRestrictedSlotNameFor(final IHomogeneousConstituentAlternatives homogeneousFilling) {
-		final IFillingInSlot fillingInSlot = homogeneousFilling.toFillingInSlot();
+		final FillingInSlot fillingInSlot = homogeneousFilling.toFillingInSlot();
 
 		for (final RoleFrame roleFrame : roleFrames) {
 			final String slotName = roleFrame.findSlotNameContaining(fillingInSlot);
@@ -708,12 +708,12 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 		return toString(false);
 	}
 
-	public Plurival<IFillingInSlot> toFillingInSlot() {
-		final ImmutableSet.Builder<IFillingInSlot> res = ImmutableSet.builder();
+	public Plurival<FillingInSlot> toFillingInSlot() {
+		final ImmutableSet.Builder<FillingInSlot> res = ImmutableSet.builder();
 
 		for (final RoleFrame roleFrame : roleFrames) {
 			@Nullable
-			final IFillingInSlot fillingInSlot = roleFrame.toFillingInSlot();
+			final FillingInSlot fillingInSlot = roleFrame.toFillingInSlot();
 			if (fillingInSlot != null) {
 				res.add(fillingInSlot);
 			}
