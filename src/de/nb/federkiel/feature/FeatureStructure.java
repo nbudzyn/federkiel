@@ -221,7 +221,59 @@ public class FeatureStructure implements IFeatureValue {
 			return Plurival.empty();
 		}
 
-		return Plurival.of(featureUnion);
+		return buildFeatureStructurePlurivalFromAlternatives(SurfacePart.join(surfacePart, other.surfacePart),
+				fillFeaturesConsumingAllFillings(featureUnion.features,
+				mergeFreeFillings(freeFillings, other.freeFillings), fillingUsageRestrictor));
+	}
+
+	/**
+	 * Tries to merge this and the other feature structure, according to the
+	 * fillingUsageRestrictor.
+	 *
+	 * @return <code>true</code>, iff a merge is possible (at least one alternative
+	 *         result)
+	 */
+	protected boolean canMerge(final FeatureStructure other, final IFillingUsageRestrictor fillingUsageRestrictor) {
+		if (features.isEmpty() && other.features.isEmpty()) {
+			// Case 1: this: no features (maybe some free fillings),
+			// other: no features (maybe more fillings)
+
+			// No slots at all --> all free fillings stay unconsumed!
+
+			return true; // ==>
+		}
+
+		if (features.isEmpty() && !other.features.isEmpty()) {
+			// Case 2: this: no features (maybe some free fillings),
+			// other: some features (no free fillings)!
+
+			return !fillFeaturesConsumingAllFillings(other.features, freeFillings, fillingUsageRestrictor).isEmpty();
+			// the results have slots (all my free fillings are used to fill
+			// them), but the results have no free fillings
+		}
+
+		if (!features.isEmpty() && other.features.isEmpty()) {
+			// Case 3: this: some slots (no free fillings),
+			// other: no slots (maybe free fillings)!
+
+			return !fillFeaturesConsumingAllFillings(features, other.freeFillings, fillingUsageRestrictor).isEmpty();
+			// the results have features (all of the other's free fillings are used
+			// to fill them), but the results have no free fillings
+		}
+
+		// ELSE:
+		// Case 4: this: some features (no free fillings)!
+		// other: some features (no free fillings)
+
+		final FeatureStructure featureUnion = disjunctUnionWithoutFreeFillings(other);
+		if (featureUnion == null) {
+			// (there might habe been the same filling in both features, or the same feature
+			// name...
+			return false;
+		}
+
+		return !fillFeaturesConsumingAllFillings(featureUnion.features, mergeFreeFillings(freeFillings, other.freeFillings),
+				fillingUsageRestrictor).isEmpty();
 	}
 
 	/**
