@@ -237,14 +237,21 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 		return fillings.size() >= minFillings;
 	}
 
-	/**
-	 * @return <code>true</code>, iff the slot contains any filling that is equal to
-	 *         a filling of the other slot
-	 */
-	@Override
-	public boolean containsAFillingInASlotEqualTo(final IFeatureValue other) {
-		for (final FillingInSlot filling : fillings) {
-			if (other.containsAFillingInASlotEqualTo(filling)) {
+	public boolean containsAFillingAlsoContainedIn(final RoleFrameSlot other) {
+		for (final FillingInSlot myFilling : fillings) {
+			for (FillingInSlot othersFilling : other.fillings) {
+				if (myFilling.equals(othersFilling)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public boolean containsFilling(FillingInSlot filling) {
+		for (FillingInSlot candidate : fillings) {
+			if (filling.equals(candidate)) {
 				return true;
 			}
 		}

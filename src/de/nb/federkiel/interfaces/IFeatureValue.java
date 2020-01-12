@@ -39,12 +39,6 @@ public interface IFeatureValue extends Comparable<IFeatureValue> {
 	boolean isCompleted();
 
 	/**
-	 * @return <code>true</code>, iff the feature contains any {@link FillingInSlot}
-	 *         that is equal to a <code>FillingInSlot</code> of the other feature
-	 */
-	boolean containsAFillingInASlotEqualTo(IFeatureValue other);
-
-	/**
 	 * @param neverShowRequirements if <code>true</code>, requirements are never
 	 *                              shown, even not if a slotted feature is empty
 	 * @param forceShowRequirements if <code>true</code>, requirements are shown,

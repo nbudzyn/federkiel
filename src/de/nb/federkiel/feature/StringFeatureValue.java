@@ -82,11 +82,6 @@ public class StringFeatureValue implements IFeatureValue {
     return true;
   }
 
-	@Override
-	public boolean containsAFillingInASlotEqualTo(IFeatureValue other) {
-		return false;
-	}
-
   @Override
   public int hashCode() {
     final int prime = 31;

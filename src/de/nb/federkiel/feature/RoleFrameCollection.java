@@ -68,7 +68,7 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<FeatureStruc
 	protected RoleFrameCollection union(final RoleFrameCollection other) {
 		for (final FeatureStructure oneRoleFrame : roleFrames) {
 			for (final FeatureStructure otherRoleFrame : other.roleFrames) {
-				if (oneRoleFrame.containsTheSameFillingInADifferentFeature(otherRoleFrame)) {
+				if (oneRoleFrame.containsTheSameRoleFrameSlotFillingInADifferentFeature(otherRoleFrame)) {
 					return null;
 				}
 			}
@@ -550,19 +550,6 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<FeatureStruc
 		}
 
 		return true;
-	}
-
-	@Override
-	public boolean containsAFillingInASlotEqualTo(IFeatureValue other) {
-		for (final FeatureStructure roleFrame : roleFrames) {
-			if (roleFrame.containsAFillingInASlotEqualTo(other)) {
-				return true;
-				// FIXME Könnte es sein, dass
-				// das nur für EINIGE meiner roleFrames gilt?
-			}
-		}
-
-		return false;
 	}
 
 	public boolean isEmpty() {

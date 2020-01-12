@@ -16,20 +16,6 @@ import net.jcip.annotations.Immutable;
 @Immutable
 @org.checkthread.annotations.ThreadSafe
 public class FillingInSlot implements IFeatureCarrier, IFeatureValue {
-	TODO FILLING
-	IN SLOT
-	MIT FEATURESTRUCTURE VERGLEICHEN,
-	VEREINHEITLICHEN UND
-	FILLING IN
-	SLOT ÜBERALL
-	DURCH FEATURE
-	STRUCTURE ERSETZEN
-
-	GGF.AUCH NOCH
-	MEHR DINGE
-	DURCH FEATURE
-	STRUCTURE ERSETZEN
-
 	/**
 	 * The features
 	 */
@@ -47,7 +33,7 @@ public class FillingInSlot implements IFeatureCarrier, IFeatureValue {
 
 	@Override
 	public Collection<FillingInSlot> getFillings() {
-		return ImmutableList.of(this);
+		return ImmutableList.of();
 	}
 
 	@Override
@@ -73,15 +59,6 @@ public class FillingInSlot implements IFeatureCarrier, IFeatureValue {
 	@Override
 	public boolean isCompleted() {
 		return true;
-	}
-
-	@Override
-	public boolean containsAFillingInASlotEqualTo(IFeatureValue other) {
-		if (other instanceof FillingInSlot) {
-			return equals(other);
-		}
-
-		return other.containsAFillingInASlotEqualTo(this);
 	}
 
 	@Override

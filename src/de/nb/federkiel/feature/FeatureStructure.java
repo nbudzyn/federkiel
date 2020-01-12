@@ -70,7 +70,7 @@ public class FeatureStructure implements IFeatureValue {
 	 * features at all!
 	 */
 	private final ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings;
-	
+
 	/**
 	 * The part of the surface - if any
 	 */
@@ -143,8 +143,7 @@ public class FeatureStructure implements IFeatureValue {
 	 * minimize memory use!
 	 */
 	private FeatureStructure(@Nullable final SurfacePart surfacePart, final ImmutableMap<String, IFeatureValue> features,
-			ISemantics semantics,
-			ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings) {
+			ISemantics semantics, ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings) {
 		// There can only be free fillings, if there are NO features at all!
 		if (!features.isEmpty()) {
 			if (!freeFillings.isEmpty()) {
@@ -196,16 +195,14 @@ public class FeatureStructure implements IFeatureValue {
 	 *                               the <i>Praedikatsnomen</i> in the other!)
 	 */
 	Plurival<FeatureStructure> mergeWithoutSemantics(final FeatureStructure other,
-			final IFillingUsageRestrictor fillingUsageRestrictor)
-			throws IllegalArgumentException {
+			final IFillingUsageRestrictor fillingUsageRestrictor) throws IllegalArgumentException {
 		if (features.isEmpty() && other.features.isEmpty()) {
 			// Case 1: this: no features (maybe some free fillings),
 			// other: no features (maybe more fillings)
 
 			// No features at all --> all free fillings stay unconsumed!
 
-			return Plurival.of(FeatureStructure.fromFreeFillings(
-					SurfacePart.join(surfacePart, other.surfacePart),
+			return Plurival.of(FeatureStructure.fromFreeFillings(SurfacePart.join(surfacePart, other.surfacePart),
 					mergeFreeFillings(freeFillings, other.freeFillings))); // ==>
 		}
 
@@ -244,9 +241,9 @@ public class FeatureStructure implements IFeatureValue {
 			return Plurival.empty();
 		}
 
-		return buildFeatureStructurePlurivalFromFeatureAlternativesWithoutSemantics(SurfacePart.join(surfacePart, other.surfacePart),
-				fillFeaturesConsumingAllFillings(featureUnion.features,
-				mergeFreeFillings(freeFillings, other.freeFillings), fillingUsageRestrictor));
+		return buildFeatureStructurePlurivalFromFeatureAlternativesWithoutSemantics(
+				SurfacePart.join(surfacePart, other.surfacePart), fillFeaturesConsumingAllFillings(featureUnion.features,
+						mergeFreeFillings(freeFillings, other.freeFillings), fillingUsageRestrictor));
 	}
 
 	/**
@@ -345,7 +342,8 @@ public class FeatureStructure implements IFeatureValue {
 			// Case 2: this: no features (maybe free fillings),
 			// ellipse: some features (no free fillings)!
 
-			return buildFeatureStructurePlurivalFromFeatureAlternativesWithoutSemantics(SurfacePart.join(surfacePart, ellipse.surfacePart),
+			return buildFeatureStructurePlurivalFromFeatureAlternativesWithoutSemantics(
+					SurfacePart.join(surfacePart, ellipse.surfacePart),
 					fillFeaturesUsingFillingsOrNotUsingThem(ellipse.features, freeFillings, fillingUsageRestrictor)); // ==>
 			// the results have features (some of my free fillings may be used to fill
 			// them),
@@ -357,7 +355,7 @@ public class FeatureStructure implements IFeatureValue {
 			// ellipse: no features (maybe free fillings)
 
 			throw new RuntimeException("Strange use of fill-ellipse: Ellipse has no features and" + // NOPMD by nbudzyn on
-																																														// 29.06.10 19:46
+			// 29.06.10 19:46
 					" base has features." + "\nBase: " + toString() + "\nEllipse: " + toString()); // ==>
 
 			/*
@@ -372,7 +370,7 @@ public class FeatureStructure implements IFeatureValue {
 
 		throw new RuntimeException("Strange use of fill-ellipse: Ellipse has features, but" + // NOPMD by nbudzyn on
 																																													// 29.06.10
-																																												// 19:46
+		// 19:46
 				" base also has features, so there cannot be any free fillings in the base." + "\nBase: " + toString()
 				+ "\nEllipse: " + toString()); // ==>
 
@@ -385,32 +383,27 @@ public class FeatureStructure implements IFeatureValue {
 	/**
 	 * Builds a FeatureStructure Plurival from the alternatives
 	 */
-	private static Plurival<FeatureStructure> buildFeatureStructurePlurivalFromFeatureAlternativesWithoutSemantics(SurfacePart surfacePart,
-			final Collection<ImmutableMap<String, IFeatureValue>> alternatives) {
+	private static Plurival<FeatureStructure> buildFeatureStructurePlurivalFromFeatureAlternativesWithoutSemantics(
+			SurfacePart surfacePart, final Collection<ImmutableMap<String, IFeatureValue>> alternatives) {
 		// @formatter:off
-	  return Plurival.of(
-	      alternatives.stream()
-						.map(features -> FeatureStructure.fromValues(surfacePart, features))
-	        .collect(toImmutableList())
-	      );
-      // @formatter:on
+		return Plurival.of(alternatives.stream().map(features -> FeatureStructure.fromValues(surfacePart, features))
+				.collect(toImmutableList()));
+		// @formatter:on
 	}
-	
+
 	/**
 	 * Build a feature structure plurival from the free fillings alternatives
 	 */
-	private static Plurival<FeatureStructure> buildRoleFramesFromFreeFillingAlternatives(
-			SurfacePart surfacePart,
+	private static Plurival<FeatureStructure> buildRoleFramesFromFreeFillingAlternatives(SurfacePart surfacePart,
 			final Collection<ImmutableSet<IHomogeneousConstituentAlternatives>> freeFillingAlternatives) {
-		//  @formatter:off
-	  return Plurival.of(
-	      freeFillingAlternatives.stream()
-						.map(f -> FeatureStructure.fromFreeFillings(surfacePart, f)) // all free fillings consumed
-	        .collect(toImmutableList())
-	      );
-      //  @formatter:on
+		// @formatter:off
+		return Plurival.of(freeFillingAlternatives.stream().map(f -> FeatureStructure.fromFreeFillings(surfacePart, f)) // all
+																																																										// free
+																																																										// fillings
+																																																										// consumed
+				.collect(toImmutableList()));
+		// @formatter:on
 	}
-
 
 	/**
 	 * Fills the free fillings into the slotted features. Also generates
@@ -449,8 +442,7 @@ public class FeatureStructure implements IFeatureValue {
 			}
 		}
 
-		return filterAlternativesWhereAllFillingsMissingForCompletionCanBeAddedLater(alternatives,
-				fillingUsageRestrictor);
+		return filterAlternativesWhereAllFillingsMissingForCompletionCanBeAddedLater(alternatives, fillingUsageRestrictor);
 	}
 
 	/**
@@ -476,8 +468,7 @@ public class FeatureStructure implements IFeatureValue {
 	 */
 	private static ImmutableCollection<ImmutableMap<String, IFeatureValue>> fillFeaturesConsumingFilling(
 			final Collection<ImmutableMap<String, IFeatureValue>> alternatives,
-			final IHomogeneousConstituentAlternatives freeFilling,
-			final IFillingUsageRestrictor fillingUsageRestrictor) {
+			final IHomogeneousConstituentAlternatives freeFilling, final IFillingUsageRestrictor fillingUsageRestrictor) {
 		final String onlyAllowedFeatureName = fillingUsageRestrictor.getRestrictedNameFor(freeFilling);
 
 		final ImmutableList.Builder<ImmutableMap<String, IFeatureValue>> res = ImmutableList
@@ -493,8 +484,8 @@ public class FeatureStructure implements IFeatureValue {
 			if (onlyAllowedFeatureName != null) {
 				final IFeatureValue onlyAllowedFeature = oldFeatures.get(onlyAllowedFeatureName);
 				if (onlyAllowedFeature != null) {
-					final IFeatureValue filledFeature = addFillingIfAccepted(onlyAllowedFeatureName, onlyAllowedFeature, freeFilling,
-							fillingUsageRestrictor);
+					final IFeatureValue filledFeature = addFillingIfAccepted(onlyAllowedFeatureName, onlyAllowedFeature,
+							freeFilling, fillingUsageRestrictor);
 					if (filledFeature != null) {
 						// Filling was accepted -> so we have a new alternative
 						res.add(replaceOneFeature(oldFeatures, onlyAllowedFeatureName, filledFeature));
@@ -538,9 +529,7 @@ public class FeatureStructure implements IFeatureValue {
 			final ImmutableCollection<ImmutableMap<String, IFeatureValue>> alternatives,
 			final IFillingUsageRestrictor fillingUsageRestrictor) {
 		// @formatter:off
-		return alternatives.stream()
-				.filter(
-						a -> allFillingsMissingForCompletionCanBeAddedLater(a, fillingUsageRestrictor))
+		return alternatives.stream().filter(a -> allFillingsMissingForCompletionCanBeAddedLater(a, fillingUsageRestrictor))
 				.collect(toImmutableList());
 		// @formatter:on
 	}
@@ -621,7 +610,7 @@ public class FeatureStructure implements IFeatureValue {
 			}
 		}
 
-		if (containsAFillingInASlotEqualTo(other)) {
+		if (containsARoleFrameSlotWithAFillingAlsoContainedIn(other)) {
 			// this.features and other.features contain
 			// the SAME FillingInSlot, you cannot build a union!
 			// The problem is: It would be a verbotene Doppelbelegung, wenn
@@ -644,16 +633,26 @@ public class FeatureStructure implements IFeatureValue {
 		}
 	}
 
-	@Override
-	public boolean containsAFillingInASlotEqualTo(IFeatureValue other) {
-		for (final IFeatureValue someFeature : features.values()) {
-			if (other.containsAFillingInASlotEqualTo(someFeature)) {
-				// this.features and other.features contain
-				// the SAME FillingInSlot, you cannot build a union!
-				// The problem is: It would be a verbotene Doppelbelegung, wenn
-				// dasselbe FillingInSlot in BEIDEN FeatureStructures unter verschiedenen Namen
-				// vorkommt!!
-				return true; // ==>
+	public boolean containsARoleFrameSlotWithAFillingAlsoContainedIn(FeatureStructure other) {
+		for (final IFeatureValue myFeature : features.values()) {
+			if (myFeature instanceof RoleFrameSlot) {
+				RoleFrameSlot mySlot = (RoleFrameSlot) myFeature;
+
+				for (IFeatureValue othersFeature : other.features.values()) {
+					if (othersFeature instanceof RoleFrameSlot) {
+						RoleFrameSlot otherSlot = (RoleFrameSlot) othersFeature;
+
+						if (mySlot.containsAFillingAlsoContainedIn(otherSlot)) {
+							// this.features and other.features contain
+							// the SAME feature value in a slot, you cannot build a union!
+							// The problem is: It would be a verbotene Doppelbelegung, wenn
+							// dasselbe Feature in RoleFrameSlots in den beiden FeatureStructures unter
+							// verschiedenen Namen
+							// vorkommt!!
+							return true; // ==>
+						}
+					}
+				}
 			}
 		}
 
@@ -686,58 +685,46 @@ public class FeatureStructure implements IFeatureValue {
 	}
 
 	/**
-	 * @param stringFeatures
-	 *          The key - string-value- pairs for the feature structure; an
-	 *          <code>UnspecifiedFeatureValue.UNSPECIFIED_STRING</code> leads to an
-	 *          <code>UnspecifiedFeatureValue</code>.
+	 * @param stringFeatures The key - string-value- pairs for the feature
+	 *                       structure; an
+	 *                       <code>UnspecifiedFeatureValue.UNSPECIFIED_STRING</code>
+	 *                       leads to an <code>UnspecifiedFeatureValue</code>.
 	 */
 	public static FeatureStructure fromStringValues(@Nullable final SurfacePart surfacePart,
 			final ImmutableMap<String, String> stringFeatures) {
 		// @formatter:off
-    return cache.findOrInsert(new FeatureStructure(
-    		surfacePart,
-        ImmutableMap.copyOf(
-            Maps.transformValues(stringFeatures, stringValue -> toFeatureValue(stringValue)))));
-    // @formatter:off
-  }
+		return cache.findOrInsert(new FeatureStructure(surfacePart,
+				ImmutableMap.copyOf(Maps.transformValues(stringFeatures, stringValue -> toFeatureValue(stringValue)))));
+		// @formatter:off
+	}
 
-  public static FeatureStructure fromValues(
-  		@Nullable final SurfacePart surfacePart,
-  		final String key, final IFeatureValue value) {
-    return fromValues(surfacePart, ImmutableMap.<String, IFeatureValue>of(key, value));
-  }
+	public static FeatureStructure fromValues(@Nullable final SurfacePart surfacePart, final String key,
+			final IFeatureValue value) {
+		return fromValues(surfacePart, ImmutableMap.<String, IFeatureValue>of(key, value));
+	}
 
-  public static FeatureStructure fromValues(
-  		@Nullable final SurfacePart surfacePart,
-  		final String key1, final IFeatureValue value1,
-      final String key2, final IFeatureValue value2) {
-    return fromValues(surfacePart, ImmutableMap.<String, IFeatureValue>of(key1, value1, key2, value2));
-  }
+	public static FeatureStructure fromValues(@Nullable final SurfacePart surfacePart, final String key1,
+			final IFeatureValue value1, final String key2, final IFeatureValue value2) {
+		return fromValues(surfacePart, ImmutableMap.<String, IFeatureValue>of(key1, value1, key2, value2));
+	}
 
-  public static FeatureStructure fromValues(
-  		@Nullable final SurfacePart surfacePart,
-  		final String key1, final IFeatureValue value1,
-      final String key2, final IFeatureValue value2, final String key3,
-      final IFeatureValue value3) {
-    return fromValues(
-    		surfacePart,
-        ImmutableMap.<String, IFeatureValue>of(key1, value1, key2, value2, key3, value3));
-  }
+	public static FeatureStructure fromValues(@Nullable final SurfacePart surfacePart, final String key1,
+			final IFeatureValue value1, final String key2, final IFeatureValue value2, final String key3,
+			final IFeatureValue value3) {
+		return fromValues(surfacePart, ImmutableMap.<String, IFeatureValue>of(key1, value1, key2, value2, key3, value3));
+	}
 
-  public static FeatureStructure fromValues(
-  		@Nullable final SurfacePart surfacePart,
-  		final String key1, final IFeatureValue value1,
-      final String key2, final IFeatureValue value2, final String key3, final IFeatureValue value3,
-      final String key4, final IFeatureValue value4) {
-    return fromValues(
-    		surfacePart,
-    		ImmutableMap.<String, IFeatureValue>of(key1, value1, key2, value2, key3,
-        value3, key4, value4));
-  }
+	public static FeatureStructure fromValues(@Nullable final SurfacePart surfacePart, final String key1,
+			final IFeatureValue value1, final String key2, final IFeatureValue value2, final String key3,
+			final IFeatureValue value3, final String key4, final IFeatureValue value4) {
+		return fromValues(surfacePart,
+				ImmutableMap.<String, IFeatureValue>of(key1, value1, key2, value2, key3, value3, key4, value4));
+	}
 
-  public static FeatureStructure fromValues(@Nullable final SurfacePart surfacePart, final ImmutableMap<String, IFeatureValue> features) {
+	public static FeatureStructure fromValues(@Nullable final SurfacePart surfacePart,
+			final ImmutableMap<String, IFeatureValue> features) {
 		return fromValues(surfacePart, features, NothingInParticularSemantics.INSTANCE);
-  }
+	}
 
 	public static FeatureStructure fromValues(@Nullable final SurfacePart surfacePart,
 			final ImmutableMap<String, IFeatureValue> features, ISemantics semantics) {
@@ -747,7 +734,7 @@ public class FeatureStructure implements IFeatureValue {
 	public static FeatureStructure fromValuesAndFreeFillings(@Nullable final SurfacePart surfacePart,
 			final ImmutableMap<String, IFeatureValue> features,
 			final ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings) {
-		return fromValuesSemanticsAndFreeFillings(surfacePart, features, NothingInParticularSemantics.INSTANCE, 
+		return fromValuesSemanticsAndFreeFillings(surfacePart, features, NothingInParticularSemantics.INSTANCE,
 				freeFillings);
 	}
 
@@ -764,18 +751,17 @@ public class FeatureStructure implements IFeatureValue {
 
 	public static FeatureStructure fromFreeFillings(@Nullable final SurfacePart surfacePart,
 			final ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings) {
-		return cache
-				.findOrInsert(new FeatureStructure(surfacePart, ImmutableMap.<String, IFeatureValue>of(),
-						NothingInParticularSemantics.INSTANCE, freeFillings));
+		return cache.findOrInsert(new FeatureStructure(surfacePart, ImmutableMap.<String, IFeatureValue>of(),
+				NothingInParticularSemantics.INSTANCE, freeFillings));
 	}
 
 	private static SurfacePart joinSurfaceParts(ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings) {
 		SurfacePart res = null;
-		
+
 		for (IHomogeneousConstituentAlternatives freeFilling : freeFillings) {
 			res = SurfacePart.join(res, freeFilling.getSurfacePart());
 		}
-		
+
 		return res;
 	}
 
@@ -791,18 +777,17 @@ public class FeatureStructure implements IFeatureValue {
 		return cache.findOrInsert(new FeatureStructure(surfacePart));
 	}
 
-  public FeatureStructure removeNames(final Collection<String> namesToBeRemoved) {
-    if (namesToBeRemoved.isEmpty()) {
-      return this;
-    }
+	public FeatureStructure removeNames(final Collection<String> namesToBeRemoved) {
+		if (namesToBeRemoved.isEmpty()) {
+			return this;
+		}
 
-    final ImmutableMap.Builder<String, IFeatureValue> newFeatures = ImmutableMap.builder();
+		final ImmutableMap.Builder<String, IFeatureValue> newFeatures = ImmutableMap.builder();
 
-    // @formatter:off
-    features.entrySet().stream()
-      .filter(featureEntry -> !namesToBeRemoved.contains(featureEntry.getKey()))
-      .forEach(featureEntry -> newFeatures.put(featureEntry.getKey(), featureEntry.getValue()));
-    // @formatter:on
+		// @formatter:off
+		features.entrySet().stream().filter(featureEntry -> !namesToBeRemoved.contains(featureEntry.getKey()))
+				.forEach(featureEntry -> newFeatures.put(featureEntry.getKey(), featureEntry.getValue()));
+		// @formatter:on
 
 		return fromValues(surfacePart, newFeatures.build());
 	}
@@ -845,15 +830,21 @@ public class FeatureStructure implements IFeatureValue {
 		return fromValues(surfacePart, res.build(), semantics);
 	}
 
-	protected boolean containsTheSameFillingInADifferentFeature(final FeatureStructure other) {
-		for (final Entry<String, IFeatureValue> someEntry : features.entrySet()) {
-			for (final Entry<String, IFeatureValue> otherEntry : other.features.entrySet()) {
-				if (someEntry.getKey().equals(otherEntry.getKey())) { // NOPMD by nbudzyn on 29.06.10 21:37
-					// all fine!
-				} else {
-					// slot names are different!
-					if (someEntry.getValue().containsAFillingInASlotEqualTo(otherEntry.getValue())) {
-						return true;
+	protected boolean containsTheSameRoleFrameSlotFillingInADifferentFeature(final FeatureStructure other) {
+		for (final Entry<String, IFeatureValue> myEntry : features.entrySet()) {
+			if (myEntry.getValue() instanceof RoleFrameSlot) {
+				for (final Entry<String, IFeatureValue> othersEntry : other.features.entrySet()) {
+					if (othersEntry.getValue() instanceof RoleFrameSlot) {
+						if (myEntry.getKey().equals(othersEntry.getKey())) { // NOPMD by nbudzyn on 29.06.10 21:37
+							// all fine!
+						} else {
+							// feature names are different!
+							RoleFrameSlot mySlot = (RoleFrameSlot) myEntry.getValue();
+							RoleFrameSlot othersSlot = (RoleFrameSlot) othersEntry.getValue();
+							if (mySlot.containsAFillingAlsoContainedIn(othersSlot)) {
+								return true;
+							}
+						}
 					}
 				}
 			}
@@ -869,8 +860,11 @@ public class FeatureStructure implements IFeatureValue {
 	 */
 	protected String findFeatureNameContaining(final FillingInSlot filling) {
 		for (final Entry<String, IFeatureValue> entry : features.entrySet()) {
-			if (entry.getValue().containsAFillingInASlotEqualTo(filling)) {
+			if (entry.getValue() instanceof RoleFrameSlot) {
+				RoleFrameSlot slot = (RoleFrameSlot) entry.getValue();
+				if (slot.containsFilling(filling)) {
 				return entry.getKey();
+			}
 			}
 		}
 
@@ -1238,8 +1232,7 @@ public class FeatureStructure implements IFeatureValue {
 	}
 
 	private final static int calcHashCode(@Nullable final SurfacePart surfacePart,
-			final ImmutableMap<String, IFeatureValue> features,
-			final ISemantics semantics,
+			final ImmutableMap<String, IFeatureValue> features, final ISemantics semantics,
 			ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings) {
 		final int prime = 31;
 		int result = 1;
@@ -1385,9 +1378,10 @@ public class FeatureStructure implements IFeatureValue {
 	}
 
 	/**
-	 * @param stringFeatureValueOrMarkerForUnspecified
-	 *          String feature value - or UnspecifiedFeatureValue.UNSPECIFIED_STRING
-	 *          (as a marker for an unspecified feature value).
+	 * @param stringFeatureValueOrMarkerForUnspecified String feature value - or
+	 *                                                 UnspecifiedFeatureValue.UNSPECIFIED_STRING
+	 *                                                 (as a marker for an
+	 *                                                 unspecified feature value).
 	 */
 	public static IFeatureValue toFeatureValue(final String stringFeatureValueOrMarkerForUnspecified) {
 		if (stringFeatureValueOrMarkerForUnspecified.equals(UnspecifiedFeatureValue.UNSPECIFIED_STRING)) {

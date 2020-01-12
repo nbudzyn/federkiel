@@ -101,11 +101,6 @@ public final class UnspecifiedFeatureValue implements IFeatureValue {
     // TODO good idea?
   }
 
-	@Override
-	public boolean containsAFillingInASlotEqualTo(IFeatureValue other) {
-		return false;
-	}
-
   @Override
   public boolean equals(final Object obj) {
     if (this == obj) {
