@@ -12,22 +12,22 @@ import de.nb.federkiel.logic.YieldsNoResultException;
  *
  * @author nbudzyn 2009
  */
-@SuppressWarnings("ucd")
-public final class RoleFrameSingletonTerm extends UnaryCompoundTerm<RoleFrameCollection, RoleFrame, FeatureAssignment> {
+public final class RoleFrameSingletonTerm
+		extends UnaryCompoundTerm<RoleFrameCollection, FeatureStructure, FeatureAssignment> {
 
 	/**
 	 * This class is currently not used.
 	 *
 	 * @param roleFrameTerm
 	 */
-	private RoleFrameSingletonTerm(final ITerm<RoleFrame, FeatureAssignment> roleFrameTerm) {
+	private RoleFrameSingletonTerm(final ITerm<FeatureStructure, FeatureAssignment> roleFrameTerm) {
 		super(roleFrameTerm);
 	}
 
 	@Override
 	public RoleFrameCollection evaluate(final FeatureAssignment variableAssignment)
 			throws UnassignedVariableException, YieldsNoResultException {
-		final RoleFrame roleFrame = getSubTerm().evaluate(variableAssignment); // UnassignedVariableException,
+		final FeatureStructure roleFrame = getSubTerm().evaluate(variableAssignment); // UnassignedVariableException,
 																																						// YieldsNoResultException
 
 		return RoleFrameCollection.of(roleFrame);

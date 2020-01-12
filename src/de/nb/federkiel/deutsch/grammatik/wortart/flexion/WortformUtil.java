@@ -12,7 +12,6 @@ import com.google.common.collect.Streams;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.feature.FeatureStructure;
 import de.nb.federkiel.feature.LexiconFeatureStructureUtil;
-import de.nb.federkiel.feature.RoleFrame;
 import de.nb.federkiel.feature.RoleFrameCollection;
 import de.nb.federkiel.feature.StringFeatureValue;
 import de.nb.federkiel.interfaces.IWordForm;
@@ -38,10 +37,8 @@ public final class WortformUtil {
 	 */
 	public static Wortform buildVerbFormFin(final Lexeme lexeme, final String pos, final String tempus,
 			final String modus, final String string, FeatureStructure slots) {
-		final RoleFrame verbFrame = RoleFrame.of(slots);
-
 		final FeatureStructure features = LexiconFeatureStructureUtil.fromValues(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
-				RoleFrameCollection.of(verbFrame), GermanUtil.TEMPUS, StringFeatureValue.of(tempus), GermanUtil.MODUS_KEY,
+				RoleFrameCollection.of(slots), GermanUtil.TEMPUS, StringFeatureValue.of(tempus), GermanUtil.MODUS_KEY,
 				StringFeatureValue.of(modus));
 
 		return new Wortform(lexeme, pos, string, features, NothingInParticularSemantics.INSTANCE);
@@ -53,10 +50,8 @@ public final class WortformUtil {
 	 */
 	public static Wortform buildVerbFormImp(final Lexeme lexeme, final String pos, final Numerus numerus,
 			final String string, final FeatureStructure slots) {
-		final RoleFrame verbFrame = RoleFrame.of(slots);
-
 		final FeatureStructure features = LexiconFeatureStructureUtil.fromValues(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
-				RoleFrameCollection.of(verbFrame), GermanUtil.NUMERUS_KEY,
+				RoleFrameCollection.of(slots), GermanUtil.NUMERUS_KEY,
 				StringFeatureValue.of(FeatureStringConverter.toFeatureString(numerus)));
 
 		return new Wortform(lexeme, pos, string, features, NothingInParticularSemantics.INSTANCE);
@@ -67,10 +62,8 @@ public final class WortformUtil {
 	 *          will NOT be copied (hand-over)
 	 */
 	public static Wortform buildVerbFormInf(final Lexeme lexeme, final String pos, final FeatureStructure slots) {
-		final RoleFrame verbFrame = RoleFrame.of(slots);
-
 		final FeatureStructure features = LexiconFeatureStructureUtil.fromValues(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
-				RoleFrameCollection.of(verbFrame));
+				RoleFrameCollection.of(slots));
 
 		return new Wortform(lexeme, pos, lexeme.getCanonicalizedForm(), features, NothingInParticularSemantics.INSTANCE);
 	}

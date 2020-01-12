@@ -28,27 +28,28 @@ public class RoleFrameCollectionTerm implements IPlurivalTerm<RoleFrameCollectio
 	 */
 	final private static WeakCache<RoleFrameCollectionTerm> cache = new WeakCache<>();
 
-	final private ImmutableSet<IPlurivalTerm<RoleFrame, FeatureAssignment>> roleFrameTerms;
+	final private ImmutableSet<IPlurivalTerm<FeatureStructure, FeatureAssignment>> roleFrameTerms;
 
 	/**
 	 * caching the hashCode
 	 */
 	private final int hashCode;
 
-	private RoleFrameCollectionTerm(final IPlurivalTerm<RoleFrame, FeatureAssignment>... roleFrameTerms) {
+	private RoleFrameCollectionTerm(final IPlurivalTerm<FeatureStructure, FeatureAssignment>... roleFrameTerms) {
 		super();
 		this.roleFrameTerms = ImmutableSet.copyOf(roleFrameTerms);
 		hashCode = calcHashCode();
 	}
 
-	private RoleFrameCollectionTerm(final ImmutableSet<IPlurivalTerm<RoleFrame, FeatureAssignment>> roleFrameTerms) {
+	private RoleFrameCollectionTerm(
+			final ImmutableSet<IPlurivalTerm<FeatureStructure, FeatureAssignment>> roleFrameTerms) {
 		super();
 		this.roleFrameTerms = roleFrameTerms;
 		hashCode = calcHashCode();
 	}
 
 	public static RoleFrameCollectionTerm of(
-			final ImmutableSet<IPlurivalTerm<RoleFrame, FeatureAssignment>> roleFrameTerms) {
+			final ImmutableSet<IPlurivalTerm<FeatureStructure, FeatureAssignment>> roleFrameTerms) {
 		return cache.findOrInsert(new RoleFrameCollectionTerm(roleFrameTerms));
 	}
 
@@ -58,7 +59,7 @@ public class RoleFrameCollectionTerm implements IPlurivalTerm<RoleFrameCollectio
 	public RoleFrameCollectionTerm union(final RoleFrameCollectionTerm other) {
 		// @formatter:off
 		return of(
-				ImmutableSet.<IPlurivalTerm<RoleFrame, FeatureAssignment>>builder()
+				ImmutableSet.<IPlurivalTerm<FeatureStructure, FeatureAssignment>>builder()
 					.addAll(roleFrameTerms)
 					.addAll(other.roleFrameTerms)
 					.build()
@@ -72,17 +73,17 @@ public class RoleFrameCollectionTerm implements IPlurivalTerm<RoleFrameCollectio
 	@Override
 	public Plurival<RoleFrameCollection> evaluate(final FeatureAssignment variableAssignment)
 			throws UnassignedVariableException {
-		ImmutableSet<ImmutableSet<RoleFrame>> alternatives = ImmutableSet.of(ImmutableSet.<RoleFrame>of());
+		ImmutableSet<ImmutableSet<FeatureStructure>> alternatives = ImmutableSet.of(ImmutableSet.<FeatureStructure>of());
 
-		for (final IPlurivalTerm<RoleFrame, FeatureAssignment> roleFrameTerm : roleFrameTerms) {
-			final Plurival<RoleFrame> roleFrameValueAlternatives = roleFrameTerm.evaluate(variableAssignment);
+		for (final IPlurivalTerm<FeatureStructure, FeatureAssignment> roleFrameTerm : roleFrameTerms) {
+			final Plurival<FeatureStructure> roleFrameValueAlternatives = roleFrameTerm.evaluate(variableAssignment);
 			// UnassignedVariableException
 
-			final ImmutableSet.Builder<ImmutableSet<RoleFrame>> newAlternatives = ImmutableSet.builder();
+			final ImmutableSet.Builder<ImmutableSet<FeatureStructure>> newAlternatives = ImmutableSet.builder();
 
-			for (final ImmutableSet<RoleFrame> roleFrameAlternative : alternatives) {
-				for (final RoleFrame roleFrameValue : roleFrameValueAlternatives) {
-					final ImmutableSet.Builder<RoleFrame> newRoleFrames = ImmutableSet.builder();
+			for (final ImmutableSet<FeatureStructure> roleFrameAlternative : alternatives) {
+				for (final FeatureStructure roleFrameValue : roleFrameValueAlternatives) {
+					final ImmutableSet.Builder<FeatureStructure> newRoleFrames = ImmutableSet.builder();
 					newRoleFrames.addAll(roleFrameAlternative);
 					newRoleFrames.add(roleFrameValue);
 					newAlternatives.add(newRoleFrames.build());
@@ -93,7 +94,7 @@ public class RoleFrameCollectionTerm implements IPlurivalTerm<RoleFrameCollectio
 		}
 
 		final ImmutableSet.Builder<RoleFrameCollection> res = ImmutableSet.builder();
-		for (final ImmutableSet<RoleFrame> alternative : alternatives) {
+		for (final ImmutableSet<FeatureStructure> alternative : alternatives) {
 			res.add(RoleFrameCollection.of(alternative));
 		}
 
@@ -170,7 +171,7 @@ public class RoleFrameCollectionTerm implements IPlurivalTerm<RoleFrameCollectio
 		res.append("[");
 
 		boolean first = true;
-		for (final IPlurivalTerm<RoleFrame, FeatureAssignment> roleFrameTerm : roleFrameTerms) {
+		for (final IPlurivalTerm<FeatureStructure, FeatureAssignment> roleFrameTerm : roleFrameTerms) {
 			if (first) {
 				first = false;
 			} else {

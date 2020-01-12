@@ -46,7 +46,7 @@ public interface ITermBounds extends IDataFlowElement {
 	 *             , if there is no possible assigment, that could fulfill these
 	 *             bounds and the other bounds.
 	 */
-	ITermBounds combineBounds(final RoleFrame roleFrameBounds)
+	ITermBounds combineBounds(final FeatureStructure roleFrameBounds)
 	throws CannotFulfillTermException;
 
 	/**
@@ -54,5 +54,5 @@ public interface ITermBounds extends IDataFlowElement {
 	 * <code>other</code> one - what will be the resulting term bound for the
 	 * term, that results from merging the two terms?
 	 */
-	Plurival<RoleFrame> mergeBounds(ITermBounds other);
+	Plurival<FeatureStructure> mergeBounds(ITermBounds other);
 }

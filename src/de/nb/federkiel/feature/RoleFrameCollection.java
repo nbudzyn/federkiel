@@ -27,33 +27,33 @@ import de.nb.federkiel.plurivallogic.Plurival;
  */
 @Immutable
 @ThreadSafe
-public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, IFillingUsageRestrictor {
+public class RoleFrameCollection implements IFeatureValue, Iterable<FeatureStructure>, IFillingUsageRestrictor {
 	final private static WeakCache<RoleFrameCollection> cache = new WeakCache<>();
 
 	public static final RoleFrameCollection EMPTY = of();
 
 	final private static int MIN_NUM_FREE_FILLINGS_FOR_RESTRICTION_CHECK = 2; // "Daumenwert"
 
-	final private ImmutableSet<RoleFrame> roleFrames;
+	final private ImmutableSet<FeatureStructure> roleFrames;
 
 	/**
 	 * caching the hashCode
 	 */
 	private final int hashCode;
 
-	public static RoleFrameCollection of(final RoleFrame... roleFrames) {
+	public static RoleFrameCollection of(final FeatureStructure... roleFrames) {
 		return cache.findOrInsert(new RoleFrameCollection(roleFrames));
 	}
 
-	public static RoleFrameCollection of(final ImmutableSet<RoleFrame> roleFrames) {
+	public static RoleFrameCollection of(final ImmutableSet<FeatureStructure> roleFrames) {
 		return cache.findOrInsert(new RoleFrameCollection(roleFrames));
 	}
 
-	private RoleFrameCollection(final RoleFrame... roleFrames) {
+	private RoleFrameCollection(final FeatureStructure... roleFrames) {
 		this(ImmutableSet.copyOf(roleFrames));
 	}
 
-	private RoleFrameCollection(final ImmutableSet<RoleFrame> roleFrames) {
+	private RoleFrameCollection(final ImmutableSet<FeatureStructure> roleFrames) {
 		super();
 		this.roleFrames = roleFrames;
 		hashCode = calcHashCode(roleFrames);
@@ -66,15 +66,15 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 	 * names</i>.
 	 */
 	protected RoleFrameCollection union(final RoleFrameCollection other) {
-		for (final RoleFrame oneRoleFrame : roleFrames) {
-			for (final RoleFrame otherRoleFrame : other.roleFrames) {
-				if (oneRoleFrame.containsTheSameFillingInADifferentSlot(otherRoleFrame)) {
+		for (final FeatureStructure oneRoleFrame : roleFrames) {
+			for (final FeatureStructure otherRoleFrame : other.roleFrames) {
+				if (oneRoleFrame.containsTheSameFillingInADifferentFeature(otherRoleFrame)) {
 					return null;
 				}
 			}
 		}
 
-		return of(ImmutableSet.<RoleFrame>builder().addAll(roleFrames).addAll(other.roleFrames).build());
+		return of(ImmutableSet.<FeatureStructure>builder().addAll(roleFrames).addAll(other.roleFrames).build());
 
 	}
 
@@ -84,8 +84,18 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 		return null;
 	}
 
-	private RoleFrameCollection add(final RoleFrame roleFrame) {
-		return of(ImmutableSet.<RoleFrame>builder().addAll(roleFrames).add(roleFrame).build());
+	private RoleFrameCollection add(final FeatureStructure roleFrame) {
+		return of(ImmutableSet.<FeatureStructure>builder().addAll(roleFrames).add(roleFrame).build());
+	}
+
+	@Override
+	public SurfacePart getSurfacePart() {
+		SurfacePart res = null;
+		for (FeatureStructure featureStructure : roleFrames) {
+			res = SurfacePart.join(res, featureStructure.getSurfacePart());
+		}
+
+		return res;
 	}
 
 	/**
@@ -112,8 +122,8 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 		 * ausfüllen (oder gar keine!)
 		 */
 
-		for (final RoleFrame myRoleFrame : roleFrames) {
-			for (final RoleFrame otherRoleFrame : other.roleFrames) {
+		for (final FeatureStructure myRoleFrame : roleFrames) {
+			for (final FeatureStructure otherRoleFrame : other.roleFrames) {
 				// NOTE: Merging of the two role frames depends on the earlier retrieved
 				// results,
 				// BECAUSE: The same free filling MUST BE FILLED INTO THE SAME SLOT
@@ -127,9 +137,9 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 				for (final RoleFrameCollection oldResAlternative : oldResAlternatives) {
 					// we take the alternative we already have and
 					// add the new possible merge result(s) to the alternative!
-					final Plurival<RoleFrame> possibleMerges = myRoleFrame.merge(otherRoleFrame, oldResAlternative);
+					final Plurival<FeatureStructure> possibleMerges = myRoleFrame.merge(otherRoleFrame, oldResAlternative);
 
-					for (final RoleFrame possibleMerge : possibleMerges) {
+					for (final FeatureStructure possibleMerge : possibleMerges) {
 						resAlternatives.add(oldResAlternative.add(possibleMerge));
 					}
 				}
@@ -169,19 +179,19 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 		// role frame slots
 		// <i>with different slot names</i>, that contain the filling!
 
-		for (final RoleFrame baseRoleFrame : roleFrames) {
-			for (final RoleFrame ellipseRoleFrame : ellipse.roleFrames) {
+		for (final FeatureStructure baseRoleFrame : roleFrames) {
+			for (final FeatureStructure ellipseRoleFrame : ellipse.roleFrames) {
 				final Collection<RoleFrameCollection> oldResAlternatives = resAlternatives;
 
 				resAlternatives = new LinkedList<>();
 				for (final RoleFrameCollection oldRoleResAlternative : oldResAlternatives) {
 
-					final Plurival<RoleFrame> possibleEllipseFillings = baseRoleFrame.fillEllipse(ellipseRoleFrame,
+					final Plurival<FeatureStructure> possibleEllipseFillings = baseRoleFrame.fillEllipse(ellipseRoleFrame,
 							oldRoleResAlternative);
 
 					// We take all alternatives we already have and
 					// add the new possible ellipse-filling result(s) to each alternative!
-					for (final RoleFrame possibleEllipseFilling : possibleEllipseFillings) {
+					for (final FeatureStructure possibleEllipseFilling : possibleEllipseFillings) {
 						resAlternatives.add(oldRoleResAlternative.add(possibleEllipseFilling));
 					}
 				}
@@ -229,7 +239,7 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 	 *         filling MUST BE FILLED INTO THE SAME SLOT for each role frame!)
 	 *         </ul>
 	 */
-	public boolean hasNoFreeFillingsAtAllOrHasFreeFillingsThatConfirmTo(final RoleFrame restriction) {
+	public boolean hasNoFreeFillingsAtAllOrHasFreeFillingsThatConfirmTo(final FeatureStructure restriction) {
 		// This procedure is very much like merge().
 
 		Collection<RoleFrameCollection> mergeAlternatives = new LinkedList<>();
@@ -237,7 +247,7 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 		// role frame Collection (for a start)
 
 		int roleFrameCount = 0;
-		for (final RoleFrame myRoleFrame : roleFrames) {
+		for (final FeatureStructure myRoleFrame : roleFrames) {
 			if (!myRoleFrame.hasFreeFillings()) {
 				// This role frame does not have any free fillings at all. So
 				// the restrictions will not be checked. I guess, that this
@@ -248,7 +258,7 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 
 			if (size() > 1 ||
 			// If the role frame collection contains only one role frame
-					myRoleFrame.numFreeFillings() >= MIN_NUM_FREE_FILLINGS_FOR_RESTRICTION_CHECK) {
+					myRoleFrame.numberOfFreeFillings() >= MIN_NUM_FREE_FILLINGS_FOR_RESTRICTION_CHECK) {
 				// and less than a special number of free fillings - we do not
 				// check it. I do not think,
 				// that a role frame with less fillings would be invalid!
@@ -289,9 +299,9 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 						// it is not the last role frame of the collection - we
 						// need
 						// all alternatives!
-						final Plurival<RoleFrame> possibleMerges = myRoleFrame.merge(restriction, oldMergeAlternative);
+						final Plurival<FeatureStructure> possibleMerges = myRoleFrame.merge(restriction, oldMergeAlternative);
 
-						for (final RoleFrame possibleMerge : possibleMerges) {
+						for (final FeatureStructure possibleMerge : possibleMerges) {
 							mergeAlternatives.add(oldMergeAlternative.add(possibleMerge));
 						}
 					}
@@ -458,8 +468,8 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 	public String getRestrictedNameFor(final IHomogeneousConstituentAlternatives homogeneousFilling) {
 		final FillingInSlot fillingInSlot = homogeneousFilling.toFillingInSlot();
 
-		for (final RoleFrame roleFrame : roleFrames) {
-			final String slotName = roleFrame.findSlotNameContaining(fillingInSlot);
+		for (final FeatureStructure roleFrame : roleFrames) {
+			final String slotName = roleFrame.findFeatureNameContaining(fillingInSlot);
 			if (slotName != null) {
 				return slotName; // ==>
 			}
@@ -484,7 +494,7 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 	public int howManyAdditionalFillingsAreAllowed(final String name) {
 		int res = -1;
 
-		for (final RoleFrame roleFrame : roleFrames) {
+		for (final FeatureStructure roleFrame : roleFrames) {
 			final int howManyAdditionalFillingsAreAllowedForThisRoleFrameAndSlotName = roleFrame
 					.howManyAdditionalFillingsAreAllowed(name);
 
@@ -508,7 +518,7 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 	private int howManyFillingsAreMissingUntilCompletion(final String slotName) {
 		int res = 0;
 
-		for (final RoleFrame roleFrame : roleFrames) {
+		for (final FeatureStructure roleFrame : roleFrames) {
 			res = Math.max(res, roleFrame.howManyFillingsAreMissingUntilCompletion(slotName));
 		}
 
@@ -518,7 +528,7 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 	@Override
 	public int howManyFillingsAreMissingUntilCompletion() {
 		int res = 0;
-		for (final RoleFrame roleFrame : roleFrames) {
+		for (final FeatureStructure roleFrame : roleFrames) {
 			res += roleFrame.howManyFillingsAreMissingUntilCompletion();
 		}
 
@@ -531,7 +541,7 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 	 */
 	@Override
 	public boolean isCompleted() {
-		for (final RoleFrame roleFrame : roleFrames) {
+		for (final FeatureStructure roleFrame : roleFrames) {
 			if (!roleFrame.isCompleted()) {
 				return false;
 				// FIXME Könnte es sein, dass nur EINIGE meiner roleFrames completed sind?
@@ -544,8 +554,8 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 
 	@Override
 	public boolean containsAFillingInASlotEqualTo(IFeatureValue other) {
-		for (final RoleFrame roleFrame : roleFrames) {
-			if (roleFrame.hasOneEqualFillingInSlotAs(other)) {
+		for (final FeatureStructure roleFrame : roleFrames) {
+			if (roleFrame.containsAFillingInASlotEqualTo(other)) {
 				return true;
 				// FIXME Könnte es sein, dass
 				// das nur für EINIGE meiner roleFrames gilt?
@@ -570,7 +580,7 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 	 * @return an Iterator over my role frames.
 	 */
 	@Override
-	public Iterator<RoleFrame> iterator() {
+	public Iterator<FeatureStructure> iterator() {
 		return roleFrames.iterator();
 	}
 
@@ -663,7 +673,7 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 	 * resBounds = (RoleFrame) newResBoundsAsTermBounds; } } return resBounds; }
 	 */
 
-	private static int calcHashCode(final ImmutableSet<RoleFrame> roleFrames) {
+	private static int calcHashCode(final ImmutableSet<FeatureStructure> roleFrames) {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + roleFrames.hashCode();
@@ -718,7 +728,7 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 		res.append("[");
 
 		boolean first = true;
-		for (final RoleFrame roleFrame : roleFrames) {
+		for (final FeatureStructure roleFrame : roleFrames) {
 			if (first) {
 				first = false;
 			} else {
@@ -745,7 +755,7 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 	public Plurival<FillingInSlot> toFillingInSlot() {
 		final ImmutableSet.Builder<FillingInSlot> res = ImmutableSet.builder();
 
-		for (final RoleFrame roleFrame : roleFrames) {
+		for (final FeatureStructure roleFrame : roleFrames) {
 			@Nullable
 			final FillingInSlot fillingInSlot = roleFrame.toFillingInSlot();
 			if (fillingInSlot != null) {

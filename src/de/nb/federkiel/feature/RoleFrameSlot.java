@@ -416,6 +416,17 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 		return maxFillings - fillings.size();
 	}
 
+	@Override
+	public SurfacePart getSurfacePart() {
+		SurfacePart res = null;
+
+		for (FillingInSlot filling : fillings) {
+			res = SurfacePart.join(res, filling.getFeatures().getSurfacePart());
+		}
+
+		return res;
+	}
+
 	/*
 	 * public boolean areUppermostAtomicFeaturesEqual(final RoleFrameSlot other) {
 	 * if (this.alternativeRequirements.equals(other.alternativeRequirements)) { //

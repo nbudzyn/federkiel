@@ -718,11 +718,31 @@ public class FeatureStructure implements IFeatureValue {
     return cache.findOrInsert(new FeatureStructure(surfacePart, features));
   }
 
+	public static FeatureStructure fromValuesAndFreeFillings(@Nullable final SurfacePart surfacePart,
+			final ImmutableMap<String, IFeatureValue> features,
+			final ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings) {
+		return cache.findOrInsert(new FeatureStructure(surfacePart, features, freeFillings));
+	}
+
 	public static FeatureStructure fromFreeFillings(
-			@Nullable final SurfacePart surfacePart,
+			final ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings) {
+		return fromFreeFillings(joinSurfaceParts(freeFillings), freeFillings);
+	}
+
+	public static FeatureStructure fromFreeFillings(@Nullable final SurfacePart surfacePart,
 			final ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings) {
 		return cache
 				.findOrInsert(new FeatureStructure(surfacePart, ImmutableMap.<String, IFeatureValue>of(), freeFillings));
+	}
+
+	private static SurfacePart joinSurfaceParts(ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings) {
+		SurfacePart res = null;
+		
+		for (IHomogeneousConstituentAlternatives freeFilling : freeFillings) {
+			res = SurfacePart.join(res, freeFilling.getSurfacePart());
+		}
+		
+		return res;
 	}
 
 	public FeatureStructure sameValuesFor(final SurfacePart otherSurfacePart) {
@@ -887,6 +907,16 @@ public class FeatureStructure implements IFeatureValue {
 		return res;
 	}
 
+	public int howManyFillingsAreMissingUntilCompletion(final String name) {
+		final IFeatureValue feature = features.get(name);
+
+		if (feature == null) {
+			return 0;
+		}
+
+		return feature.howManyFillingsAreMissingUntilCompletion();
+	}
+
 	@Override
 	public int howManyAdditionalFillingsAreAllowed() {
 		return 0;
@@ -968,6 +998,7 @@ public class FeatureStructure implements IFeatureValue {
 		return ImmutableList.of();
 	}
 
+	@Override
 	@Nullable
 	public SurfacePart getSurfacePart() {
 		return surfacePart;

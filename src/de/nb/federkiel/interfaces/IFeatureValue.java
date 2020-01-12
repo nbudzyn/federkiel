@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import de.nb.federkiel.feature.FillingInSlot;
 import de.nb.federkiel.feature.IHomogeneousConstituentAlternatives;
+import de.nb.federkiel.feature.SurfacePart;
 
 /**
  * A value a feature could have.
@@ -14,6 +15,8 @@ import de.nb.federkiel.feature.IHomogeneousConstituentAlternatives;
  */
 @javax.annotation.concurrent.Immutable
 public interface IFeatureValue extends Comparable<IFeatureValue> {
+	SurfacePart getSurfacePart();
+
 	/**
 	 * Checks whether this (additional) filling would be acceptable for this
 	 * feature. If the filling would be acceptable, the methode returns a copy of

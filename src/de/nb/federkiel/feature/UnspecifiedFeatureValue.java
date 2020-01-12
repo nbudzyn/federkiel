@@ -34,6 +34,11 @@ public final class UnspecifiedFeatureValue implements IFeatureValue {
   }
 
 	@Override
+	public SurfacePart getSurfacePart() {
+		return null;
+	}
+
+	@Override
 	public Collection<FillingInSlot> getFillings() {
 		return ImmutableList.of();
 	}

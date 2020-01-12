@@ -15,7 +15,6 @@ import com.google.common.collect.ImmutableMap;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Genus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.feature.FeatureStructure;
-import de.nb.federkiel.feature.RoleFrame;
 import de.nb.federkiel.feature.RoleFrameSlot;
 import de.nb.federkiel.interfaces.IFeatureValue;
 import de.nb.federkiel.reflection.ReflectionUtil;
@@ -216,7 +215,7 @@ public final class Valenz {
 	/**
 	 * Gecacheter wert
 	 */
-	private final RoleFrame restrictions;
+	private final FeatureStructure restrictions;
 
 	private Valenz(final AbstractErgaenzungsOderAngabenTyp... ergaenzungstypen) {
 		this.ergaenzungstypen = ergaenzungstypen;
@@ -389,11 +388,11 @@ public final class Valenz {
 	 * Beispiel: Ein IM ENGEREN SINNE TRANSITIVES Verb steht nur mit einem Subjekt
 	 * und einem Akkusativobjekt, ein Dativobjekt wäre verboten.
 	 */
-	public RoleFrame buildRestrictions() {
+	public FeatureStructure buildRestrictions() {
 		return restrictions;
 	}
 
-	private RoleFrame calcRestrictions() {
+	private FeatureStructure calcRestrictions() {
 		final ImmutableMap.Builder<String, IFeatureValue> restrictionSlotsBuilder = ImmutableMap.builder();
 
 		for (final AbstractErgaenzungsOderAngabenTyp ergaenzungstyp : ergaenzungstypen) {
@@ -402,8 +401,7 @@ public final class Valenz {
 
 		FeatureStructure restrictionSlots = FeatureStructure.fromValues(null, restrictionSlotsBuilder.build());
 
-		return RoleFrame.of(
-				restrictionSlots.disjunctUnionWithoutFreeFillings(ErgaenzungsOderAngabeTypen.buildAngabenRestrictionSlots()));
+		return restrictionSlots.disjunctUnionWithoutFreeFillings(ErgaenzungsOderAngabeTypen.buildAngabenRestrictionSlots());
 	}
 
 	/**

@@ -16,6 +16,7 @@ import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.Maps;
 
 import de.nb.federkiel.collection.CollectionUtil;
+import de.nb.federkiel.interfaces.IFeatureValue;
 import de.nb.federkiel.logic.IAssignment;
 import de.nb.federkiel.logic.ITerm;
 import de.nb.federkiel.logic.UnassignedVariableException;
@@ -32,7 +33,7 @@ import de.nb.federkiel.plurivallogic.Plurival;
  */
 @Immutable
 @ThreadSafe
-public class RoleFrameTerm implements IPlurivalTerm<RoleFrame, FeatureAssignment> {
+public class RoleFrameTerm implements IPlurivalTerm<FeatureStructure, FeatureAssignment> {
 	final private static boolean CHECK_ASSERTIONS = false;
 
 	private final ImmutableMap<String, RoleFrameSlotTerm> slotTerms;
@@ -66,19 +67,23 @@ public class RoleFrameTerm implements IPlurivalTerm<RoleFrame, FeatureAssignment
 	}
 
 	/**
-	 * Evaluates this role frame term - the result will be a role frame.
+	 * Evaluates this role frame term - the result will be a feature structure.
 	 */
 	@Override
-	public Plurival<RoleFrame> evaluate(final FeatureAssignment variableAssignment) throws UnassignedVariableException {
+	public Plurival<FeatureStructure> evaluate(final FeatureAssignment variableAssignment)
+			throws UnassignedVariableException {
 		final ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings;
+		SurfacePart surfacePart = null;
 
 		try {
 			final Builder<IHomogeneousConstituentAlternatives> freeFillingsBuilder = ImmutableSet
 					.<IHomogeneousConstituentAlternatives>builder();
 
 			for (final ITerm<IHomogeneousConstituentAlternatives, FeatureAssignment> freeFillingTerm : freeFillingTerms) {
-				freeFillingsBuilder.add(freeFillingTerm.evaluate(variableAssignment));
+				IHomogeneousConstituentAlternatives freeFilling = freeFillingTerm.evaluate(variableAssignment);
+				freeFillingsBuilder.add(freeFilling);
 				// UnassignedVariableException, YieldsNoResultException
+				surfacePart = SurfacePart.join(surfacePart, freeFilling.getSurfacePart());
 			}
 
 			freeFillings = freeFillingsBuilder.build();
@@ -86,17 +91,17 @@ public class RoleFrameTerm implements IPlurivalTerm<RoleFrame, FeatureAssignment
 			return Plurival.empty();
 		}
 
-		ImmutableSet<ImmutableMap<String, RoleFrameSlot>> slotMapEntryAlternatives = ImmutableSet
-				.of(ImmutableMap.<String, RoleFrameSlot>of());
+		ImmutableSet<ImmutableMap<String, IFeatureValue>> slotMapEntryAlternatives = ImmutableSet
+				.of(ImmutableMap.<String, IFeatureValue>of());
 
 		for (final Map.Entry<String, RoleFrameSlotTerm> slotMapEntry : slotTerms.entrySet()) {
 			final String key = slotMapEntry.getKey();
 			final Plurival<RoleFrameSlot> roleFrameSlotAlternatives = slotMapEntry.getValue().evaluate(variableAssignment);
 			// UnassignedVariableException
 
-			final ImmutableSet.Builder<ImmutableMap<String, RoleFrameSlot>> newMapEntryAlternatives = ImmutableSet.builder();
-			for (final Map<String, RoleFrameSlot> oldMap : slotMapEntryAlternatives) {
-				final ImmutableMap.Builder<String, RoleFrameSlot> newMap = ImmutableMap.builder();
+			final ImmutableSet.Builder<ImmutableMap<String, IFeatureValue>> newMapEntryAlternatives = ImmutableSet.builder();
+			for (final Map<String, IFeatureValue> oldMap : slotMapEntryAlternatives) {
+				final ImmutableMap.Builder<String, IFeatureValue> newMap = ImmutableMap.builder();
 				newMap.putAll(oldMap);
 				for (final RoleFrameSlot roleFrameSlot : roleFrameSlotAlternatives) {
 					newMap.put(key, roleFrameSlot);
@@ -108,12 +113,24 @@ public class RoleFrameTerm implements IPlurivalTerm<RoleFrame, FeatureAssignment
 			slotMapEntryAlternatives = newMapEntryAlternatives.build();
 		}
 
-		final ImmutableSet.Builder<RoleFrame> roleFrameAlternatives = ImmutableSet.builder();
-		for (final ImmutableMap<String, RoleFrameSlot> slotMapEntry : slotMapEntryAlternatives) {
-			roleFrameAlternatives.add(RoleFrame.of(slotMapEntry, freeFillings));
+		final ImmutableSet.Builder<FeatureStructure> roleFrameAlternatives = ImmutableSet.builder();
+		for (final ImmutableMap<String, IFeatureValue> slotMapEntry : slotMapEntryAlternatives) {
+			roleFrameAlternatives.add(FeatureStructure.fromValuesAndFreeFillings(
+					SurfacePart.join(surfacePart, joinSurfaceParts(slotMapEntry.values())), slotMapEntry,
+					freeFillings));
 		}
 
 		return Plurival.of(roleFrameAlternatives.build());
+	}
+
+	public static SurfacePart joinSurfaceParts(Iterable<IFeatureValue> features) {
+		SurfacePart res = null;
+
+		for (IFeatureValue feature : features) {
+			res = SurfacePart.join(res, feature.getSurfacePart());
+		}
+
+		return res;
 	}
 
 	@Override

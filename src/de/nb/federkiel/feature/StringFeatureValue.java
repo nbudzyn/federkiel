@@ -53,6 +53,11 @@ public class StringFeatureValue implements IFeatureValue {
   }
 
 	@Override
+	public SurfacePart getSurfacePart() {
+		return null;
+	}
+
+	@Override
 	public IFeatureValue addFillingIfAccepted(IHomogeneousConstituentAlternatives freeFilling,
 			int keepPlaceFreeForHowManyFillings) {
 		return null;

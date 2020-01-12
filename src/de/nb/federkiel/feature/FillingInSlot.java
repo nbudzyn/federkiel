@@ -44,6 +44,11 @@ public class FillingInSlot implements Comparable<IFeatureValue>, IFeatureAndSema
 	}
 
 	@Override
+	public SurfacePart getSurfacePart() {
+		return features.getSurfacePart();
+	}
+
+	@Override
 	public FeatureStructure getFeatures() {
 		return features;
 	}

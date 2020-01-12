@@ -37,7 +37,6 @@ import de.nb.federkiel.deutsch.grammatik.kategorie.VorgabeFuerNachfolgendesAdjek
 import de.nb.federkiel.deutsch.grammatik.valenz.Valenz;
 import de.nb.federkiel.feature.FeatureStructure;
 import de.nb.federkiel.feature.LexiconFeatureStructureUtil;
-import de.nb.federkiel.feature.RoleFrame;
 import de.nb.federkiel.feature.RoleFrameCollection;
 import de.nb.federkiel.feature.StringFeatureLogicUtil;
 import de.nb.federkiel.feature.StringFeatureValue;
@@ -231,10 +230,8 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
 	protected final static ImmutableMap<String, IFeatureValue> buildFeatureMap(final String komparation,
 			final String staerke, final FeatureStructure ergaenzungenUndAngabenSlots) {
 
-		final RoleFrame verbFrame = RoleFrame.of(ergaenzungenUndAngabenSlots);
-
 		return ImmutableMap.<String, IFeatureValue>of(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
-				RoleFrameCollection.of(verbFrame), KOMPARATION_KEY, StringFeatureValue.of(komparation), STAERKE_KEY,
+				RoleFrameCollection.of(ergaenzungenUndAngabenSlots), KOMPARATION_KEY, StringFeatureValue.of(komparation), STAERKE_KEY,
 				StringFeatureValue.of(staerke));
 	}
 
@@ -248,15 +245,13 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
 	protected final static ImmutableMap<String, IFeatureValue> buildFeatureMap(final @Nullable String staerke,
 			final FeatureStructure ergaenzungenUndAngabenSlots) {
 
-		final RoleFrame verbFrame = RoleFrame.of(ergaenzungenUndAngabenSlots);
-
 		if (staerke == null) {
 			return ImmutableMap.<String, IFeatureValue>of(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
-					RoleFrameCollection.of(verbFrame));
+					RoleFrameCollection.of(ergaenzungenUndAngabenSlots));
 		}
 
 		return ImmutableMap.<String, IFeatureValue>of(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
-				RoleFrameCollection.of(verbFrame), STAERKE_KEY, StringFeatureValue.of(staerke));
+				RoleFrameCollection.of(ergaenzungenUndAngabenSlots), STAERKE_KEY, StringFeatureValue.of(staerke));
 	}
 
 	protected final static ImmutableMap<String, IFeatureType> buildFeatureTypeMap(final @Nullable String staerke) {
@@ -281,10 +276,8 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
 
 	protected final static ImmutableMap<String, IFeatureValue> buildFeatureMap(
 			final FeatureStructure ergaenzungenUndAngabenSlots) {
-		final RoleFrame verbFrame = RoleFrame.of(ergaenzungenUndAngabenSlots);
-
 		return ImmutableMap.<String, IFeatureValue>of(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
-				RoleFrameCollection.of(verbFrame));
+				RoleFrameCollection.of(ergaenzungenUndAngabenSlots));
 	}
 
 	/**
@@ -974,11 +967,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
 						numerusDesBezugsworts, StringFeatureLogicUtil.FALSE, // die ihrer
 																																	// selbst
 						true);
-		// gedenkenden Männer,
-		// ABER NICHT *die Ihrer selbst gedenkenden Männer!
-		final RoleFrame verbRoleFrame = RoleFrame.of(ergaenzungenUndAngabenSlots);
-		final RoleFrameCollection verbRoleFrameCollection = RoleFrameCollection.of(verbRoleFrame);
-		return verbRoleFrameCollection;
+		return RoleFrameCollection.of(ergaenzungenUndAngabenSlots);
 	}
 
 	/*

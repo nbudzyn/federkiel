@@ -37,11 +37,13 @@ public interface IConstituentAlternatives extends Iterable<IConstituent>, Compar
 
 	String getSurface();
 
+	SurfacePart getSurfacePart();
+
 	int size();
 
 	void visitWordForms(IWordFormVisitor visitor);
 
-	public Set<IGuessedWordForm> getGuessedWordForms();
+	Set<IGuessedWordForm> getGuessedWordForms();
 
 	// THIS would be a BAD idea - because, if AFTER THE EDGE has been processed,
 	// producing some other edges, a NEW CHILD EDGE with DIFFERENT

@@ -41,7 +41,7 @@ ITermBounds {
 	}
 
 	@Override
-	public ITermBounds combineBounds(final RoleFrame roleFrameBounds)
+	public ITermBounds combineBounds(final FeatureStructure roleFrameBounds)
 	throws CannotFulfillTermException {
 		if (valueMeetsRoleFrameRestrictions(roleFrameBounds)) {
 			return this;
@@ -51,7 +51,7 @@ ITermBounds {
 	}
 
 	@Override
-	public Plurival<RoleFrame> mergeBounds(final ITermBounds other) {
+	public Plurival<FeatureStructure> mergeBounds(final ITermBounds other) {
 		/*
 		if (this.onlyValue == null) {
 			return new Plurival<RoleFrame>();
@@ -124,12 +124,12 @@ ITermBounds {
 	 *         frame restrictions
 	 */
 	public boolean valueMeetsRoleFrameRestrictions(
-			final RoleFrame roleFrameBounds)
+			final FeatureStructure roleFrameBounds)
 	throws CannotFulfillTermException {
 		if (this.onlyValue == null) {
 			return false;
 		}
-		if (this.onlyValue instanceof RoleFrame) {
+		if (this.onlyValue instanceof FeatureStructure) {
 			/* FIXME (zurzeit nicht verwendet)
 			if (((RoleFrame) this.onlyValue).meetsRestrictions(roleFrameBounds)) {
 				return true;
