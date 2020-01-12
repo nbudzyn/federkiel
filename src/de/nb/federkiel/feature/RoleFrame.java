@@ -615,7 +615,7 @@ public class RoleFrame
 
 	public boolean hasOneEqualFillingInSlotAs(IFeatureValue other) {
 		for (final RoleFrameSlot slot : slots.values()) {
-			if (slot.hasOneEqualFillingInSlotAs(other)) {
+			if (slot.containsAFillingInASlotEqualTo(other)) {
 				return true;
 			}
 		}
@@ -643,7 +643,7 @@ public class RoleFrame
 					// all fine!
 				} else {
 					// slot names are different!
-					if (someEntry.getValue().hasOneEqualFillingInSlotAs(otherEntry.getValue())) {
+					if (someEntry.getValue().containsAFillingInASlotEqualTo(otherEntry.getValue())) {
 						return true;
 					}
 				}
@@ -660,7 +660,7 @@ public class RoleFrame
 	 */
 	protected String findSlotNameContaining(final FillingInSlot filling) {
 		for (final Entry<String, RoleFrameSlot> entry : slots.entrySet()) {
-			if (entry.getValue().containsFilling(filling)) {
+			if (entry.getValue().containsAFillingInASlotEqualTo(filling)) {
 				return entry.getKey();
 			}
 		}
@@ -721,7 +721,7 @@ public class RoleFrame
 			final Map<String, RoleFrameSlot> moreSlots) {
 		for (final RoleFrameSlot someSlot : someSlots.values()) {
 			for (final RoleFrameSlot otherSlot : moreSlots.values()) {
-				if (someSlot.hasOneEqualFillingInSlotAs(otherSlot)) {
+				if (someSlot.containsAFillingInASlotEqualTo(otherSlot)) {
 					// someSlots and moreSlots contain the same
 					// FILLING, you cannot build a union!
 					// The problem is: It would be a verbotene Doppelbelegung, wenn
@@ -975,15 +975,13 @@ public class RoleFrame
 
 	@Override
 	public String toString() {
-		return toString(false);
+		return toString(true, false);
 	}
 
 	/**
-	 * @param full
-	 *          wether to return a <i>full</i> string representation
 	 * @return a string representation of <code>this</code>
 	 */
-	public String toString(final boolean full) {
+	public String toString(boolean neverShowRequirements, boolean forceShowRequirements) {
 		final StringBuilder res = new StringBuilder();
 
 		res.append("{");
@@ -1001,8 +999,8 @@ public class RoleFrame
 
 			res.append(" : ");
 
-			res.append(entry.getValue().toString(!full, // never show requirements?
-					full)); // force showing requirements?
+			res.append(entry.getValue().toString(neverShowRequirements,
+					forceShowRequirements));
 		}
 
 		for (final IConstituentAlternatives freeFilling : freeFillings) {
@@ -1038,7 +1036,9 @@ public class RoleFrame
 	public int howManyFillingsAreMissingUntilCompletion() {
 		int res = 0;
 		for (String slotName : slots.keySet()) {
-			res += howManyAdditionalFillingsAreAllowed(slotName);
+			res +=
+					// TODO Bug?? howManyFillingsAreMissingUntilCompletion(slotName??)
+					howManyAdditionalFillingsAreAllowed(slotName);
 		}
 
 		return res;

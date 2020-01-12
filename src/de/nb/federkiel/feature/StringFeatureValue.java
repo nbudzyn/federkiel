@@ -1,7 +1,11 @@
 package de.nb.federkiel.feature;
 
+import java.util.Collection;
+
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
+
+import com.google.common.collect.ImmutableList;
 
 import de.nb.federkiel.cache.WeakCache;
 import de.nb.federkiel.interfaces.IFeatureValue;
@@ -59,6 +63,11 @@ public class StringFeatureValue implements IFeatureValue {
 		return 0;
 	}
 
+	@Override
+	public int howManyAdditionalFillingsAreAllowed() {
+		return 0;
+	}
+
   /**
    * @return <code>true</code>, iff all slots are satisfied and there are no free fillings. String
    *         features are always completed (even if there value were empty!)
@@ -69,7 +78,7 @@ public class StringFeatureValue implements IFeatureValue {
   }
 
 	@Override
-	public boolean hasOneEqualFillingInSlotAs(IFeatureValue other) {
+	public boolean containsAFillingInASlotEqualTo(IFeatureValue other) {
 		return false;
 	}
 
@@ -96,6 +105,10 @@ public class StringFeatureValue implements IFeatureValue {
    * return null; }
    */
 
+	@Override
+	public Collection<FillingInSlot> getFillings() {
+		return ImmutableList.of();
+	}
 
   public String getString() {
     return string;
@@ -133,9 +146,13 @@ public class StringFeatureValue implements IFeatureValue {
     return string.compareTo(other.string);
   }
 
+	@Override
+	public String toString() {
+		return toString(true, false);
+	}
 
   @Override
-  public String toString() {
+	public String toString(boolean neverShowRequirements, boolean forceShowRequirements) {
     return "\"" + string.toString() + "\"";
   }
 

@@ -1,5 +1,9 @@
 package de.nb.federkiel.feature;
 
+import java.util.Collection;
+
+import com.google.common.collect.ImmutableList;
+
 import de.nb.federkiel.interfaces.IFeatureValue;
 import de.nb.federkiel.interfaces.ISemantics;
 import net.jcip.annotations.Immutable;
@@ -35,6 +39,11 @@ public class FillingInSlot implements Comparable<IFeatureValue>, IFeatureAndSema
 	}
 
 	@Override
+	public Collection<FillingInSlot> getFillings() {
+		return ImmutableList.of(this);
+	}
+
+	@Override
 	public FeatureStructure getFeatures() {
 		return features;
 	}
@@ -50,17 +59,22 @@ public class FillingInSlot implements Comparable<IFeatureValue>, IFeatureAndSema
 	}
 
 	@Override
+	public int howManyAdditionalFillingsAreAllowed() {
+		return 0;
+	}
+
+	@Override
 	public boolean isCompleted() {
 		return true;
 	}
 
 	@Override
-	public boolean hasOneEqualFillingInSlotAs(IFeatureValue other) {
+	public boolean containsAFillingInASlotEqualTo(IFeatureValue other) {
 		if (other instanceof FillingInSlot) {
 			return equals(other);
 		}
 
-		return other.hasOneEqualFillingInSlotAs(this);
+		return other.containsAFillingInASlotEqualTo(this);
 	}
 
 	@Override
@@ -125,6 +139,11 @@ public class FillingInSlot implements Comparable<IFeatureValue>, IFeatureAndSema
 
 	@Override
 	public String toString() {
-		return getFeatures().toString();
+		return toString(true, false);
+	}
+
+	@Override
+	public String toString(boolean neverShowRequirements, boolean forceShowRequirements) {
+		return getFeatures().toString(neverShowRequirements, forceShowRequirements);
 	}
 }

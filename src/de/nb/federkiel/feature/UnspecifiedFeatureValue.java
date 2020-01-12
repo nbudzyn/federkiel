@@ -1,7 +1,11 @@
 package de.nb.federkiel.feature;
 
+import java.util.Collection;
+
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
+
+import com.google.common.collect.ImmutableList;
 
 import de.nb.federkiel.interfaces.IFeatureValue;
 
@@ -30,6 +34,11 @@ public final class UnspecifiedFeatureValue implements IFeatureValue {
   }
 
 	@Override
+	public Collection<FillingInSlot> getFillings() {
+		return ImmutableList.of();
+	}
+
+	@Override
 	public IFeatureValue addFillingIfAccepted(IHomogeneousConstituentAlternatives freeFilling,
 			int keepPlaceFreeForHowManyFillings) {
 		return null;
@@ -54,16 +63,27 @@ public final class UnspecifiedFeatureValue implements IFeatureValue {
     return 1;
   }
 
-  @Override
-  public String toString() {
+	@Override
+	public String toString() {
+		return toString(true, false);
+	}
+
+	@Override
+	public String toString(boolean neverShowRequirements, boolean forceShowRequirements) {
     return "(unspecified)";
   }
 
 	@Override
 	public int howManyFillingsAreMissingUntilCompletion() {
-		// UnspecifiedFeatureValues NEVER completed AT ALL.
+		// UnspecifiedFeatureValues are NEVER completed AT ALL.
 		return 1;
 		// TODO good idea?
+	}
+
+	@Override
+	public int howManyAdditionalFillingsAreAllowed() {
+		// TODO good idea?
+		return -1;
 	}
 
   /**
@@ -77,7 +97,7 @@ public final class UnspecifiedFeatureValue implements IFeatureValue {
   }
 
 	@Override
-	public boolean hasOneEqualFillingInSlotAs(IFeatureValue other) {
+	public boolean containsAFillingInASlotEqualTo(IFeatureValue other) {
 		return false;
 	}
 

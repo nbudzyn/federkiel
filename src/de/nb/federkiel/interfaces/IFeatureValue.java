@@ -1,5 +1,7 @@
 package de.nb.federkiel.interfaces;
 
+import java.util.Collection;
+
 import de.nb.federkiel.feature.FillingInSlot;
 import de.nb.federkiel.feature.IHomogeneousConstituentAlternatives;
 
@@ -37,7 +39,23 @@ public interface IFeatureValue extends Comparable<IFeatureValue> {
 	 * @return <code>true</code>, iff the feature contains any {@link FillingInSlot}
 	 *         that is equal to a <code>FillingInSlot</code> of the other feature
 	 */
-	boolean hasOneEqualFillingInSlotAs(IFeatureValue other);
+	boolean containsAFillingInASlotEqualTo(IFeatureValue other);
+
+	/**
+	 * @param neverShowRequirements if <code>true</code>, requirements are never
+	 *                              shown, even not if a slotted feature is empty
+	 * @param forceShowRequirements if <code>true</code>, requirements are shown,
+	 *                              even if the feature is filled.
+	 */
+	public String toString(final boolean neverShowRequirements, final boolean forceShowRequirements);
+
+	/**
+	 * @return How many <i>additional</i> fillings are allowed? - <i>-1</i>, if
+	 *         there is <i>no upper bound</i>.
+	 */
+	int howManyAdditionalFillingsAreAllowed();
+
+	Collection<FillingInSlot> getFillings();
 
 	/*
 	 * If both <code>this</code> and the <code>otherValue</code> are <i>role frame

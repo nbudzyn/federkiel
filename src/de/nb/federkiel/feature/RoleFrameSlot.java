@@ -212,6 +212,7 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 		return false;
 	}
 
+	@Override
 	public Collection<FillingInSlot> getFillings() {
 		return Collections.unmodifiableCollection(fillings);
 	}
@@ -241,24 +242,10 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 	 *         a filling of the other slot
 	 */
 	@Override
-	public boolean hasOneEqualFillingInSlotAs(final IFeatureValue other) {
+	public boolean containsAFillingInASlotEqualTo(final IFeatureValue other) {
 		for (final FillingInSlot filling : fillings) {
-			if (other.hasOneEqualFillingInSlotAs(filling)) {
+			if (other.containsAFillingInASlotEqualTo(filling)) {
 				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * @return <code>true</code>, iff the slot contains this filling - false, if it
-	 *         does not. This method does an equality check.
-	 */
-	boolean containsFilling(final FillingInSlot fillingToCheckFor) {
-		for (final FillingInSlot fillingContained : fillings) {
-			if (fillingContained.equals(fillingToCheckFor)) {
-				return true; // =>
 			}
 		}
 
@@ -353,14 +340,7 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 		return toString(false, false);
 	}
 
-	/**
-	 * @param neverShowRequirements
-	 *          if <code>true</code>, requirements are never shown, even not if the
-	 *          slot is empty
-	 * @param forceShowRequirements
-	 *          if <code>true</code>, slot requirements are shown, even if the slot
-	 *          is filled.
-	 */
+	@Override
 	public String toString(final boolean neverShowRequirements, final boolean forceShowRequirements) {
 		if (neverShowRequirements && forceShowRequirements) {
 			throw new IllegalArgumentException("Unsensible combination! Never show and force show??");
@@ -427,7 +407,8 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 	 * @return How many <i>additional</i> fillings are allowed? - <i>-1</i>, if
 	 *         there is <i>no upper bound</i>.
 	 */
-	int howManyAdditionalFillingsAreAllowed() {
+	@Override
+	public int howManyAdditionalFillingsAreAllowed() {
 		if (maxFillings == -1) {
 			return -1;
 		}

@@ -6,9 +6,11 @@ import static com.google.common.collect.ImmutableList.toImmutableList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.BiConsumer;
 
 import javax.annotation.Nullable;
@@ -28,6 +30,7 @@ import com.google.common.collect.UnmodifiableIterator;
 import de.nb.federkiel.cache.WeakCache;
 import de.nb.federkiel.collection.CollectionUtil;
 import de.nb.federkiel.interfaces.IFeatureValue;
+import de.nb.federkiel.interfaces.ISemantics;
 import de.nb.federkiel.plurivallogic.Plurival;
 
 /**
@@ -191,7 +194,7 @@ public class FeatureStructure implements IFeatureValue {
 			// Case 2: this: no features (maybe some free fillings),
 			// other: some features (no free fillings)!
 
-			return buildFeatureStructurePlurivalFromAlternatives(
+			return buildFeatureStructurePlurivalFromFeatureAlternatives(
 					SurfacePart.join(surfacePart, other.surfacePart),
 					fillFeaturesConsumingAllFillings(other.features, freeFillings, fillingUsageRestrictor));
 			// the results have features (all my free fillings are used to fill them),
@@ -202,7 +205,7 @@ public class FeatureStructure implements IFeatureValue {
 			// Case 3: this: some features (no free fillings),
 			// other: no features (maybe some free fillings)!
 
-			return buildFeatureStructurePlurivalFromAlternatives(
+			return buildFeatureStructurePlurivalFromFeatureAlternatives(
 					SurfacePart.join(surfacePart, other.surfacePart),
 					fillFeaturesConsumingAllFillings(features, other.freeFillings, fillingUsageRestrictor));
 			// the results have features (all of the other's free fillings are used to fill
@@ -221,7 +224,7 @@ public class FeatureStructure implements IFeatureValue {
 			return Plurival.empty();
 		}
 
-		return buildFeatureStructurePlurivalFromAlternatives(SurfacePart.join(surfacePart, other.surfacePart),
+		return buildFeatureStructurePlurivalFromFeatureAlternatives(SurfacePart.join(surfacePart, other.surfacePart),
 				fillFeaturesConsumingAllFillings(featureUnion.features,
 				mergeFreeFillings(freeFillings, other.freeFillings), fillingUsageRestrictor));
 	}
@@ -277,9 +280,91 @@ public class FeatureStructure implements IFeatureValue {
 	}
 
 	/**
+	 * Uses this feature structure as the base for filling an ellipse feature
+	 * structure.
+	 * <ul>
+	 * <li>the ellipse MUST NOT contain any features (only free filings)
+	 * <li>if there are any features in this (the base) at all, then <i>ALL</i> free
+	 * fillings IN THE ELLIPSE are used to fill the slots)
+	 * </ul>
+	 * <p>
+	 * The free fillings of this feature structure (the base) and of the ellipse
+	 * feature structure may contain the same elements (resulting from earlier
+	 * ellipse-filling, for example)!
+	 * <p>
+	 * In some cases, filling the ellipse is not possible (not all free fillings in
+	 * the ellipse can be consumed by the slotted features, e.g.), in other cases
+	 * there are several possibilities (filling A fills slotted feature X, filling B
+	 * fills slotted feature Y; or the other way round). So, the result is a
+	 * Plurival, containing all possible (alternative) ellipse fillings.
+	 *
+	 * @param fillingUsageRestrictor a free filling (e.g. from <code>this</code>)
+	 *                               might be restricted, so that it can only fill a
+	 *                               feature (e.g. from the <code>ellipse</code>)
+	 *                               with a specified name - this is the restrictor.
+	 *                               (This is necessary to ensure that in a
+	 *                               ellipse-like sentence like <i>Paul war
+	 *                               Komponist und ab 1924 Dirigent.<i>, Paul is the
+	 *                               <i>Subjekt<i> in both parts - not the
+	 *                               <i>Subjekt</i> in one part and the
+	 *                               <i>Praedikatsnomen</i> in the other!)
+	 */
+	protected Plurival<FeatureStructure> fillEllipse(final FeatureStructure ellipse,
+			final IFillingUsageRestrictor fillingUsageRestrictor) throws IllegalArgumentException {
+		if (features.isEmpty() && ellipse.features.isEmpty()) {
+			// Case 1: this: no features (maybe free fillings),
+			// ellipse: no features (maybe more fillings)
+
+			// No features at all --> all free fillings stay unconsumed!
+			return buildRoleFramesFromFreeFillingAlternatives(SurfacePart.join(surfacePart, ellipse.surfacePart),
+					buildAllSubSets(freeFillings, ellipse.freeFillings)); // ==>
+		}
+
+		if (features.isEmpty() && !ellipse.features.isEmpty()) {
+			// Case 2: this: no features (maybe free fillings),
+			// ellipse: some features (no free fillings)!
+
+			return buildFeatureStructurePlurivalFromFeatureAlternatives(SurfacePart.join(surfacePart, ellipse.surfacePart),
+					fillFeaturesUsingFillingsOrNotUsingThem(ellipse.features, freeFillings, fillingUsageRestrictor)); // ==>
+			// the results have features (some of my free fillings may be used to fill
+			// them),
+			// but the result has no free fillings
+		}
+
+		if (!features.isEmpty() && ellipse.features.isEmpty()) {
+			// Case 3: this: some features (no free fillings)!
+			// ellipse: no features (maybe free fillings)
+
+			throw new RuntimeException("Strange use of fill-ellipse: Ellipse has no features and" + // NOPMD by nbudzyn on
+																																														// 29.06.10 19:46
+					" base has features." + "\nBase: " + toString() + "\nEllipse: " + toString()); // ==>
+
+			/*
+			 * FIXME (or would this be ok?) Actually this would work like a merge, see
+			 * merge()
+			 */
+		}
+
+		// ELSE:
+		// Case 4: this: some features (no free fillings)!
+		// ellipse: some features (no free fillings)
+
+		throw new RuntimeException("Strange use of fill-ellipse: Ellipse has features, but" + // NOPMD by nbudzyn on
+																																													// 29.06.10
+																																												// 19:46
+				" base also has features, so there cannot be any free fillings in the base." + "\nBase: " + toString()
+				+ "\nEllipse: " + toString()); // ==>
+
+		/*
+		 * FIXME (or would this be ok?) Actually this would work like a merge, see
+		 * merge()!
+		 */
+	}
+
+	/**
 	 * Builds a FeatureStructure Plurival from the alternatives
 	 */
-	private static Plurival<FeatureStructure> buildFeatureStructurePlurivalFromAlternatives(SurfacePart surfacePart,
+	private static Plurival<FeatureStructure> buildFeatureStructurePlurivalFromFeatureAlternatives(SurfacePart surfacePart,
 			final Collection<ImmutableMap<String, IFeatureValue>> alternatives) {
 		// @formatter:off
 	  return Plurival.of(
@@ -289,6 +374,22 @@ public class FeatureStructure implements IFeatureValue {
 	      );
       // @formatter:on
 	}
+	
+	/**
+	 * Build a feature structure plurival from the free fillings alternatives
+	 */
+	private static Plurival<FeatureStructure> buildRoleFramesFromFreeFillingAlternatives(
+			SurfacePart surfacePart,
+			final Collection<ImmutableSet<IHomogeneousConstituentAlternatives>> freeFillingAlternatives) {
+		//  @formatter:off
+	  return Plurival.of(
+	      freeFillingAlternatives.stream()
+						.map(f -> FeatureStructure.fromFreeFillings(surfacePart, f)) // all free fillings consumed
+	        .collect(toImmutableList())
+	      );
+      //  @formatter:on
+	}
+
 
 	/**
 	 * Fills the free fillings into the slotted features. Also generates
@@ -453,6 +554,41 @@ public class FeatureStructure implements IFeatureValue {
 		return feature.howManyFillingsAreMissingUntilCompletion() <= howManyAdditionalFillingsAllowed;
 	}
 
+	/**
+	 * Tries to fill the free fillings into the features. If a filling does not fit
+	 * into any feature, it is simply left out! Also generates alternatives - in
+	 * each alternative, <i>some</i> free fillings may be consumed - others may not.
+	 * <p>
+	 * The result always contains at least one element: The slots from the input,
+	 * left unchanged without any fillings filled in.
+	 *
+	 * @param fillingUsageRestrictor a free filling might be restricted, so that it
+	 *                               can only fill a (slotted) feature with a
+	 *                               specified name - this is the restrictor. (This
+	 *                               is necessary to ensure that in a ellipse-like
+	 *                               sentence like <i>Paul war Komponist und ab 1924
+	 *                               Dirigent.<i>, Paul is the <i>Subjekt<i> in both
+	 *                               parts - not the <i>Subjekt</i> in one part and
+	 *                               the <i>Praedikatsnomen</i> in the other!)
+	 */
+	private static Collection<ImmutableMap<String, IFeatureValue>> fillFeaturesUsingFillingsOrNotUsingThem(
+			final ImmutableMap<String, IFeatureValue> features,
+			final ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings,
+			final IFillingUsageRestrictor fillingUsageRestrictor) {
+
+		// starting without any feature filled
+		final Collection<ImmutableMap<String, IFeatureValue>> res = new LinkedList<>();
+		res.add(features);
+
+		for (final IHomogeneousConstituentAlternatives freeFilling : freeFillings) {
+			// Tries to fill in this free filling into the already-generated
+			// alternatives -- and then adds the results to the alternatives.
+			res.addAll(fillFeaturesConsumingFilling(res, freeFilling, fillingUsageRestrictor));
+		}
+
+		return res;
+	}
+
 	public FeatureStructure disjunctUnionWithoutFreeFillings(final FeatureStructure other) {
 		if (freeFillings.isEmpty() && Objects.equal(surfacePart, other.surfacePart)) {
 			if (isEmpty()) {
@@ -464,7 +600,7 @@ public class FeatureStructure implements IFeatureValue {
 			}
 		}
 
-		if (hasOneEqualFillingInSlotAs(other)) {
+		if (containsAFillingInASlotEqualTo(other)) {
 			// this.features and other.features contain
 			// the SAME FillingInSlot, you cannot build a union!
 			// The problem is: It would be a verbotene Doppelbelegung, wenn
@@ -488,9 +624,9 @@ public class FeatureStructure implements IFeatureValue {
 	}
 
 	@Override
-	public boolean hasOneEqualFillingInSlotAs(IFeatureValue other) {
+	public boolean containsAFillingInASlotEqualTo(IFeatureValue other) {
 		for (final IFeatureValue someFeature : features.values()) {
-			if (other.hasOneEqualFillingInSlotAs(someFeature)) {
+			if (other.containsAFillingInASlotEqualTo(someFeature)) {
 				// this.features and other.features contain
 				// the SAME FillingInSlot, you cannot build a union!
 				// The problem is: It would be a verbotene Doppelbelegung, wenn
@@ -651,6 +787,39 @@ public class FeatureStructure implements IFeatureValue {
 		return fromValues(surfacePart, res.build());
 	}
 
+	protected boolean containsTheSameFillingInADifferentFeature(final FeatureStructure other) {
+		for (final Entry<String, IFeatureValue> someEntry : features.entrySet()) {
+			for (final Entry<String, IFeatureValue> otherEntry : other.features.entrySet()) {
+				if (someEntry.getKey().equals(otherEntry.getKey())) { // NOPMD by nbudzyn on 29.06.10 21:37
+					// all fine!
+				} else {
+					// slot names are different!
+					if (someEntry.getValue().containsAFillingInASlotEqualTo(otherEntry.getValue())) {
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * @return the name of a feature that contains the <code>filling</code> - or
+	 *         <code>null</code>, if there is no such feature. (The method does an
+	 *         equality check.)
+	 */
+	protected String findFeatureNameContaining(final FillingInSlot filling) {
+		for (final Entry<String, IFeatureValue> entry : features.entrySet()) {
+			if (entry.getValue().containsAFillingInASlotEqualTo(filling)) {
+				return entry.getKey();
+			}
+		}
+
+		// no feature contains this FillingInSlot
+		return null;
+	}
+
 	public IFeatureValue getFeatureValue(final String name) {
 		final IFeatureValue res = features.get(name);
 
@@ -675,7 +844,7 @@ public class FeatureStructure implements IFeatureValue {
 		return features.size();
 	}
 
-	public boolean contains(final String featureName) { // NO_UCD
+	public boolean hasFeature(final String featureName) { // NO_UCD
 		return this.getFeatureValue(featureName) != null;
 	}
 
@@ -695,6 +864,18 @@ public class FeatureStructure implements IFeatureValue {
 		return new OrderedFeatureNameIterator(features);
 	}
 
+	public Iterator<IHomogeneousConstituentAlternatives> freeFillingIterator() {
+		return freeFillings.iterator();
+	}
+
+	protected boolean hasFreeFillings() {
+		return !freeFillings.isEmpty();
+	}
+
+	protected int numberOfFreeFillings() {
+		return freeFillings.size();
+	}
+
 	@Override
 	public int howManyFillingsAreMissingUntilCompletion() {
 		int res = 0;
@@ -706,12 +887,35 @@ public class FeatureStructure implements IFeatureValue {
 		return res;
 	}
 
+	@Override
+	public int howManyAdditionalFillingsAreAllowed() {
+		return 0;
+	}
+
+	/**
+	 * @return How many <i>additional</i> fillings are allowed for a feature with
+	 *         this name? - <i>-1</i>, if there is <i>no upper bound</i>.
+	 */
+	int howManyAdditionalFillingsAreAllowed(final String name) {
+		final IFeatureValue feature = features.get(name);
+
+		if (feature == null) {
+			return -1;
+		}
+
+		return feature.howManyAdditionalFillingsAreAllowed();
+	}
+
 	/**
 	 * Whether this feature value is completed. In this case, all features of this
 	 * feature structure have to be completed.
 	 */
 	@Override
 	public boolean isCompleted() {
+		if (!freeFillings.isEmpty()) {
+			return false;
+		}
+
 		for (final IFeatureValue value : features.values()) {
 			if (!value.isCompleted()) {
 				return false;
@@ -719,6 +923,49 @@ public class FeatureStructure implements IFeatureValue {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Returns this feature structure as a {@link IFillingInSlot} - unless the
+	 * feature structure has more than one filling in slotted feature
+	 */
+	@Nullable
+	public FillingInSlot toFillingInSlot() {
+		SurfacePart resSurfacePart = null;
+		final ImmutableMap.Builder<String, IFeatureValue> resFeatures = ImmutableMap.builder();
+		boolean semanticsAmbivalent = false;
+		ISemantics semantics = null;
+
+		for (Entry<String, IFeatureValue> entry : features.entrySet()) {
+			final Collection<FillingInSlot> slotFillings = entry.getValue().getFillings();
+			if (slotFillings.size() > 1) {
+				return null;
+			}
+
+			if (!slotFillings.isEmpty()) {
+				final FillingInSlot slotFilling = slotFillings.iterator().next();
+
+				resSurfacePart = SurfacePart.join(resSurfacePart, slotFilling.getFeatures().getSurfacePart());
+
+				resFeatures.put(entry.getKey(), slotFilling);
+
+				if (!semanticsAmbivalent) {
+					if (semantics == null) {
+						semantics = slotFilling.getSemantics();
+					} else if (slotFilling.getSemantics() != null && !slotFilling.getSemantics().equals(semantics)) {
+						semantics = null;
+						semanticsAmbivalent = true;
+					}
+				}
+			}
+		}
+
+		return new FillingInSlot(FeatureStructure.fromValues(resSurfacePart, resFeatures.build()), semantics);
+	}
+
+	@Override
+	public Collection<FillingInSlot> getFillings() {
+		return ImmutableList.of();
 	}
 
 	@Nullable
@@ -949,6 +1196,11 @@ public class FeatureStructure implements IFeatureValue {
 
 	@Override
 	public String toString() {
+		return toString(true, false);
+	}
+
+	@Override
+	public String toString(boolean neverShowRequirements, boolean forceShowRequirements) {
 		final StringBuilder res = new StringBuilder();
 
 		if (getSurfacePart() != null) {
@@ -956,6 +1208,8 @@ public class FeatureStructure implements IFeatureValue {
 			res.append(getSurfacePart());
 			res.append("\": ");
 		}
+
+		res.append("{");
 
 		boolean first = true;
 
@@ -970,9 +1224,21 @@ public class FeatureStructure implements IFeatureValue {
 
 			res.append(name);
 			res.append("=");
-			res.append(features.get(name));
+			res.append(features.get(name).toString(neverShowRequirements, forceShowRequirements));
 		}
 
+		for (final IConstituentAlternatives freeFilling : freeFillings) {
+			if (first) {
+				first = false;
+			} else {
+				res.append(", ");
+			}
+
+			res.append("? : ");
+			res.append(freeFilling.toString());
+		}
+
+		res.append("}");
 		return res.toString();
 	}
 
@@ -1024,6 +1290,46 @@ public class FeatureStructure implements IFeatureValue {
 		}
 
 		return StringFeatureValue.of(stringFeatureValueOrMarkerForUnspecified);
+	}
+
+	/**
+	 * Takes a Set and builds all subsets.
+	 * <p>
+	 * Example: The subsets of { a, b } are:
+	 * <ul>
+	 * <li>{ }
+	 * <li>{ a }
+	 * <li>{ b }
+	 * <li>{ a, b }
+	 * </ul>
+	 *
+	 * @param additionSet all these elements will also be in each result
+	 */
+	private static <T extends Object> Set<ImmutableSet<T>> buildAllSubSets(final Set<T> set, final Set<T> additionSet) {
+		// start with empty set
+		ImmutableSet.Builder<ImmutableSet<T>> res = ImmutableSet.builder();
+		// usings a result Set (instead of a list) allows for values, that
+		// are contained in set as well as in additionSet
+		res.add(ImmutableSet.<T>copyOf(additionSet));
+
+		// iterate over all set elements
+		for (final T element : set) {
+			final ImmutableSet<ImmutableSet<T>> oldRes = res.build();
+
+			res = ImmutableSet.<ImmutableSet<T>>builder();
+
+			// Iterate over all sub-set "alternatives" we already have
+			for (final ImmutableSet<T> oldSet : oldRes) {
+				// without the element
+				res.add(oldSet);
+
+				// with the element
+				final ImmutableSet<T> withElement = ImmutableSet.<T>builder().addAll(oldSet).add(element).build();
+				res.add(withElement);
+			}
+		}
+
+		return res.build();
 	}
 
 	/**

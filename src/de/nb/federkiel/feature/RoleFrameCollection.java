@@ -476,6 +476,11 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 	}
 
 	@Override
+	public int howManyAdditionalFillingsAreAllowed() {
+		return 0;
+	}
+
+	@Override
 	public int howManyAdditionalFillingsAreAllowed(final String name) {
 		int res = -1;
 
@@ -538,7 +543,7 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 	}
 
 	@Override
-	public boolean hasOneEqualFillingInSlotAs(IFeatureValue other) {
+	public boolean containsAFillingInASlotEqualTo(IFeatureValue other) {
 		for (final RoleFrame roleFrame : roleFrames) {
 			if (roleFrame.hasOneEqualFillingInSlotAs(other)) {
 				return true;
@@ -706,12 +711,8 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 		return CollectionUtil.compareCollections(roleFrames, other.roleFrames);
 	}
 
-	/**
-	 * @param full
-	 *          wether to return a <i>full</i> string representation
-	 * @return a string representation of <code>this</code>
-	 */
-	public String toString(final boolean full) {
+	@Override
+	public String toString(boolean neverShowRequirements, boolean forceShowRequirements) {
 		final StringBuilder res = new StringBuilder();
 
 		res.append("[");
@@ -723,18 +724,22 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 			} else {
 				res.append(", ");
 			}
-			res.append(roleFrame.toString(full));
+			res.append(roleFrame.toString(neverShowRequirements, forceShowRequirements));
 		}
 
 		res.append("]");
 
 		return res.toString();
-
 	}
 
 	@Override
 	public String toString() {
-		return toString(false);
+		return toString(true, false);
+	}
+
+	@Override
+	public Collection<FillingInSlot> getFillings() {
+		return ImmutableList.of();
 	}
 
 	public Plurival<FillingInSlot> toFillingInSlot() {
