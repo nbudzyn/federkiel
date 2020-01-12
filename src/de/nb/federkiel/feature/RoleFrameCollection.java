@@ -104,7 +104,7 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<FeatureStruc
 	 * Merging two <i>role frames</i> means adding slots and filling slots with free
 	 * fillings.
 	 */
-	protected Plurival<RoleFrameCollection> merge(final RoleFrameCollection other) {
+	protected Plurival<RoleFrameCollection> mergeWithoutSemantics(final RoleFrameCollection other) {
 		Collection<RoleFrameCollection> resAlternatives = new LinkedList<>();
 		resAlternatives.add(of()); // one result: empty role frame Collection
 		// (for a start)
@@ -137,7 +137,7 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<FeatureStruc
 				for (final RoleFrameCollection oldResAlternative : oldResAlternatives) {
 					// we take the alternative we already have and
 					// add the new possible merge result(s) to the alternative!
-					final Plurival<FeatureStructure> possibleMerges = myRoleFrame.merge(otherRoleFrame, oldResAlternative);
+					final Plurival<FeatureStructure> possibleMerges = myRoleFrame.mergeWithoutSemantics(otherRoleFrame, oldResAlternative);
 
 					for (final FeatureStructure possibleMerge : possibleMerges) {
 						resAlternatives.add(oldResAlternative.add(possibleMerge));
@@ -168,7 +168,7 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<FeatureStruc
 	 * base and filling other slots (taken from the base) with free filling from the
 	 * ellipse.
 	 */
-	protected Plurival<RoleFrameCollection> fillEllipse(final RoleFrameCollection ellipse) {
+	protected Plurival<RoleFrameCollection> fillEllipseWithoutSemantics(final RoleFrameCollection ellipse) {
 		Collection<RoleFrameCollection> resAlternatives = new LinkedList<>();
 		resAlternatives.add(of()); // one result: empty role frame Collection
 		// (for a start)
@@ -186,7 +186,7 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<FeatureStruc
 				resAlternatives = new LinkedList<>();
 				for (final RoleFrameCollection oldRoleResAlternative : oldResAlternatives) {
 
-					final Plurival<FeatureStructure> possibleEllipseFillings = baseRoleFrame.fillEllipse(ellipseRoleFrame,
+					final Plurival<FeatureStructure> possibleEllipseFillings = baseRoleFrame.fillEllipseWithoutSemantics(ellipseRoleFrame,
 							oldRoleResAlternative);
 
 					// We take all alternatives we already have and
@@ -299,7 +299,7 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<FeatureStruc
 						// it is not the last role frame of the collection - we
 						// need
 						// all alternatives!
-						final Plurival<FeatureStructure> possibleMerges = myRoleFrame.merge(restriction, oldMergeAlternative);
+						final Plurival<FeatureStructure> possibleMerges = myRoleFrame.mergeWithoutSemantics(restriction, oldMergeAlternative);
 
 						for (final FeatureStructure possibleMerge : possibleMerges) {
 							mergeAlternatives.add(oldMergeAlternative.add(possibleMerge));

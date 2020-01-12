@@ -32,14 +32,17 @@ import de.nb.federkiel.collection.CollectionUtil;
 import de.nb.federkiel.interfaces.IFeatureValue;
 import de.nb.federkiel.interfaces.ISemantics;
 import de.nb.federkiel.plurivallogic.Plurival;
+import de.nb.federkiel.semantik.NothingInParticularSemantics;
 
 /**
- * A structure for (grammatical) features (for the genus, the subject,
- * objects, e.g.).
+ * A structure for (grammatical) features (for the genus, the subject, objects,
+ * e.g.).
  * <p>
- * There can also be <i>Free Fillings</i>, that could be used to 
- * fill (not-yet existing) empty feature slots.
- * Each free filling is a set of realization alternatives.
+ * A feature structure also carries semantics.
+ * <p>
+ * There can also be <i>Free Fillings</i>, that could be used to fill (not-yet
+ * existing) empty feature slots. Each free filling is a set of realization
+ * alternatives.
  *
  * @author nbudzyn 2009
  */
@@ -56,6 +59,11 @@ public class FeatureStructure implements IFeatureValue {
 	 * The (slotted) features with name and value.
 	 */
 	private final ImmutableMap<String, IFeatureValue> features;
+
+	/**
+	 * The semantics (might be a {@link NothingInParticularSemantics})
+	 */
+	private final ISemantics semantics;
 
 	/**
 	 * Free filling values. There can only be free fillings, if there are NO
@@ -118,7 +126,7 @@ public class FeatureStructure implements IFeatureValue {
 	 */
 	private FeatureStructure(@Nullable final SurfacePart surfacePart,
 			final ImmutableMap<String, IFeatureValue> features) {
-		this(surfacePart, features, ImmutableSet.of());
+		this(surfacePart, features, NothingInParticularSemantics.INSTANCE, ImmutableSet.of());
 	}
 
 	/**
@@ -126,6 +134,16 @@ public class FeatureStructure implements IFeatureValue {
 	 * minimize memory use!
 	 */
 	private FeatureStructure(@Nullable final SurfacePart surfacePart, final ImmutableMap<String, IFeatureValue> features,
+			ISemantics semantics) {
+		this(surfacePart, features, semantics, ImmutableSet.of());
+	}
+
+	/**
+	 * When calling this, always use <code>cache.findOrInsert(...)</code>, to
+	 * minimize memory use!
+	 */
+	private FeatureStructure(@Nullable final SurfacePart surfacePart, final ImmutableMap<String, IFeatureValue> features,
+			ISemantics semantics,
 			ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings) {
 		// There can only be free fillings, if there are NO features at all!
 		if (!features.isEmpty()) {
@@ -137,9 +155,10 @@ public class FeatureStructure implements IFeatureValue {
 
 		this.surfacePart = surfacePart;
 		this.features = features;
+		this.semantics = semantics;
 		this.freeFillings = freeFillings;
 
-		hashCode = calcHashCode(this.surfacePart, this.features, this.freeFillings);
+		hashCode = calcHashCode(this.surfacePart, this.features, this.semantics, this.freeFillings);
 	}
 
 	/**
@@ -176,7 +195,7 @@ public class FeatureStructure implements IFeatureValue {
 	 *                               parts - not the <i>Subjekt</i> in one part and
 	 *                               the <i>Praedikatsnomen</i> in the other!)
 	 */
-	Plurival<FeatureStructure> merge(final FeatureStructure other,
+	Plurival<FeatureStructure> mergeWithoutSemantics(final FeatureStructure other,
 			final IFillingUsageRestrictor fillingUsageRestrictor)
 			throws IllegalArgumentException {
 		if (features.isEmpty() && other.features.isEmpty()) {
@@ -194,7 +213,7 @@ public class FeatureStructure implements IFeatureValue {
 			// Case 2: this: no features (maybe some free fillings),
 			// other: some features (no free fillings)!
 
-			return buildFeatureStructurePlurivalFromFeatureAlternatives(
+			return buildFeatureStructurePlurivalFromFeatureAlternativesWithoutSemantics(
 					SurfacePart.join(surfacePart, other.surfacePart),
 					fillFeaturesConsumingAllFillings(other.features, freeFillings, fillingUsageRestrictor));
 			// the results have features (all my free fillings are used to fill them),
@@ -205,7 +224,7 @@ public class FeatureStructure implements IFeatureValue {
 			// Case 3: this: some features (no free fillings),
 			// other: no features (maybe some free fillings)!
 
-			return buildFeatureStructurePlurivalFromFeatureAlternatives(
+			return buildFeatureStructurePlurivalFromFeatureAlternativesWithoutSemantics(
 					SurfacePart.join(surfacePart, other.surfacePart),
 					fillFeaturesConsumingAllFillings(features, other.freeFillings, fillingUsageRestrictor));
 			// the results have features (all of the other's free fillings are used to fill
@@ -217,14 +236,15 @@ public class FeatureStructure implements IFeatureValue {
 		// Case 4: this: some features (no free fillings)!
 		// other: some features (no free fillings)
 
-		final FeatureStructure featureUnion = disjunctUnionWithoutFreeFillings(other);
+		final FeatureStructure featureUnion = disjunctUnionWithoutFreeFillings(other,
+				NothingInParticularSemantics.INSTANCE);
 		if (featureUnion == null) {
 			// (there might habe been the same filling in both features, or the same feature
 			// name...
 			return Plurival.empty();
 		}
 
-		return buildFeatureStructurePlurivalFromFeatureAlternatives(SurfacePart.join(surfacePart, other.surfacePart),
+		return buildFeatureStructurePlurivalFromFeatureAlternativesWithoutSemantics(SurfacePart.join(surfacePart, other.surfacePart),
 				fillFeaturesConsumingAllFillings(featureUnion.features,
 				mergeFreeFillings(freeFillings, other.freeFillings), fillingUsageRestrictor));
 	}
@@ -268,7 +288,8 @@ public class FeatureStructure implements IFeatureValue {
 		// Case 4: this: some features (no free fillings)!
 		// other: some features (no free fillings)
 
-		final FeatureStructure featureUnion = disjunctUnionWithoutFreeFillings(other);
+		final FeatureStructure featureUnion = disjunctUnionWithoutFreeFillings(other,
+				NothingInParticularSemantics.INSTANCE);
 		if (featureUnion == null) {
 			// (there might habe been the same filling in both features, or the same feature
 			// name...
@@ -309,7 +330,7 @@ public class FeatureStructure implements IFeatureValue {
 	 *                               <i>Subjekt</i> in one part and the
 	 *                               <i>Praedikatsnomen</i> in the other!)
 	 */
-	protected Plurival<FeatureStructure> fillEllipse(final FeatureStructure ellipse,
+	protected Plurival<FeatureStructure> fillEllipseWithoutSemantics(final FeatureStructure ellipse,
 			final IFillingUsageRestrictor fillingUsageRestrictor) throws IllegalArgumentException {
 		if (features.isEmpty() && ellipse.features.isEmpty()) {
 			// Case 1: this: no features (maybe free fillings),
@@ -324,7 +345,7 @@ public class FeatureStructure implements IFeatureValue {
 			// Case 2: this: no features (maybe free fillings),
 			// ellipse: some features (no free fillings)!
 
-			return buildFeatureStructurePlurivalFromFeatureAlternatives(SurfacePart.join(surfacePart, ellipse.surfacePart),
+			return buildFeatureStructurePlurivalFromFeatureAlternativesWithoutSemantics(SurfacePart.join(surfacePart, ellipse.surfacePart),
 					fillFeaturesUsingFillingsOrNotUsingThem(ellipse.features, freeFillings, fillingUsageRestrictor)); // ==>
 			// the results have features (some of my free fillings may be used to fill
 			// them),
@@ -364,7 +385,7 @@ public class FeatureStructure implements IFeatureValue {
 	/**
 	 * Builds a FeatureStructure Plurival from the alternatives
 	 */
-	private static Plurival<FeatureStructure> buildFeatureStructurePlurivalFromFeatureAlternatives(SurfacePart surfacePart,
+	private static Plurival<FeatureStructure> buildFeatureStructurePlurivalFromFeatureAlternativesWithoutSemantics(SurfacePart surfacePart,
 			final Collection<ImmutableMap<String, IFeatureValue>> alternatives) {
 		// @formatter:off
 	  return Plurival.of(
@@ -589,13 +610,13 @@ public class FeatureStructure implements IFeatureValue {
 		return res;
 	}
 
-	public FeatureStructure disjunctUnionWithoutFreeFillings(final FeatureStructure other) {
+	public FeatureStructure disjunctUnionWithoutFreeFillings(final FeatureStructure other, ISemantics newSemantics) {
 		if (freeFillings.isEmpty() && Objects.equal(surfacePart, other.surfacePart)) {
-			if (isEmpty()) {
+			if (isEmpty() && newSemantics.equals(other.semantics)) {
 				return other;
 			}
 
-			if (other.isEmpty()) {
+			if (other.isEmpty() && newSemantics.equals(semantics)) {
 				return this;
 			}
 		}
@@ -615,7 +636,7 @@ public class FeatureStructure implements IFeatureValue {
 		valueBuilder.putAll(other.features);
 
 		try {
-			return fromValues(SurfacePart.join(surfacePart, other.surfacePart), valueBuilder.build());
+			return fromValues(SurfacePart.join(surfacePart, other.surfacePart), valueBuilder.build(), newSemantics);
 			// fails, if duplicate keys were added
 		} catch (final IllegalArgumentException e) {
 			// Cannot merge role frames: Both share the same slot name.
@@ -715,13 +736,25 @@ public class FeatureStructure implements IFeatureValue {
   }
 
   public static FeatureStructure fromValues(@Nullable final SurfacePart surfacePart, final ImmutableMap<String, IFeatureValue> features) {
-    return cache.findOrInsert(new FeatureStructure(surfacePart, features));
+		return fromValues(surfacePart, features, NothingInParticularSemantics.INSTANCE);
   }
+
+	public static FeatureStructure fromValues(@Nullable final SurfacePart surfacePart,
+			final ImmutableMap<String, IFeatureValue> features, ISemantics semantics) {
+		return cache.findOrInsert(new FeatureStructure(surfacePart, features, semantics));
+	}
 
 	public static FeatureStructure fromValuesAndFreeFillings(@Nullable final SurfacePart surfacePart,
 			final ImmutableMap<String, IFeatureValue> features,
 			final ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings) {
-		return cache.findOrInsert(new FeatureStructure(surfacePart, features, freeFillings));
+		return fromValuesSemanticsAndFreeFillings(surfacePart, features, NothingInParticularSemantics.INSTANCE, 
+				freeFillings);
+	}
+
+	public static FeatureStructure fromValuesSemanticsAndFreeFillings(@Nullable final SurfacePart surfacePart,
+			final ImmutableMap<String, IFeatureValue> features, final ISemantics semantics,
+			final ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings) {
+		return cache.findOrInsert(new FeatureStructure(surfacePart, features, semantics, freeFillings));
 	}
 
 	public static FeatureStructure fromFreeFillings(
@@ -732,7 +765,8 @@ public class FeatureStructure implements IFeatureValue {
 	public static FeatureStructure fromFreeFillings(@Nullable final SurfacePart surfacePart,
 			final ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings) {
 		return cache
-				.findOrInsert(new FeatureStructure(surfacePart, ImmutableMap.<String, IFeatureValue>of(), freeFillings));
+				.findOrInsert(new FeatureStructure(surfacePart, ImmutableMap.<String, IFeatureValue>of(),
+						NothingInParticularSemantics.INSTANCE, freeFillings));
 	}
 
 	private static SurfacePart joinSurfaceParts(ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings) {
@@ -746,7 +780,11 @@ public class FeatureStructure implements IFeatureValue {
 	}
 
 	public FeatureStructure sameValuesFor(final SurfacePart otherSurfacePart) {
-		return cache.findOrInsert(new FeatureStructure(otherSurfacePart, features));
+		return cache.findOrInsert(new FeatureStructure(otherSurfacePart, features, semantics, freeFillings));
+	}
+
+	public FeatureStructure with(ISemantics otherSemantics) {
+		return cache.findOrInsert(new FeatureStructure(surfacePart, features, otherSemantics, freeFillings));
 	}
 
 	public static FeatureStructure empty(@Nullable final SurfacePart surfacePart) {
@@ -804,7 +842,7 @@ public class FeatureStructure implements IFeatureValue {
 			}
 		}
 
-		return fromValues(surfacePart, res.build());
+		return fromValues(surfacePart, res.build(), semantics);
 	}
 
 	protected boolean containsTheSameFillingInADifferentFeature(final FeatureStructure other) {
@@ -866,6 +904,10 @@ public class FeatureStructure implements IFeatureValue {
 
 	public boolean hasFeature(final String featureName) { // NO_UCD
 		return this.getFeatureValue(featureName) != null;
+	}
+
+	public ISemantics getSemantics() {
+		return semantics;
 	}
 
 	public boolean isEmpty() {
@@ -964,7 +1006,7 @@ public class FeatureStructure implements IFeatureValue {
 		SurfacePart resSurfacePart = null;
 		final ImmutableMap.Builder<String, IFeatureValue> resFeatures = ImmutableMap.builder();
 		boolean semanticsAmbivalent = false;
-		ISemantics semantics = null;
+		ISemantics semantics = NothingInParticularSemantics.INSTANCE;
 
 		for (Entry<String, IFeatureValue> entry : features.entrySet()) {
 			final Collection<FillingInSlot> slotFillings = entry.getValue().getFillings();
@@ -981,16 +1023,17 @@ public class FeatureStructure implements IFeatureValue {
 
 				if (!semanticsAmbivalent) {
 					if (semantics == null) {
-						semantics = slotFilling.getSemantics();
-					} else if (slotFilling.getSemantics() != null && !slotFilling.getSemantics().equals(semantics)) {
-						semantics = null;
+						semantics = slotFilling.getFeatures().getSemantics();
+					} else if (slotFilling.getFeatures().getSemantics() != null
+							&& !slotFilling.getFeatures().getSemantics().equals(semantics)) {
+						semantics = NothingInParticularSemantics.INSTANCE;
 						semanticsAmbivalent = true;
 					}
 				}
 			}
 		}
 
-		return new FillingInSlot(FeatureStructure.fromValues(resSurfacePart, resFeatures.build()), semantics);
+		return new FillingInSlot(FeatureStructure.fromValues(resSurfacePart, resFeatures.build(), semantics));
 	}
 
 	@Override
@@ -1033,7 +1076,15 @@ public class FeatureStructure implements IFeatureValue {
 			return false;
 		}
 
-		return freeFillings.equals(other.freeFillings);
+		if (!freeFillings.equals(other.freeFillings)) {
+			return false;
+		}
+
+		if (!semantics.equals(other.semantics)) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -1087,6 +1138,14 @@ public class FeatureStructure implements IFeatureValue {
 			return false;
 		}
 
+		if (!freeFillings.equals(other.freeFillings)) {
+			return false;
+		}
+
+		if (!semantics.equals(other.semantics)) {
+			return false;
+		}
+
 		for (final Entry<String, IFeatureValue> featureEntry : features.entrySet()) {
 			if (excludedNames.contains(featureEntry.getKey())) {
 				continue;
@@ -1135,6 +1194,14 @@ public class FeatureStructure implements IFeatureValue {
 			return false;
 		}
 
+		if (!freeFillings.equals(other.freeFillings)) {
+			return false;
+		}
+
+		if (!semantics.equals(other.semantics)) {
+			return false;
+		}
+
 		for (final Entry<String, IFeatureValue> featureEntry : features.entrySet()) {
 			if (excludedNames.contains(featureEntry.getKey())) {
 				continue;
@@ -1172,10 +1239,12 @@ public class FeatureStructure implements IFeatureValue {
 
 	private final static int calcHashCode(@Nullable final SurfacePart surfacePart,
 			final ImmutableMap<String, IFeatureValue> features,
+			final ISemantics semantics,
 			ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings) {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + features.hashCode();
+		result = prime * result + semantics.hashCode();
 		result = prime * result + freeFillings.hashCode();
 
 		// IDEA: Teuer? könnte man per entrySet /iterator auf einige wenige Einträge
@@ -1203,6 +1272,11 @@ public class FeatureStructure implements IFeatureValue {
 		final int featuresCompared = CollectionUtil.compareMaps(features, other.features);
 		if (featuresCompared != 0) {
 			return featuresCompared;
+		}
+
+		final int semanticsCompared = semantics.compareTo(other.semantics);
+		if (semanticsCompared != 0) {
+			return semanticsCompared;
 		}
 
 		return CollectionUtil.compareCollections(freeFillings, other.freeFillings);

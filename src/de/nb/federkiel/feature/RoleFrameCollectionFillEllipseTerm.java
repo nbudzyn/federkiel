@@ -39,7 +39,7 @@ RoleFrameCollection, RoleFrameCollection, FeatureAssignment> {
 		}
 		 */
 
-		return base.fillEllipse(ellipse);
+		return base.fillEllipseWithoutSemantics(ellipse);
 	}
 
 

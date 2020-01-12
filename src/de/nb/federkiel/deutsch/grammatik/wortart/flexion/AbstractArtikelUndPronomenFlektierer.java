@@ -28,7 +28,6 @@ import de.nb.federkiel.interfaces.IFeatureValue;
 import de.nb.federkiel.interfaces.IWordForm;
 import de.nb.federkiel.lexikon.Lexeme;
 import de.nb.federkiel.lexikon.Wortform;
-import de.nb.federkiel.semantik.NothingInParticularSemantics;
 
 /**
  * Sammelt einige Gemeinsamkeiten von Artikel- und Pronomen- Flektierern
@@ -309,7 +308,7 @@ abstract class AbstractArtikelUndPronomenFlektierer extends AbstractArtikelProno
 
     final FeatureStructure features = LexiconFeatureStructureUtil.fromStringValues(featureMap);
 
-    final Wortform res = new Wortform(lexeme, pos, string, features, NothingInParticularSemantics.INSTANCE);
+		final Wortform res = new Wortform(lexeme, pos, string, features);
     // @formatter:on
 
 		return res;

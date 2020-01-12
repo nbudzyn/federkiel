@@ -34,8 +34,6 @@ public interface IWordForm extends Comparable<IWordForm> {
    */
   public IFeatureValue getFeatureValue(final String featureName, final IFeatureValue defaultValue);
 
-  public ISemantics getSemantics();
-
   public IWordForm generalizeFeature(String featureName);
 
   /**

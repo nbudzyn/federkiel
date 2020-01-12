@@ -32,7 +32,7 @@ RoleFrameCollection, RoleFrameCollection, FeatureAssignment> {
 	public Plurival<RoleFrameCollection> calculate(
 			final RoleFrameCollection first, final RoleFrameCollection second) {
 
-		return first.merge(second);
+		return first.mergeWithoutSemantics(second);
 	}
 
 	/*

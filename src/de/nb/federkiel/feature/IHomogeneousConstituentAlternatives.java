@@ -18,6 +18,6 @@ import javax.annotation.concurrent.ThreadSafe;
  */
 @Immutable
 @ThreadSafe
-public interface IHomogeneousConstituentAlternatives extends IConstituentAlternatives, IFeatureAndSemanticsCarrier {
+public interface IHomogeneousConstituentAlternatives extends IConstituentAlternatives, IFeatureCarrier {
 	public FillingInSlot toFillingInSlot();
 }

@@ -1454,7 +1454,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
 		final FeatureStructure features = buildFeatures(kasusInfo, vorgabeFuerNachfolgendesAdjektiv, numerus, genus,
 				additionalFeatures, additionalFeatureTypes);
 
-		return new Wortform(lexeme, pos, string, features, NothingInParticularSemantics.INSTANCE);
+		return new Wortform(lexeme, pos, string, features);
 	}
 
 	private static FeatureStructure buildFeatures(final KasusInfo kasusInfo,
@@ -1491,6 +1491,6 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
     featureBuilder.putAll(additionalFeatures);
     // @formatter:on
 
-		return LexiconFeatureStructureUtil.fromValues(featureBuilder.build());
+		return LexiconFeatureStructureUtil.fromValues(featureBuilder.build(), NothingInParticularSemantics.INSTANCE);
 	}
 }

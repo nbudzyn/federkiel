@@ -3,6 +3,7 @@ package de.nb.federkiel.feature;
 import com.google.common.collect.ImmutableMap;
 
 import de.nb.federkiel.interfaces.IFeatureValue;
+import de.nb.federkiel.interfaces.ISemantics;
 
 /**
  * Utility methode for feature structures in a lexicon.
@@ -48,7 +49,7 @@ public class LexiconFeatureStructureUtil {
 	/**
 	 * Builds a feature Structure WITHOUT a surface part - for a lexicon.
 	 */
-	public static FeatureStructure fromValues(final ImmutableMap<String, IFeatureValue> features) {
-		return FeatureStructure.fromValues(null, features);
+	public static FeatureStructure fromValues(final ImmutableMap<String, IFeatureValue> features, ISemantics semantics) {
+		return FeatureStructure.fromValues(null, features, semantics);
 	}
 }

@@ -5,31 +5,38 @@ import java.util.Collection;
 import com.google.common.collect.ImmutableList;
 
 import de.nb.federkiel.interfaces.IFeatureValue;
-import de.nb.federkiel.interfaces.ISemantics;
 import net.jcip.annotations.Immutable;
 
 /**
- * A filling inside a slot (as opposed to a <i>free filling</i>). A part surface
- * with some features and semantics
+ * A filling inside a slot (as opposed to a <i>free filling</i>). A part of the
+ * surface with some features and semantics
  *
  * @author nbudzyn 2019
  */
 @Immutable
 @org.checkthread.annotations.ThreadSafe
-public class FillingInSlot implements Comparable<IFeatureValue>, IFeatureAndSemanticsCarrier, IFeatureValue {
+public class FillingInSlot implements IFeatureCarrier, IFeatureValue {
+	TODO FILLING
+	IN SLOT
+	MIT FEATURESTRUCTURE VERGLEICHEN,
+	VEREINHEITLICHEN UND
+	FILLING IN
+	SLOT ÜBERALL
+	DURCH FEATURE
+	STRUCTURE ERSETZEN
+
+	GGF.AUCH NOCH
+	MEHR DINGE
+	DURCH FEATURE
+	STRUCTURE ERSETZEN
+
 	/**
 	 * The features
 	 */
 	private final FeatureStructure features;
 
-	/**
-	 * The semantics
-	 */
-	private final ISemantics semantics;
-
-	public FillingInSlot(final FeatureStructure features, final ISemantics semantics) {
+	public FillingInSlot(final FeatureStructure features) {
 		this.features = features;
-		this.semantics = semantics;
 	}
 
 	@Override
@@ -51,11 +58,6 @@ public class FillingInSlot implements Comparable<IFeatureValue>, IFeatureAndSema
 	@Override
 	public FeatureStructure getFeatures() {
 		return features;
-	}
-
-	@Override
-	public ISemantics getSemantics() {
-		return semantics;
 	}
 
 	@Override
@@ -87,7 +89,6 @@ public class FillingInSlot implements Comparable<IFeatureValue>, IFeatureAndSema
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (features == null ? 0 : features.hashCode());
-		result = prime * result + (semantics == null ? 0 : semantics.hashCode());
 		return result;
 	}
 
@@ -110,13 +111,6 @@ public class FillingInSlot implements Comparable<IFeatureValue>, IFeatureAndSema
 		} else if (!features.equals(other.features)) {
 			return false;
 		}
-		if (semantics == null) {
-			if (other.semantics != null) {
-				return false;
-			}
-		} else if (!semantics.equals(other.semantics)) {
-			return false;
-		}
 		return true;
 	}
 
@@ -132,11 +126,6 @@ public class FillingInSlot implements Comparable<IFeatureValue>, IFeatureAndSema
 		final int featuresCompared = features.compareTo(other.getFeatures());
 		if (featuresCompared != 0) {
 			return featuresCompared;
-		}
-
-		final int semanticsCompared = semantics.compareTo(other.getSemantics());
-		if (semanticsCompared != 0) {
-			return semanticsCompared;
 		}
 
 		return 0;

@@ -52,7 +52,6 @@ import de.nb.federkiel.interfaces.ILexeme;
 import de.nb.federkiel.interfaces.IWordForm;
 import de.nb.federkiel.lexikon.Lexeme;
 import de.nb.federkiel.lexikon.Wortform;
-import de.nb.federkiel.semantik.NothingInParticularSemantics;
 import de.nb.federkiel.string.StringUtil;
 
 /**
@@ -1601,7 +1600,7 @@ public class SubstantivFlektierer implements IFlektierer {
             .build());
     // @formatter:on
 
-		final Wortform res = new Wortform(lexeme, pos, string, features, NothingInParticularSemantics.INSTANCE);
+		final Wortform res = new Wortform(lexeme, pos, string, features);
 
 		return res;
 	}

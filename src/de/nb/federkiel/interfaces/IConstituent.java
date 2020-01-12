@@ -21,8 +21,6 @@ import de.nb.federkiel.feature.FeatureStructure;
 public interface IConstituent extends IConstituentOrEdge {
 	public FeatureStructure getFeatures();
 
-	public ISemantics getSemantics();
-
 	/**
 	 * Returns the number of all parsings represented by this grammar symbol
 	 * realization, multiplying all possibilities (from the alternativity sets,

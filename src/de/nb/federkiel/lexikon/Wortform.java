@@ -59,11 +59,6 @@ public class Wortform implements IWordForm {
 	private final FeatureStructure features;
 
 	/**
-	 * Semantics (<i>meaning</i>) of the word.
-	 */
-	private final ISemantics semantics;
-
-	/**
 	 * Erzeugt eine neue Wortform, die der Nennform eines Lexems entspricht,
 	 * <i>ohne</i> Wortform-spezifische (grammatische) Merkmale.
 	 */
@@ -78,12 +73,11 @@ public class Wortform implements IWordForm {
 	 * @param string
 	 *          must not be empty
 	 */
-	public Wortform(final ILexeme lexeme, final String pos, final String string, final ISemantics semantics) {
+	public Wortform(final ILexeme lexeme, final String pos, final String string, ISemantics semantics) {
 		this.lexeme = lexeme;
 		this.string = string;
 		this.pos = pos;
-		features = lexeme.getFeatures();
-		this.semantics = semantics;
+		features = lexeme.getFeatures().with(semantics);
 	}
 
 	/**
@@ -93,9 +87,9 @@ public class Wortform implements IWordForm {
 	 * @param string
 	 *          must not be empty
 	 */
-	public Wortform(final ILexeme lexeme, final String pos, final String string, final FeatureStructure specificFeatures,
-			final ISemantics semantics) {
-		this(lexeme, pos, string, specificFeatures, semantics, true);
+	public Wortform(final ILexeme lexeme, final String pos, final String string,
+			final FeatureStructure specificFeatures) {
+		this(lexeme, pos, string, specificFeatures, true);
 	}
 
 	/**
@@ -122,7 +116,7 @@ public class Wortform implements IWordForm {
 																																																	// are
 																																																	// already
 																																																	// included!
-				additionalSpecificFeatures), original.semantics, false); // (lexeme
+				additionalSpecificFeatures, original.features.getSemantics()), false); // (lexeme
 																																	// features
 																																	// are
 																																	// already
@@ -134,13 +128,13 @@ public class Wortform implements IWordForm {
 	 *          must not be empty
 	 */
 	private Wortform(final ILexeme lexeme, final String pos, final String string, final FeatureStructure features,
-			final ISemantics semantics, final boolean addFeaturesFromLexeme) {
+			final boolean addFeaturesFromLexeme) {
 		this.lexeme = lexeme;
 		this.pos = pos;
 		this.string = string;
-		this.features = addFeaturesFromLexeme ? this.lexeme.getFeatures().disjunctUnionWithoutFreeFillings(features)
+		this.features = addFeaturesFromLexeme
+				? this.lexeme.getFeatures().disjunctUnionWithoutFreeFillings(features, features.getSemantics())
 				: features;
-		this.semantics = semantics;
 	}
 
 	/**
@@ -148,8 +142,8 @@ public class Wortform implements IWordForm {
 	 *          must not be empty
 	 */
 	public static Wortform lexemeFeaturesAlreadyIntegrated(final ILexeme lexeme, final String pos, final String string,
-			final FeatureStructure allWordformFeatures, final ISemantics semantics) {
-		return new Wortform(lexeme, pos, string, allWordformFeatures, semantics, false);
+			final FeatureStructure allWordformFeatures) {
+		return new Wortform(lexeme, pos, string, allWordformFeatures, false);
 	}
 
 	/**
@@ -161,7 +155,7 @@ public class Wortform implements IWordForm {
 		final FeatureStructure generalizedFeatures = features.generalizeFeature(featureName);
 		return new Wortform(lexeme, pos, string, generalizedFeatures, // lexeme
 				// features are already included!
-				semantics, false); // (lexeme features are already
+				false); // (lexeme features are already
 	}
 
 	/**
@@ -220,11 +214,6 @@ public class Wortform implements IWordForm {
 
 	public boolean areAllFeaturesCompleted() {
 		return features.isCompleted();
-	}
-
-	@Override
-	public ISemantics getSemantics() {
-		return semantics;
 	}
 
 	@Override
@@ -308,10 +297,6 @@ public class Wortform implements IWordForm {
 			return false;
 		}
 
-		if (!semantics.equals(other.semantics)) {
-			return false;
-		}
-
 		if (!pos.equals(other.pos)) {
 			return false;
 		}
@@ -344,12 +329,7 @@ public class Wortform implements IWordForm {
 			return lexemsCompared;
 		}
 
-		final int featuresCompared = features.compareTo(other.features);
-		if (featuresCompared != 0) {
-			return featuresCompared;
-		}
-
-		return semantics.compareTo(other.semantics);
+		return features.compareTo(other.features);
 	}
 
 	@Override

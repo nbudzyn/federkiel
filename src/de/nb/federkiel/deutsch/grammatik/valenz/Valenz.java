@@ -18,6 +18,7 @@ import de.nb.federkiel.feature.FeatureStructure;
 import de.nb.federkiel.feature.RoleFrameSlot;
 import de.nb.federkiel.interfaces.IFeatureValue;
 import de.nb.federkiel.reflection.ReflectionUtil;
+import de.nb.federkiel.semantik.NothingInParticularSemantics;
 
 /**
  * Valenz eines Verbs - ist es transitiv, intransitiv, erfordert es zwei
@@ -377,7 +378,8 @@ public final class Valenz {
 		
 		return ergaenzungstypFeatures.disjunctUnionWithoutFreeFillings(
 				ErgaenzungsOderAngabeTypen.buildAngabenSlots(personDesSubjekts, genusDesSubjekts, numerusDesSubjekts,
-						hoeflichkeitsformDesSubjekts, fuerAdjektivischeForm));
+						hoeflichkeitsformDesSubjekts, fuerAdjektivischeForm),
+				NothingInParticularSemantics.INSTANCE);
 	}
 
 	/**
@@ -401,7 +403,8 @@ public final class Valenz {
 
 		FeatureStructure restrictionSlots = FeatureStructure.fromValues(null, restrictionSlotsBuilder.build());
 
-		return restrictionSlots.disjunctUnionWithoutFreeFillings(ErgaenzungsOderAngabeTypen.buildAngabenRestrictionSlots());
+		return restrictionSlots.disjunctUnionWithoutFreeFillings(ErgaenzungsOderAngabeTypen.buildAngabenRestrictionSlots(),
+				NothingInParticularSemantics.INSTANCE);
 	}
 
 	/**

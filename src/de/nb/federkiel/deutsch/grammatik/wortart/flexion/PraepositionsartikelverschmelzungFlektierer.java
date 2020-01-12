@@ -21,7 +21,6 @@ import de.nb.federkiel.feature.LexiconFeatureStructureUtil;
 import de.nb.federkiel.interfaces.IWordForm;
 import de.nb.federkiel.lexikon.Lexeme;
 import de.nb.federkiel.lexikon.Wortform;
-import de.nb.federkiel.semantik.NothingInParticularSemantics;
 
 public class PraepositionsartikelverschmelzungFlektierer implements IFlektierer {
 	private static final String PRAEPOSITION_KEY = "praeposition";
@@ -243,7 +242,7 @@ public class PraepositionsartikelverschmelzungFlektierer implements IFlektierer 
             .build());
     // @formatter:on
 
-		return new Wortform(lexeme, pos, string, features, NothingInParticularSemantics.INSTANCE);
+		return new Wortform(lexeme, pos, string, features);
 	}
 
 }

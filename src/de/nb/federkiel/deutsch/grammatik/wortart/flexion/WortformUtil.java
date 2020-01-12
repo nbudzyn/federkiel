@@ -17,7 +17,6 @@ import de.nb.federkiel.feature.StringFeatureValue;
 import de.nb.federkiel.interfaces.IWordForm;
 import de.nb.federkiel.lexikon.Lexeme;
 import de.nb.federkiel.lexikon.Wortform;
-import de.nb.federkiel.semantik.NothingInParticularSemantics;
 
 /**
  * Utility-Methoden für Wortformen
@@ -41,7 +40,7 @@ public final class WortformUtil {
 				RoleFrameCollection.of(slots), GermanUtil.TEMPUS, StringFeatureValue.of(tempus), GermanUtil.MODUS_KEY,
 				StringFeatureValue.of(modus));
 
-		return new Wortform(lexeme, pos, string, features, NothingInParticularSemantics.INSTANCE);
+		return new Wortform(lexeme, pos, string, features);
 	}
 
 	/**
@@ -54,7 +53,7 @@ public final class WortformUtil {
 				RoleFrameCollection.of(slots), GermanUtil.NUMERUS_KEY,
 				StringFeatureValue.of(FeatureStringConverter.toFeatureString(numerus)));
 
-		return new Wortform(lexeme, pos, string, features, NothingInParticularSemantics.INSTANCE);
+		return new Wortform(lexeme, pos, string, features);
 	}
 
 	/**
@@ -65,7 +64,7 @@ public final class WortformUtil {
 		final FeatureStructure features = LexiconFeatureStructureUtil.fromValues(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
 				RoleFrameCollection.of(slots));
 
-		return new Wortform(lexeme, pos, lexeme.getCanonicalizedForm(), features, NothingInParticularSemantics.INSTANCE);
+		return new Wortform(lexeme, pos, lexeme.getCanonicalizedForm(), features);
 	}
 
 	public static Collection<IWordForm> expandToUpperLowerCaseForms(final Iterable<IWordForm> wordForms,
