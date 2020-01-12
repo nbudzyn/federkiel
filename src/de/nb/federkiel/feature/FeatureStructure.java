@@ -1,6 +1,7 @@
 package de.nb.federkiel.feature;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.collect.ImmutableList.toImmutableList;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -15,6 +16,7 @@ import javax.annotation.concurrent.Immutable;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -26,6 +28,7 @@ import com.google.common.collect.UnmodifiableIterator;
 import de.nb.federkiel.cache.WeakCache;
 import de.nb.federkiel.collection.CollectionUtil;
 import de.nb.federkiel.interfaces.IFeatureValue;
+import de.nb.federkiel.plurivallogic.Plurival;
 
 /**
  * A structure for (grammatical) features (for the genus, the subject,
@@ -52,7 +55,7 @@ public class FeatureStructure implements IFeatureValue {
 	private final ImmutableMap<String, IFeatureValue> features;
 
 	/**
-	 * Free filling values. There can only be free fillings, if there are NO (slotted)
+	 * Free filling values. There can only be free fillings, if there are NO
 	 * features at all!
 	 */
 	private final ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings;
@@ -121,6 +124,14 @@ public class FeatureStructure implements IFeatureValue {
 	 */
 	private FeatureStructure(@Nullable final SurfacePart surfacePart, final ImmutableMap<String, IFeatureValue> features,
 			ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings) {
+		// There can only be free fillings, if there are NO features at all!
+		if (!features.isEmpty()) {
+			if (!freeFillings.isEmpty()) {
+				throw new IllegalArgumentException("There can only be free fillings, if there are NO features at all! "
+						+ "Features: " + features + ", free fillings: " + freeFillings);
+			}
+		}
+
 		this.surfacePart = surfacePart;
 		this.features = features;
 		this.freeFillings = freeFillings;
@@ -128,32 +139,341 @@ public class FeatureStructure implements IFeatureValue {
 		hashCode = calcHashCode(this.surfacePart, this.features, this.freeFillings);
 	}
 
+	/**
+	 * Merges the two feature structures, which means:
+	 * <ul>
+	 * <li>free fillings are added
+	 * <li>if there are any features at all, the features are added, and <i>ALL</i>
+	 * free fillings are used to fill the slotted features. (<i>ALL</i> symbols are
+	 * &quot;consumed&quot; in this case! - There can only be free fillings, if
+	 * there are NO features at all!)
+	 * </ul>
+	 * <p>
+	 * The free fillings of this feature structure and of the other feature
+	 * structure may contain the same free filling (resulting from the same parts of
+	 * the input, based on a filled ellipse, for example).
+	 * <p>
+	 * In some cases, merging is not possible (not all free fillings can be consumed
+	 * by the slotted freatures, e.g.), in other cases there are several
+	 * possibilities for a merge (filling A fills feature X, filling B fills feature
+	 * Y; or the other way round). So, the merge result is a Plurival, containing
+	 * all possible (alternative) merges.
+	 * <p>
+	 * If the merge is not possible (due to a all-has-to-be-consumed-condition,
+	 * e.g.), the result will be empty.
+	 * <p>
+	 * The two feature structures MUST NOT share the feature name!
+	 *
+	 * @param fillingUsageRestrictor a free filling might be restricted, so that it
+	 *                               can only fill a slotted feature with a
+	 *                               specified name - this is the restrictor. (This
+	 *                               is necessary to ensure that in a ellipse-like
+	 *                               sentence like <i>Paul war Komponist und ab 1924
+	 *                               Dirigent.<i>, Paul is the <i>Subjekt<i> in both
+	 *                               parts - not the <i>Subjekt</i> in one part and
+	 *                               the <i>Praedikatsnomen</i> in the other!)
+	 */
+	Plurival<FeatureStructure> merge(final FeatureStructure other,
+			final IFillingUsageRestrictor fillingUsageRestrictor)
+			throws IllegalArgumentException {
+		if (features.isEmpty() && other.features.isEmpty()) {
+			// Case 1: this: no features (maybe some free fillings),
+			// other: no features (maybe more fillings)
+
+			// No features at all --> all free fillings stay unconsumed!
+
+			return Plurival.of(FeatureStructure.fromFreeFillings(
+					SurfacePart.join(surfacePart, other.surfacePart),
+					mergeFreeFillings(freeFillings, other.freeFillings))); // ==>
+		}
+
+		if (features.isEmpty() && !other.features.isEmpty()) {
+			// Case 2: this: no features (maybe some free fillings),
+			// other: some features (no free fillings)!
+
+			return buildFeatureStructurePlurivalFromAlternatives(
+					SurfacePart.join(surfacePart, other.surfacePart),
+					fillFeaturesConsumingAllFillings(other.features, freeFillings, fillingUsageRestrictor));
+			// the results have features (all my free fillings are used to fill them),
+			// but the results don't have free fillings
+		}
+
+		if (!features.isEmpty() && other.features.isEmpty()) {
+			// Case 3: this: some features (no free fillings),
+			// other: no features (maybe some free fillings)!
+
+			return buildFeatureStructurePlurivalFromAlternatives(
+					SurfacePart.join(surfacePart, other.surfacePart),
+					fillFeaturesConsumingAllFillings(features, other.freeFillings, fillingUsageRestrictor));
+			// the results have features (all of the other's free fillings are used to fill
+			// them),
+			// but the results have no free fillings
+		}
+
+		// ELSE:
+		// Case 4: this: some features (no free fillings)!
+		// other: some features (no free fillings)
+
+		final FeatureStructure featureUnion = disjunctUnionWithoutFreeFillings(other);
+		if (featureUnion == null) {
+			// (there might habe been the same filling in both features, or the same feature
+			// name...
+			return Plurival.empty();
+		}
+
+		return Plurival.of(featureUnion);
+	}
 
 	/**
-	 * @param a
-	 *          feature provider
-	 * @param another
-	 *          feature provider - the features must NOT overlap, and the surface
-	 *          HAS TO BE the same
+	 * Builds a FeatureStructure Plurival from the alternatives
 	 */
-	public static FeatureStructure disjunctUnion(final FeatureStructure one, final FeatureStructure other) {
-		if (one.isEmpty()) {
-			return other;
+	private static Plurival<FeatureStructure> buildFeatureStructurePlurivalFromAlternatives(SurfacePart surfacePart,
+			final Collection<ImmutableMap<String, IFeatureValue>> alternatives) {
+		// @formatter:off
+	  return Plurival.of(
+	      alternatives.stream()
+						.map(features -> FeatureStructure.fromValues(surfacePart, features))
+	        .collect(toImmutableList())
+	      );
+      // @formatter:on
+	}
+
+	/**
+	 * Fills the free fillings into the slotted features. Also generates
+	 * alternatives - in each alternative, <i>all</i> free fillings will be
+	 * consumed.
+	 *
+	 * @param fillingUsageRestrictor a free filling might be restricted, so that it
+	 *                               can only fill a slot with a specified name -
+	 *                               this is the restrictor. (This is necessary to
+	 *                               ensure that in a ellipse-like sentence like
+	 *                               <i>Paul war Komponist und ab 1924 Dirigent.<i>,
+	 *                               Paul is the <i>Subjekt<i> in both parts - not
+	 *                               the <i>Subjekt</i> in one part and the
+	 *                               <i>Praedikatsnomen</i> in the other!)
+	 */
+	private static Collection<ImmutableMap<String, IFeatureValue>> fillFeaturesConsumingAllFillings(
+			ImmutableMap<String, IFeatureValue> features,
+			final ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings,
+			final IFillingUsageRestrictor fillingUsageRestrictor) {
+
+		// There could be several different possibilites to fill the slotted features.
+		// We start with exactly one of them,
+		// and then consume the free fillings, one after the other.
+		// (ALL fillings have to be consumed!)
+
+		ImmutableCollection<ImmutableMap<String, IFeatureValue>> alternatives = ImmutableList
+				.<ImmutableMap<String, IFeatureValue>>of(features);
+
+		for (final IHomogeneousConstituentAlternatives freeFilling : freeFillings) {
+			alternatives = ImmutableList
+					.copyOf(fillFeaturesConsumingFilling(alternatives, freeFilling, fillingUsageRestrictor));
+
+			if (alternatives.isEmpty()) {
+				// the filling could not be consumed -> no result at all
+				return ImmutableList.of(); // ==>
+			}
 		}
 
-		if (other.isEmpty()) {
-			return one;
+		return filterAlternativesWhereAllFillingsMissingForCompletionCanBeAddedLater(alternatives,
+				fillingUsageRestrictor);
+	}
+
+	/**
+	 * Takes the free filling and fills it (exactly once) into each of the
+	 * alternatives. If in the alternative, there is no matching slotted feature for
+	 * the filling, the alternative is skipped (and not included in the result). If
+	 * there is more than one possibility for filling the free filling into an
+	 * alternative, all possibilities are generated.
+	 * <p>
+	 * The result is a collection of alternatives, each of which contains the
+	 * (formerly) free filling exactly once. If the free filling does not match any
+	 * of the slotted features, the result will be empty.
+	 *
+	 * @param fillingUsageRestrictor the filling might be restricted, so that the
+	 *                               <code>freeFilling</code> can only fill a
+	 *                               slotted feature with a specified name - this is
+	 *                               the restrictor. (This is necessary to ensure
+	 *                               that in a ellipse-like sentence like <i>Paul
+	 *                               war Komponist und ab 1924 Dirigent.<i>, Paul is
+	 *                               the <i>Subjekt<i> in both parts - not the
+	 *                               <i>Subjekt</i> in one part and the
+	 *                               <i>Praedikatsnomen</i> in the other!)
+	 */
+	private static ImmutableCollection<ImmutableMap<String, IFeatureValue>> fillFeaturesConsumingFilling(
+			final Collection<ImmutableMap<String, IFeatureValue>> alternatives,
+			final IHomogeneousConstituentAlternatives freeFilling,
+			final IFillingUsageRestrictor fillingUsageRestrictor) {
+		final String onlyAllowedFeatureName = fillingUsageRestrictor.getRestrictedNameFor(freeFilling);
+
+		final ImmutableList.Builder<ImmutableMap<String, IFeatureValue>> res = ImmutableList
+				.<ImmutableMap<String, IFeatureValue>>builder();
+
+		// Iterate over all alternatives we already have
+		for (final ImmutableMap<String, IFeatureValue> oldFeatures : alternatives) {
+			// FIXME Note, that the method
+			// fillingUsageRestrictor.getRestrictedNameFor() will not work
+			// properly, if there are several features
+			// <i>with different names</i>, that contain the filling!
+			// Is this a problem? How to prevent this?
+			if (onlyAllowedFeatureName != null) {
+				final IFeatureValue onlyAllowedFeature = oldFeatures.get(onlyAllowedFeatureName);
+				if (onlyAllowedFeature != null) {
+					final IFeatureValue filledFeature = addFillingIfAccepted(onlyAllowedFeatureName, onlyAllowedFeature, freeFilling,
+							fillingUsageRestrictor);
+					if (filledFeature != null) {
+						// Filling was accepted -> so we have a new alternative
+						res.add(replaceOneFeature(oldFeatures, onlyAllowedFeatureName, filledFeature));
+					}
+					// else: filling - based on these oldFeatures - is impossible -> try the next
+					// alternative
+				}
+				// else: filling - based on these oldFeatures - is impossible -> try the next
+				// alternative
+			} else {
+				// No Filling restriction -> iterate over all features in this alternative
+				for (final Entry<String, IFeatureValue> entry : oldFeatures.entrySet()) {
+					final IFeatureValue filledFeature = addFillingIfAccepted(entry.getKey(), entry.getValue(), freeFilling,
+							fillingUsageRestrictor);
+					if (filledFeature != null) {
+						// Filling was accepted -> so we have a new alternative
+						res.add(replaceOneFeature(oldFeatures, entry.getKey(), filledFeature));
+					}
+				}
+			}
+		}
+		return res.build();
+	}
+
+	/**
+	 * Checks whether this (additional) filling would be acceptable for this
+	 * feature. If the filling would be acceptable, the methode returns a copy of
+	 * this feature with this filling added. Otherwise, the method returns
+	 * <code>null</code>.
+	 */
+	private static IFeatureValue addFillingIfAccepted(String name, IFeatureValue feature,
+			final IHomogeneousConstituentAlternatives freeFilling, final IFillingUsageRestrictor fillingUsageRestrictor) {
+		return feature.addFillingIfAccepted(freeFilling, fillingUsageRestrictor.keepPlaceFreeForHowManyFillings(name));
+	}
+
+	/**
+	 * @return only those alternatives, for which all fillings, that are still
+	 *         missing for completion, can be added in some later parsing step
+	 */
+	private static Collection<ImmutableMap<String, IFeatureValue>> filterAlternativesWhereAllFillingsMissingForCompletionCanBeAddedLater(
+			final ImmutableCollection<ImmutableMap<String, IFeatureValue>> alternatives,
+			final IFillingUsageRestrictor fillingUsageRestrictor) {
+		// @formatter:off
+		return alternatives.stream()
+				.filter(
+						a -> allFillingsMissingForCompletionCanBeAddedLater(a, fillingUsageRestrictor))
+				.collect(toImmutableList());
+		// @formatter:on
+	}
+
+	/**
+	 * @return whether for these features all fillings, that are still missing for
+	 *         completion, can be added in some later parsing step
+	 */
+	private static boolean allFillingsMissingForCompletionCanBeAddedLater(
+			final ImmutableMap<String, IFeatureValue> features, final IFillingUsageRestrictor fillingUsageRestrictor) {
+		for (final Entry<String, IFeatureValue> entry : features.entrySet()) {
+			if (!allFillingsMissingForCompletionCanBeAddedLater(entry.getKey(), entry.getValue(), fillingUsageRestrictor)) {
+				return false;
+			}
 		}
 
-		final FeatureStructure oneFeatureStructure = one;
-		final FeatureStructure otherFeatureStructure = other;
+		return true;
+	}
+
+	/**
+	 * @return whether all fillings, that are still missing for completion, can be
+	 *         added in some later parsing step
+	 */
+	private static boolean allFillingsMissingForCompletionCanBeAddedLater(String name, IFeatureValue feature,
+			final IFillingUsageRestrictor fillingUsageRestrictor) {
+		final int howManyAdditionalFillingsAllowed = fillingUsageRestrictor.howManyAdditionalFillingsAreAllowed(name);
+
+		if (howManyAdditionalFillingsAllowed == -1) {
+			return true;
+		}
+
+		return feature.howManyFillingsAreMissingUntilCompletion() <= howManyAdditionalFillingsAllowed;
+	}
+
+	public FeatureStructure disjunctUnionWithoutFreeFillings(final FeatureStructure other) {
+		if (freeFillings.isEmpty() && Objects.equal(surfacePart, other.surfacePart)) {
+			if (isEmpty()) {
+				return other;
+			}
+
+			if (other.isEmpty()) {
+				return this;
+			}
+		}
+
+		if (hasOneEqualFillingInSlotAs(other)) {
+			// this.features and other.features contain
+			// the SAME FillingInSlot, you cannot build a union!
+			// The problem is: It would be a verbotene Doppelbelegung, wenn
+			// dasselbe FillingInSlot in BEIDEN FeatureStructures unter verschiedenen Namen
+			// vorkommt!!
+			return null; // ==>
+		}
 
 		final Builder<String, IFeatureValue> valueBuilder = ImmutableMap.<String, IFeatureValue>builder();
 
-		valueBuilder.putAll(oneFeatureStructure.features);
-		valueBuilder.putAll(otherFeatureStructure.features);
+		valueBuilder.putAll(features);
+		valueBuilder.putAll(other.features);
 
-		return fromValues(one.getSurfacePart(), valueBuilder.build());
+		try {
+			return fromValues(SurfacePart.join(surfacePart, other.surfacePart), valueBuilder.build());
+			// fails, if duplicate keys were added
+		} catch (final IllegalArgumentException e) {
+			// Cannot merge role frames: Both share the same slot name.
+			return null;
+		}
+	}
+
+	@Override
+	public boolean hasOneEqualFillingInSlotAs(IFeatureValue other) {
+		for (final IFeatureValue someFeature : features.values()) {
+			if (other.hasOneEqualFillingInSlotAs(someFeature)) {
+				// this.features and other.features contain
+				// the SAME FillingInSlot, you cannot build a union!
+				// The problem is: It would be a verbotene Doppelbelegung, wenn
+				// dasselbe FillingInSlot in BEIDEN FeatureStructures unter verschiedenen Namen
+				// vorkommt!!
+				return true; // ==>
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Merges two collections of free fillings by simply building a union. The free
+	 * fillings need not be disjoint.
+	 */
+	private static ImmutableSet<IHomogeneousConstituentAlternatives> mergeFreeFillings(
+			final ImmutableSet<IHomogeneousConstituentAlternatives> someFreeFillings,
+			final ImmutableSet<IHomogeneousConstituentAlternatives> moreFreeFillings) {
+		if (someFreeFillings.isEmpty()) {
+			return moreFreeFillings;
+		}
+		// else : someFreeFilling is not empty
+
+		if (moreFreeFillings.isEmpty()) {
+			return someFreeFillings;
+		}
+
+		// else: none of them is empty
+
+		return ImmutableSet.<IHomogeneousConstituentAlternatives>builder().
+		// duplicates have no effect :-)
+				addAll(someFreeFillings).
+				// duplicates have no effect :-)
+				addAll(moreFreeFillings).build();
 	}
 
 	/**
@@ -217,13 +537,6 @@ public class FeatureStructure implements IFeatureValue {
 				.findOrInsert(new FeatureStructure(surfacePart, ImmutableMap.<String, IFeatureValue>of(), freeFillings));
 	}
 
-	public static FeatureStructure from(@Nullable final SurfacePart surfacePart,
-			final ImmutableMap<String, IFeatureValue> slots,
-			final ImmutableSet<IHomogeneousConstituentAlternatives> freeFillings) {
-		return cache.findOrInsert(new FeatureStructure(surfacePart, slots, freeFillings));
-	}
-
-
 	public FeatureStructure sameValuesFor(final SurfacePart otherSurfacePart) {
 		return cache.findOrInsert(new FeatureStructure(otherSurfacePart, features));
 	}
@@ -246,6 +559,26 @@ public class FeatureStructure implements IFeatureValue {
     // @formatter:on
 
 		return fromValues(surfacePart, newFeatures.build());
+	}
+
+	/**
+	 * Returns an immutable copy of the map with one feature replaced.
+	 */
+	private static ImmutableMap<String, IFeatureValue> replaceOneFeature(final Map<String, IFeatureValue> oldFeatures,
+			String nameToReplace, final IFeatureValue newFeature) {
+		final Builder<String, IFeatureValue> res = ImmutableMap.<String, IFeatureValue>builder();
+
+		for (final Entry<String, IFeatureValue> oldEntry : oldFeatures.entrySet()) {
+			final String oldFeatureName = oldEntry.getKey();
+
+			if (oldFeatureName.equals(nameToReplace)) {
+				res.put(oldFeatureName, newFeature);
+			} else {
+				res.put(oldFeatureName, oldEntry.getValue());
+			}
+		}
+
+		return res.build();
 	}
 
 	/**
@@ -308,6 +641,17 @@ public class FeatureStructure implements IFeatureValue {
 
 	public Iterator<String> orderedFeatureNameIterator() {
 		return new OrderedFeatureNameIterator(features);
+	}
+
+	@Override
+	public int howManyFillingsAreMissingUntilCompletion() {
+		int res = 0;
+
+		for (final IFeatureValue value : features.values()) {
+			res += value.howManyFillingsAreMissingUntilCompletion();
+		}
+
+		return res;
 	}
 
 	/**
@@ -608,6 +952,12 @@ public class FeatureStructure implements IFeatureValue {
 			return first;
 		}
 
+		return null;
+	}
+
+	@Override
+	public IFeatureValue addFillingIfAccepted(IHomogeneousConstituentAlternatives freeFilling,
+			int keepPlaceFreeForHowManyFillings) {
 		return null;
 	}
 

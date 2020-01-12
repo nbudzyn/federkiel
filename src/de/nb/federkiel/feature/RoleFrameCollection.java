@@ -78,6 +78,12 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 
 	}
 
+	@Override
+	public IFeatureValue addFillingIfAccepted(IHomogeneousConstituentAlternatives freeFilling,
+			int keepPlaceFreeForHowManyFillings) {
+		return null;
+	}
+
 	private RoleFrameCollection add(final RoleFrame roleFrame) {
 		return of(ImmutableSet.<RoleFrame>builder().addAll(roleFrames).add(roleFrame).build());
 	}
@@ -449,7 +455,7 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 	 * @see IFillingUsageRestrictor
 	 */
 	@Override
-	public String getRestrictedSlotNameFor(final IHomogeneousConstituentAlternatives homogeneousFilling) {
+	public String getRestrictedNameFor(final IHomogeneousConstituentAlternatives homogeneousFilling) {
 		final FillingInSlot fillingInSlot = homogeneousFilling.toFillingInSlot();
 
 		for (final RoleFrame roleFrame : roleFrames) {
@@ -465,17 +471,17 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 	}
 
 	@Override
-	public int keepPlaceFreeForHowManyFillings(final String slotName) {
-		return howManyFillingsAreMissingUntilCompletion(slotName);
+	public int keepPlaceFreeForHowManyFillings(final String name) {
+		return howManyFillingsAreMissingUntilCompletion(name);
 	}
 
 	@Override
-	public int howManyAdditionalFillingsAreAllowed(final String slotName) {
+	public int howManyAdditionalFillingsAreAllowed(final String name) {
 		int res = -1;
 
 		for (final RoleFrame roleFrame : roleFrames) {
 			final int howManyAdditionalFillingsAreAllowedForThisRoleFrameAndSlotName = roleFrame
-					.howManyAdditionalFillingsAreAllowed(slotName);
+					.howManyAdditionalFillingsAreAllowed(name);
 
 			if (howManyAdditionalFillingsAreAllowedForThisRoleFrameAndSlotName != -1) {
 				if (res == -1) {
@@ -504,6 +510,16 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 		return res;
 	}
 
+	@Override
+	public int howManyFillingsAreMissingUntilCompletion() {
+		int res = 0;
+		for (final RoleFrame roleFrame : roleFrames) {
+			res += roleFrame.howManyFillingsAreMissingUntilCompletion();
+		}
+
+		return res;
+	}
+
 	/**
 	 * @return <code>true</code>, iff all slots are satisfied and there are no free
 	 *         fillings.
@@ -519,6 +535,19 @@ public class RoleFrameCollection implements IFeatureValue, Iterable<RoleFrame>, 
 		}
 
 		return true;
+	}
+
+	@Override
+	public boolean hasOneEqualFillingInSlotAs(IFeatureValue other) {
+		for (final RoleFrame roleFrame : roleFrames) {
+			if (roleFrame.hasOneEqualFillingInSlotAs(other)) {
+				return true;
+				// FIXME Könnte es sein, dass
+				// das nur für EINIGE meiner roleFrames gilt?
+			}
+		}
+
+		return false;
 	}
 
 	public boolean isEmpty() {

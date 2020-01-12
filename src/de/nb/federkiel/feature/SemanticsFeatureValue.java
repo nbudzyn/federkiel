@@ -30,6 +30,12 @@ public abstract class SemanticsFeatureValue implements IFeatureValue {
 	}
 
 	@Override
+	public IFeatureValue addFillingIfAccepted(IHomogeneousConstituentAlternatives freeFilling,
+			int keepPlaceFreeForHowManyFillings) {
+		return null;
+	}
+
+	@Override
 	public int hashCode() {
 		return 1;
 	}

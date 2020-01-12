@@ -29,6 +29,12 @@ public final class UnspecifiedFeatureValue implements IFeatureValue {
     super();
   }
 
+	@Override
+	public IFeatureValue addFillingIfAccepted(IHomogeneousConstituentAlternatives freeFilling,
+			int keepPlaceFreeForHowManyFillings) {
+		return null;
+	}
+
   /**
    * Returns true, if one feature value subsumes the other. This means, the feature values are
    * equal, or the other is just a special case of the first one. For example: JOKER would subsume
@@ -53,6 +59,13 @@ public final class UnspecifiedFeatureValue implements IFeatureValue {
     return "(unspecified)";
   }
 
+	@Override
+	public int howManyFillingsAreMissingUntilCompletion() {
+		// UnspecifiedFeatureValues NEVER completed AT ALL.
+		return 1;
+		// TODO good idea?
+	}
+
   /**
    * @return <code>true</code>, iff all slots are satisfied and there are no free fillings.
    *         UnspecifiedFeatureValues NEVER completed AT ALL.
@@ -62,6 +75,11 @@ public final class UnspecifiedFeatureValue implements IFeatureValue {
     return false;
     // TODO good idea?
   }
+
+	@Override
+	public boolean hasOneEqualFillingInSlotAs(IFeatureValue other) {
+		return false;
+	}
 
   @Override
   public boolean equals(final Object obj) {

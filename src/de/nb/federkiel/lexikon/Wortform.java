@@ -117,7 +117,7 @@ public class Wortform implements IWordForm {
 	 *          additional specific features
 	 */
 	private Wortform(final Wortform original, final String string, final FeatureStructure additionalSpecificFeatures) {
-		this(original.lexeme, original.pos, string, FeatureStructure.disjunctUnion(original.features, // lexeme
+		this(original.lexeme, original.pos, string, original.features.disjunctUnionWithoutFreeFillings(// lexeme
 																																																	// features
 																																																	// are
 																																																	// already
@@ -138,7 +138,7 @@ public class Wortform implements IWordForm {
 		this.lexeme = lexeme;
 		this.pos = pos;
 		this.string = string;
-		this.features = addFeaturesFromLexeme ? FeatureStructure.disjunctUnion(this.lexeme.getFeatures(), features)
+		this.features = addFeaturesFromLexeme ? this.lexeme.getFeatures().disjunctUnionWithoutFreeFillings(features)
 				: features;
 		this.semantics = semantics;
 	}

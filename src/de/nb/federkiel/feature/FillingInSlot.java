@@ -29,6 +29,12 @@ public class FillingInSlot implements Comparable<IFeatureValue>, IFeatureAndSema
 	}
 
 	@Override
+	public IFeatureValue addFillingIfAccepted(IHomogeneousConstituentAlternatives freeFilling,
+			int keepPlaceFreeForHowManyFillings) {
+		return null;
+	}
+
+	@Override
 	public FeatureStructure getFeatures() {
 		return features;
 	}
@@ -39,8 +45,22 @@ public class FillingInSlot implements Comparable<IFeatureValue>, IFeatureAndSema
 	}
 
 	@Override
+	public int howManyFillingsAreMissingUntilCompletion() {
+		return 0;
+	}
+
+	@Override
 	public boolean isCompleted() {
 		return true;
+	}
+
+	@Override
+	public boolean hasOneEqualFillingInSlotAs(IFeatureValue other) {
+		if (other instanceof FillingInSlot) {
+			return equals(other);
+		}
+
+		return other.hasOneEqualFillingInSlotAs(this);
 	}
 
 	@Override

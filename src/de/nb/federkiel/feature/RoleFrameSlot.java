@@ -162,7 +162,8 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 	 * If the filling would be acceptable, the methode returns a copy of this slot
 	 * with this filling added. Otherwise, the method returns <code>null</code>.
 	 */
-	RoleFrameSlot addFillingIfAccepted(final IHomogeneousConstituentAlternatives freeFilling,
+	@Override
+	public RoleFrameSlot addFillingIfAccepted(final IHomogeneousConstituentAlternatives freeFilling,
 			int keepPlaceFreeForHowManyFillings) {
 		if (maxFillings != -1
 				&& fillings.size() + 1 + keepPlaceFreeForHowManyFillings > maxFillings) {
@@ -239,9 +240,10 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 	 * @return <code>true</code>, iff the slot contains any filling that is equal to
 	 *         a filling of the other slot
 	 */
-	boolean hasOneEqualFillingAs(final RoleFrameSlot other) {
+	@Override
+	public boolean hasOneEqualFillingInSlotAs(final IFeatureValue other) {
 		for (final FillingInSlot filling : fillings) {
-			if (other.containsFilling(filling)) {
+			if (other.hasOneEqualFillingInSlotAs(filling)) {
 				return true;
 			}
 		}
@@ -416,10 +418,8 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 		return num >= 0 ? Integer.toString(num) : "*";
 	}
 
-	/**
-	 * @return How many fillings are missing, until this slot is completed?
-	 */
-	int howManyFillingsAreMissingUntilCompletion() {
+	@Override
+	public int howManyFillingsAreMissingUntilCompletion() {
 		return Math.max(0, minFillings - fillings.size());
 	}
 

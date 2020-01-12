@@ -1,5 +1,8 @@
 package de.nb.federkiel.interfaces;
 
+import de.nb.federkiel.feature.FillingInSlot;
+import de.nb.federkiel.feature.IHomogeneousConstituentAlternatives;
+
 /**
  * A value a feature could have.
  * <p>
@@ -10,10 +13,31 @@ package de.nb.federkiel.interfaces;
 @javax.annotation.concurrent.Immutable
 public interface IFeatureValue extends Comparable<IFeatureValue> {
 	/**
-	 * Whether this feature value is completed. For a role frame collection, for example, this
-	 * could mean, that all slot are filled and there are no free fillings...
+	 * Checks whether this (additional) filling would be acceptable for this
+	 * feature. If the filling would be acceptable, the methode returns a copy of
+	 * this (slotted) feature with this filling added. Otherwise, the method returns
+	 * <code>null</code>.
+	 */
+	IFeatureValue addFillingIfAccepted(final IHomogeneousConstituentAlternatives freeFilling,
+			int keepPlaceFreeForHowManyFillings);
+
+	/**
+	 * @return How many fillings are missing, until this feature is completed?
+	 */
+	int howManyFillingsAreMissingUntilCompletion();
+
+	/**
+	 * Whether this feature value is completed. For a role frame collection, for
+	 * example, this could mean, that all slot are filled and there are no free
+	 * fillings...
 	 */
 	boolean isCompleted();
+
+	/**
+	 * @return <code>true</code>, iff the feature contains any {@link FillingInSlot}
+	 *         that is equal to a <code>FillingInSlot</code> of the other feature
+	 */
+	boolean hasOneEqualFillingInSlotAs(IFeatureValue other);
 
 	/*
 	 * If both <code>this</code> and the <code>otherValue</code> are <i>role frame

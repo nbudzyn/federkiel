@@ -493,7 +493,7 @@ public class RoleFrame
 			final Collection<ImmutableMap<String, RoleFrameSlot>> slotAlternatives,
 			final IHomogeneousConstituentAlternatives homogenousFilling,
 			final IFillingUsageRestrictor fillingUsageRestrictor) {
-		final String onlyAllowedSlotName = fillingUsageRestrictor.getRestrictedSlotNameFor(homogenousFilling);
+		final String onlyAllowedSlotName = fillingUsageRestrictor.getRestrictedNameFor(homogenousFilling);
 
 		final ImmutableList.Builder<ImmutableMap<String, RoleFrameSlot>> res = ImmutableList
 				.<ImmutableMap<String, RoleFrameSlot>>builder();
@@ -613,6 +613,16 @@ public class RoleFrame
 		return true;
 	}
 
+	public boolean hasOneEqualFillingInSlotAs(IFeatureValue other) {
+		for (final RoleFrameSlot slot : slots.values()) {
+			if (slot.hasOneEqualFillingInSlotAs(other)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	/**
 	 * @param name
 	 *          the name of an existing slot
@@ -633,7 +643,7 @@ public class RoleFrame
 					// all fine!
 				} else {
 					// slot names are different!
-					if (someEntry.getValue().hasOneEqualFillingAs(otherEntry.getValue())) {
+					if (someEntry.getValue().hasOneEqualFillingInSlotAs(otherEntry.getValue())) {
 						return true;
 					}
 				}
@@ -711,7 +721,7 @@ public class RoleFrame
 			final Map<String, RoleFrameSlot> moreSlots) {
 		for (final RoleFrameSlot someSlot : someSlots.values()) {
 			for (final RoleFrameSlot otherSlot : moreSlots.values()) {
-				if (someSlot.hasOneEqualFillingAs(otherSlot)) {
+				if (someSlot.hasOneEqualFillingInSlotAs(otherSlot)) {
 					// someSlots and moreSlots contain the same
 					// FILLING, you cannot build a union!
 					// The problem is: It would be a verbotene Doppelbelegung, wenn
@@ -1025,6 +1035,15 @@ public class RoleFrame
 		}
 	}
 
+	public int howManyFillingsAreMissingUntilCompletion() {
+		int res = 0;
+		for (String slotName : slots.keySet()) {
+			res += howManyAdditionalFillingsAreAllowed(slotName);
+		}
+
+		return res;
+	}
+
 	/**
 	 * @return How many fillings are missing, until a slot with this name is
 	 *         completed (if such a slot exists)
@@ -1075,11 +1094,7 @@ public class RoleFrame
 			if (!slotFillings.isEmpty()) {
 				final FillingInSlot slotFilling = slotFillings.iterator().next();
 
-				if (surfacePart == null) {
-					surfacePart = slotFilling.getFeatures().getSurfacePart();
-				} else {
-					surfacePart.join(slotFilling.getFeatures().getSurfacePart());
-				}
+				surfacePart = SurfacePart.join(surfacePart, slotFilling.getFeatures().getSurfacePart());
 
 				features.put(entry.getKey(), slotFilling);
 

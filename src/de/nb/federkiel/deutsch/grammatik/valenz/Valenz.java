@@ -376,8 +376,7 @@ public final class Valenz {
 
 		FeatureStructure ergaenzungstypFeatures = FeatureStructure.fromValues(null, ergaenzungstypBuilder.build());
 		
-		return FeatureStructure.disjunctUnion(
-				ergaenzungstypFeatures, 
+		return ergaenzungstypFeatures.disjunctUnionWithoutFreeFillings(
 				ErgaenzungsOderAngabeTypen.buildAngabenSlots(personDesSubjekts, genusDesSubjekts, numerusDesSubjekts,
 						hoeflichkeitsformDesSubjekts, fuerAdjektivischeForm));
 	}
@@ -404,7 +403,7 @@ public final class Valenz {
 		FeatureStructure restrictionSlots = FeatureStructure.fromValues(null, restrictionSlotsBuilder.build());
 
 		return RoleFrame.of(
-				FeatureStructure.disjunctUnion(restrictionSlots, ErgaenzungsOderAngabeTypen.buildAngabenRestrictionSlots()));
+				restrictionSlots.disjunctUnionWithoutFreeFillings(ErgaenzungsOderAngabeTypen.buildAngabenRestrictionSlots()));
 	}
 
 	/**

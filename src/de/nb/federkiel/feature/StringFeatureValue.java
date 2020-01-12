@@ -48,6 +48,17 @@ public class StringFeatureValue implements IFeatureValue {
     return cache.findOrInsert(new StringFeatureValue(string));
   }
 
+	@Override
+	public IFeatureValue addFillingIfAccepted(IHomogeneousConstituentAlternatives freeFilling,
+			int keepPlaceFreeForHowManyFillings) {
+		return null;
+	}
+
+	@Override
+	public int howManyFillingsAreMissingUntilCompletion() {
+		return 0;
+	}
+
   /**
    * @return <code>true</code>, iff all slots are satisfied and there are no free fillings. String
    *         features are always completed (even if there value were empty!)
@@ -57,6 +68,10 @@ public class StringFeatureValue implements IFeatureValue {
     return true;
   }
 
+	@Override
+	public boolean hasOneEqualFillingInSlotAs(IFeatureValue other) {
+		return false;
+	}
 
   @Override
   public int hashCode() {

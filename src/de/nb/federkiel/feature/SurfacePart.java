@@ -3,6 +3,7 @@ package de.nb.federkiel.feature;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -57,7 +58,19 @@ public class SurfacePart implements Comparable<SurfacePart> {
 		this.characterIndexTo = characterIndexTo;
 	}
 
-	public SurfacePart join(final SurfacePart other) {
+	public static @Nullable SurfacePart join(@Nullable SurfacePart one, @Nullable SurfacePart other) {
+		if (one == null) {
+			return other;
+		}
+
+		return one.join(other);
+	}
+
+	public SurfacePart join(@Nullable final SurfacePart other) {
+		if (other == null) {
+			return this;
+		}
+
 		if (!surfaceOfAll.equals(other.surfaceOfAll)) {
 			throw new IllegalArgumentException("Not the same surface of all! - Cannot join.");
 		}
