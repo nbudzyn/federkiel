@@ -58,13 +58,13 @@ public class RoleFrameSlotTerm implements IPlurivalTerm<RoleFrameSlot, FeatureAs
 	 * <code>SymbolReferenceVariable</code>.
 	 */
 	@Nullable
-	private final IPlurivalTerm<FillingInSlot, FeatureAssignment> fillingTerm;
+	private final IPlurivalTerm<FeatureStructure, FeatureAssignment> fillingTerm;
 
 	/**
 	 * Creates a frame slot with one filling, that only accepts one filling.
 	 */
 	public RoleFrameSlotTerm(final String name,
-			@Nullable final IPlurivalTerm<FillingInSlot, FeatureAssignment> fillingTerm,
+			@Nullable final IPlurivalTerm<FeatureStructure, FeatureAssignment> fillingTerm,
 			final SlotRequirements... requirementAlternatives) {
 		this.name = name;
 		alternativeRequirements = ImmutableList.copyOf(requirementAlternatives);
@@ -142,12 +142,12 @@ public class RoleFrameSlotTerm implements IPlurivalTerm<RoleFrameSlot, FeatureAs
 			return Plurival.of(RoleFrameSlot.of(alternativeRequirements, ImmutableSet.of(), minFillings, maxFillings));
 		}
 
-		final Plurival<FillingInSlot> fillingPlurival = fillingTerm.evaluate(variableAssignment);
+		final Plurival<FeatureStructure> fillingPlurival = fillingTerm.evaluate(variableAssignment);
 		// UnassignedVariableException
 
 		final ImmutableSet.Builder<RoleFrameSlot> roleFrameSlotAlternatives = ImmutableSet.builder();
 
-		for (final FillingInSlot filling : fillingPlurival) {
+		for (final FeatureStructure filling : fillingPlurival) {
 			roleFrameSlotAlternatives
 					.add(RoleFrameSlot.of(alternativeRequirements, ImmutableSet.of(filling), minFillings, maxFillings));
 		}

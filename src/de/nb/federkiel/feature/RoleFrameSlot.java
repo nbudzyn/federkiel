@@ -52,10 +52,8 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 
 	/**
 	 * The fillings of the slot. Can be empty (<i>empty slot</i>).
-	 * <p>
-	 * Fillings are values
 	 */
-	private final ImmutableSet<FillingInSlot> fillings;
+	private final ImmutableSet<FeatureStructure> fillings;
 
 	/**
 	 * caching the hashCode
@@ -76,29 +74,29 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 		return cache.findOrInsert(new RoleFrameSlot(requirementAlternatives));
 	}
 
-	public static RoleFrameSlot of(final FillingInSlot filling) {
+	public static RoleFrameSlot of(final FeatureStructure filling) {
 		return cache.findOrInsert(new RoleFrameSlot(filling));
 	}
 
 	public static RoleFrameSlot of(final ImmutableCollection<SlotRequirements> alternativeRequirements,
-			final ImmutableSet<FillingInSlot> fillings, final int minFillings, final int maxFillings) {
+			final ImmutableSet<FeatureStructure> fillings, final int minFillings, final int maxFillings) {
 		return cache.findOrInsert(new RoleFrameSlot(alternativeRequirements, fillings, minFillings, maxFillings));
 	}
 
 	/**
 	 * Creates a frame slot with one filling, that only accepts one filling.
 	 */
-	private RoleFrameSlot(final FillingInSlot filling,
+	private RoleFrameSlot(final FeatureStructure filling,
 			final SlotRequirements... requirementAlternatives) {
 		this(ImmutableList.<SlotRequirements>copyOf(requirementAlternatives),
-				ImmutableSet.<FillingInSlot>of(filling), 1, 1);
+				ImmutableSet.<FeatureStructure>of(filling), 1, 1);
 	}
 
 	/**
 	 * Creates a mandatory frame slot, that only accepts one filling.
 	 */
 	private RoleFrameSlot(final SlotRequirements... requirementAlternatives) {
-		this(ImmutableList.<SlotRequirements>copyOf(requirementAlternatives), ImmutableSet.<FillingInSlot>of(), 1,
+		this(ImmutableList.<SlotRequirements>copyOf(requirementAlternatives), ImmutableSet.<FeatureStructure>of(), 1,
 				1);
 	}
 
@@ -122,12 +120,12 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 	 */
 	private RoleFrameSlot(final int minFillings, final int maxFillings,
 			final SlotRequirements... requirementAlternatives) {
-		this(ImmutableList.<SlotRequirements>copyOf(requirementAlternatives), ImmutableSet.<FillingInSlot>of(),
+		this(ImmutableList.<SlotRequirements>copyOf(requirementAlternatives), ImmutableSet.<FeatureStructure>of(),
 				minFillings, maxFillings);
 	}
 
 	private RoleFrameSlot(final ImmutableCollection<SlotRequirements> alternativeRequirements,
-			final ImmutableSet<FillingInSlot> fillings, final int minFillings, final int maxFillings) {
+			final ImmutableSet<FeatureStructure> fillings, final int minFillings, final int maxFillings) {
 		this.alternativeRequirements = alternativeRequirements;
 		this.fillings = fillings;
 		this.minFillings = minFillings;
@@ -139,7 +137,7 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 	 * @return an copy of this which is empty (does not have any fillings)
 	 */
 	public RoleFrameSlot emptyCopy() {
-		return of(alternativeRequirements, ImmutableSet.<FillingInSlot>of(), minFillings, maxFillings);
+		return of(alternativeRequirements, ImmutableSet.<FeatureStructure>of(), minFillings, maxFillings);
 	}
 
 	/**
@@ -191,8 +189,8 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 	/**
 	 * @return a copy of this slot with this filling added (nothing is checked!)
 	 */
-	private RoleFrameSlot addFilling(final FillingInSlot filling) {
-		final ImmutableSet.Builder<FillingInSlot> resFillingsBuilder = ImmutableSet.<FillingInSlot>builder();
+	private RoleFrameSlot addFilling(final FeatureStructure filling) {
+		final ImmutableSet.Builder<FeatureStructure> resFillingsBuilder = ImmutableSet.<FeatureStructure>builder();
 		resFillingsBuilder.addAll(fillings);
 		resFillingsBuilder.add(filling);
 
@@ -213,7 +211,7 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 	}
 
 	@Override
-	public Collection<FillingInSlot> getFillings() {
+	public Collection<FeatureStructure> getFillings() {
 		return Collections.unmodifiableCollection(fillings);
 	}
 
@@ -238,8 +236,8 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 	}
 
 	public boolean containsAFillingAlsoContainedIn(final RoleFrameSlot other) {
-		for (final FillingInSlot myFilling : fillings) {
-			for (FillingInSlot othersFilling : other.fillings) {
+		for (final FeatureStructure myFilling : fillings) {
+			for (FeatureStructure othersFilling : other.fillings) {
 				if (myFilling.equals(othersFilling)) {
 					return true;
 				}
@@ -249,8 +247,8 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 		return false;
 	}
 
-	public boolean containsFilling(FillingInSlot filling) {
-		for (FillingInSlot candidate : fillings) {
+	public boolean containsFilling(FeatureStructure filling) {
+		for (FeatureStructure candidate : fillings) {
 			if (filling.equals(candidate)) {
 				return true;
 			}
@@ -367,7 +365,7 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 		if (!fillings.isEmpty()) {
 			res.append("[");
 			boolean first = true;
-			for (final FillingInSlot filling : fillings) {
+			for (final FeatureStructure filling : fillings) {
 				if (first == true) {
 					first = false;
 				} else {
@@ -427,8 +425,8 @@ public final class RoleFrameSlot implements IFeatureValue, Comparable<IFeatureVa
 	public SurfacePart getSurfacePart() {
 		SurfacePart res = null;
 
-		for (FillingInSlot filling : fillings) {
-			res = SurfacePart.join(res, filling.getFeatures().getSurfacePart());
+		for (FeatureStructure filling : fillings) {
+			res = SurfacePart.join(res, filling.getSurfacePart());
 		}
 
 		return res;

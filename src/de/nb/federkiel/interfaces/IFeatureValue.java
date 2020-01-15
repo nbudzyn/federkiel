@@ -2,7 +2,7 @@ package de.nb.federkiel.interfaces;
 
 import java.util.Collection;
 
-import de.nb.federkiel.feature.FillingInSlot;
+import de.nb.federkiel.feature.FeatureStructure;
 import de.nb.federkiel.feature.IHomogeneousConstituentAlternatives;
 import de.nb.federkiel.feature.SurfacePart;
 
@@ -52,7 +52,7 @@ public interface IFeatureValue extends Comparable<IFeatureValue> {
 	 */
 	int howManyAdditionalFillingsAreAllowed();
 
-	Collection<FillingInSlot> getFillings();
+	Collection<FeatureStructure> getFillings();
 
 	/*
 	 * If both <code>this</code> and the <code>otherValue</code> are <i>role frame

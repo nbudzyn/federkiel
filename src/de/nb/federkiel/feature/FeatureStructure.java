@@ -612,10 +612,10 @@ public class FeatureStructure implements IFeatureValue {
 
 		if (containsARoleFrameSlotWithAFillingAlsoContainedIn(other)) {
 			// this.features and other.features contain
-			// the SAME FillingInSlot, you cannot build a union!
+			// the SAME FeatureStructure, you cannot build a union!
 			// The problem is: It would be a verbotene Doppelbelegung, wenn
-			// dasselbe FillingInSlot in BEIDEN FeatureStructures unter verschiedenen Namen
-			// vorkommt!!
+			// dieselbe FeatureStructure in BEIDEN FeatureStructures unter verschiedenen
+			// Namen vorkommt!!
 			return null; // ==>
 		}
 
@@ -858,7 +858,7 @@ public class FeatureStructure implements IFeatureValue {
 	 *         <code>null</code>, if there is no such feature. (The method does an
 	 *         equality check.)
 	 */
-	protected String findFeatureNameContaining(final FillingInSlot filling) {
+	protected String findFeatureNameContaining(final FeatureStructure filling) {
 		for (final Entry<String, IFeatureValue> entry : features.entrySet()) {
 			if (entry.getValue() instanceof RoleFrameSlot) {
 				RoleFrameSlot slot = (RoleFrameSlot) entry.getValue();
@@ -996,30 +996,29 @@ public class FeatureStructure implements IFeatureValue {
 	 * feature structure has more than one filling in slotted feature
 	 */
 	@Nullable
-	public FillingInSlot toFillingInSlot() {
+	public FeatureStructure toFillingInSlot() {
 		SurfacePart resSurfacePart = null;
 		final ImmutableMap.Builder<String, IFeatureValue> resFeatures = ImmutableMap.builder();
 		boolean semanticsAmbivalent = false;
 		ISemantics semantics = NothingInParticularSemantics.INSTANCE;
 
 		for (Entry<String, IFeatureValue> entry : features.entrySet()) {
-			final Collection<FillingInSlot> slotFillings = entry.getValue().getFillings();
+			final Collection<FeatureStructure> slotFillings = entry.getValue().getFillings();
 			if (slotFillings.size() > 1) {
 				return null;
 			}
 
 			if (!slotFillings.isEmpty()) {
-				final FillingInSlot slotFilling = slotFillings.iterator().next();
+				final FeatureStructure slotFilling = slotFillings.iterator().next();
 
-				resSurfacePart = SurfacePart.join(resSurfacePart, slotFilling.getFeatures().getSurfacePart());
+				resSurfacePart = SurfacePart.join(resSurfacePart, slotFilling.getSurfacePart());
 
 				resFeatures.put(entry.getKey(), slotFilling);
 
 				if (!semanticsAmbivalent) {
 					if (semantics == null) {
-						semantics = slotFilling.getFeatures().getSemantics();
-					} else if (slotFilling.getFeatures().getSemantics() != null
-							&& !slotFilling.getFeatures().getSemantics().equals(semantics)) {
+						semantics = slotFilling.getSemantics();
+					} else if (slotFilling.getSemantics() != null && !slotFilling.getSemantics().equals(semantics)) {
 						semantics = NothingInParticularSemantics.INSTANCE;
 						semanticsAmbivalent = true;
 					}
@@ -1027,11 +1026,11 @@ public class FeatureStructure implements IFeatureValue {
 			}
 		}
 
-		return new FillingInSlot(FeatureStructure.fromValues(resSurfacePart, resFeatures.build(), semantics));
+		return FeatureStructure.fromValues(resSurfacePart, resFeatures.build(), semantics);
 	}
 
 	@Override
-	public Collection<FillingInSlot> getFillings() {
+	public Collection<FeatureStructure> getFillings() {
 		return ImmutableList.of();
 	}
 

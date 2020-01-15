@@ -106,7 +106,7 @@ public class StringFeatureValue implements IFeatureValue {
    */
 
 	@Override
-	public Collection<FillingInSlot> getFillings() {
+	public Collection<FeatureStructure> getFillings() {
 		return ImmutableList.of();
 	}
 

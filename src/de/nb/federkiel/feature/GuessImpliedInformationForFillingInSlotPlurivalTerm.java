@@ -12,7 +12,7 @@ import de.nb.federkiel.plurivallogic.UnaryCompoundPlurivalTerm;
  * @author nbudzyn 2019
  */
 public class GuessImpliedInformationForFillingInSlotPlurivalTerm
-		extends UnaryCompoundPlurivalTerm<FillingInSlot, IFeatureValue, FeatureAssignment> {
+		extends UnaryCompoundPlurivalTerm<FeatureStructure, IFeatureValue, FeatureAssignment> {
 
 	public GuessImpliedInformationForFillingInSlotPlurivalTerm(
 			final IPlurivalTerm<IFeatureValue, FeatureAssignment> subTerm) {
@@ -20,9 +20,9 @@ public class GuessImpliedInformationForFillingInSlotPlurivalTerm
 	}
 
 	@Override
-	public Plurival<FillingInSlot> calculate(final IFeatureValue input) {
-		if (input instanceof FillingInSlot) {
-			return Plurival.of((FillingInSlot) input);
+	public Plurival<FeatureStructure> calculate(final IFeatureValue input) {
+		if (input instanceof FeatureStructure) {
+			return Plurival.of((FeatureStructure) input);
 		}
 
 		final RoleFrameCollection roleFrameCollection = (RoleFrameCollection) input;

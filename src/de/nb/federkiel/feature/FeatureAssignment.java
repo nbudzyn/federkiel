@@ -31,7 +31,7 @@ public class FeatureAssignment implements IAssignment {
 	final private static WeakCache<FeatureAssignment> cache =
 			new WeakCache<>();
 
-	private final List<? extends IFeatureCarrier> parseAlternatives;
+	private final List<? extends IFeatureStructure> parseAlternatives;
 
 	private final FeatureStructure features;
 
@@ -47,7 +47,7 @@ public class FeatureAssignment implements IAssignment {
 	 * @param featuresOfThisSymbol
 	 */
 	public static FeatureAssignment of(
-			final List<? extends IFeatureCarrier> parseAlternatives,
+			final List<? extends IFeatureStructure> parseAlternatives,
 			final FeatureStructure featuresOfThisSymbol) {
 		return cache.findOrInsert(
 				new FeatureAssignment(parseAlternatives, featuresOfThisSymbol));
@@ -58,7 +58,7 @@ public class FeatureAssignment implements IAssignment {
 	 * @param featuresOfThisSymbol
 	 */
 	private FeatureAssignment(
-			final List<? extends IFeatureCarrier> parseAlternatives,
+			final List<? extends IFeatureStructure> parseAlternatives,
 			final FeatureStructure featuresOfThisSymbol) {
 		super();
 		this.parseAlternatives = parseAlternatives;
@@ -90,10 +90,10 @@ public class FeatureAssignment implements IAssignment {
 			final int symbolRefPosition = stringFeatureReferenceVariable.getSymbolRefPosition();
 
 			if (symbolRefPosition < parseAlternatives.size()) {
-				final IFeatureCarrier parsesForRefencedSymbol =
+				final IFeatureStructure parsesForRefencedSymbol =
 					parseAlternatives.get(symbolRefPosition);
 				try {
-					res = (T) parsesForRefencedSymbol.getFeatures().getFeatureValue(
+					res = (T) parsesForRefencedSymbol.getFeatureValue(
 							stringFeatureReferenceVariable.getFeatureName());
 				} catch (final IllegalArgumentException e) {
 					throw new IllegalArgumentException(
