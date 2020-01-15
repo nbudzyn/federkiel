@@ -22,4 +22,5 @@ public interface IHomogeneousConstituentAlternatives extends IConstituentAlterna
 	FeatureStructure getFeatures();
 
 	FeatureStructure toFillingInSlot();
+
 }
