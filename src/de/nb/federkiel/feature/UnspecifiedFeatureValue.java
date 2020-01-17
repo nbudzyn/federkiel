@@ -1,11 +1,7 @@
 package de.nb.federkiel.feature;
 
-import java.util.Collection;
-
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
-
-import com.google.common.collect.ImmutableList;
 
 import de.nb.federkiel.interfaces.IFeatureValue;
 
@@ -38,17 +34,6 @@ public final class UnspecifiedFeatureValue implements IFeatureValue {
 		return null;
 	}
 
-	@Override
-	public Collection<FeatureStructure> getFillings() {
-		return ImmutableList.of();
-	}
-
-	@Override
-	public IFeatureValue addFillingIfAccepted(IHomogeneousConstituentAlternatives freeFilling,
-			int keepPlaceFreeForHowManyFillings) {
-		return null;
-	}
-
   /**
    * Returns true, if one feature value subsumes the other. This means, the feature values are
    * equal, or the other is just a special case of the first one. For example: JOKER would subsume
@@ -76,29 +61,6 @@ public final class UnspecifiedFeatureValue implements IFeatureValue {
 	@Override
 	public String toString(boolean neverShowRequirements, boolean forceShowRequirements) {
     return "(unspecified)";
-  }
-
-	@Override
-	public int howManyFillingsAreMissingUntilCompletion() {
-		// UnspecifiedFeatureValues are NEVER completed AT ALL.
-		return 1;
-		// TODO good idea?
-	}
-
-	@Override
-	public int howManyAdditionalFillingsAreAllowed() {
-		// TODO good idea?
-		return -1;
-	}
-
-  /**
-   * @return <code>true</code>, iff all slots are satisfied and there are no free fillings.
-   *         UnspecifiedFeatureValues NEVER completed AT ALL.
-   */
-  @Override
-  public boolean isCompleted() {
-    return false;
-    // TODO good idea?
   }
 
   @Override

@@ -78,45 +78,29 @@ ITermBounds {
 	}
 
 	/*
-	private static Plurival<RoleFrame> mergeBounds(
-			final RoleFrameCollection boundsGivenAsRoleFrameCollection,
-			final ITermBounds otherBounds) {
-		if (otherBounds instanceof OnlyValueBound<?>) {
-			final Object otherOnlyValue = ((OnlyValueBound<?>) otherBounds).onlyValue;
-
-			if (otherOnlyValue == null) {
-				return new Plurival<RoleFrame>();
-			}
-			if (otherOnlyValue instanceof RoleFrame) {
-				final RoleFrame otherOnlyRoleFrame = (RoleFrame) otherOnlyValue;
-
-				return null;
-				/*boundsGivenAsRoleFrameCollection
-				.mergeBoundsGivenAsRoleFrameCollections(
-						new RoleFrameCollection(otherOnlyRoleFrame)); *
-			}
-			if (otherOnlyValue instanceof RoleFrameSlot) {
-				...
-			}
-
-			if (otherOnlyValue instanceof RoleFrameCollection) {
-				final RoleFrameCollection otherOnlyRoleFrameCollection = (RoleFrameCollection) otherOnlyValue;
-
-				return null;/* boundsGivenAsRoleFrameCollection
-							.mergeBoundsGivenAsRoleFrameCollections(
-							otherOnlyRoleFrameCollection); *
-			}
-			return new Plurival<RoleFrame>();
-		}
-
-		if (otherBounds instanceof RoleFrame) {
-			// TODO
-		}
-
-		throw new IllegalStateException("Unexpected bounds type: "
-				+ otherBounds);
-	}
-	*/
+	 * private static Plurival<RoleFrame> mergeBounds( final RoleFrameSlot
+	 * boundsGivenAsRoleFrameSlot, final ITermBounds otherBounds) { if (otherBounds
+	 * instanceof OnlyValueBound<?>) { final Object otherOnlyValue =
+	 * ((OnlyValueBound<?>) otherBounds).onlyValue;
+	 * 
+	 * if (otherOnlyValue == null) { return new Plurival<RoleFrame>(); } if
+	 * (otherOnlyValue instanceof RoleFrame) { final RoleFrame otherOnlyRoleFrame =
+	 * (RoleFrame) otherOnlyValue;
+	 * 
+	 * return null; /*boundsGivenAsRoleFrameSlot .mergeBoundsGivenAsRoleFrameSlots(
+	 * new RoleFrameSlot(otherOnlyRoleFrame)); * } if (otherOnlyValue instanceof
+	 * RoleFrameSlot) { ... }
+	 * 
+	 * if (otherOnlyValue instanceof RoleFrameSlot) { final RoleFrameSlot
+	 * otherOnlyRoleFrameSlot = (RoleFrameSlot) otherOnlyValue;
+	 * 
+	 * return null;/* boundsGivenAsRoleFrameSlot .mergeBoundsGivenAsRoleFrameSlots(
+	 * otherOnlyRoleFrameSlot); * } return new Plurival<RoleFrame>(); }
+	 * 
+	 * if (otherBounds instanceof RoleFrame) { // TODO }
+	 * 
+	 * throw new IllegalStateException("Unexpected bounds type: " + otherBounds); }
+	 */
 
 
 	/**
@@ -140,13 +124,10 @@ ITermBounds {
 		if (this.onlyValue instanceof RoleFrameSlot) {
 			// ...
 		}
-		if (this.onlyValue instanceof RoleFrameCollection) {
-			/* FIXME (zurzeit nicht verwendet)
-			if (((RoleFrameCollection) this.onlyValue)
-					.meetsRestrictions(roleFrameBounds)) {
-				return true;
-			}
-			return false;
+		if (this.onlyValue instanceof RoleFrameSlot) {
+			/*
+			 * FIXME (zurzeit nicht verwendet) if (((RoleFrameSlot) this.onlyValue)
+			 * .meetsRestrictions(roleFrameBounds)) { return true; } return false;
 			 */
 		}
 

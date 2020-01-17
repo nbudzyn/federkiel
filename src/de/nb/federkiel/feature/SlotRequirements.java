@@ -26,8 +26,7 @@ public class SlotRequirements implements Comparable<SlotRequirements> {
 	 * consists of weak references, so it will be cleared automatically, when a
 	 * value is no longer (strongly) referenced.
 	 */
-	final private static WeakCache<SlotRequirements> cache =
-			new WeakCache<>();
+	final private static WeakCache<SlotRequirements> cache = new WeakCache<>();
 
 	/**
 	 * The required grammar symbol name (NP, or art, e.g.).
@@ -35,8 +34,8 @@ public class SlotRequirements implements Comparable<SlotRequirements> {
 	private final String grammarSymbolName;
 
 	/**
-	 * Requirements to features of the element, that is supposed to fill the
-	 * slot. The required features ARE REQUIRED to exist - but the value
+	 * Requirements to features of the element, that is supposed to fill the slot.
+	 * The required features ARE REQUIRED to exist - but the value
 	 * <code>FeatureStructure.STRING_FEATURE_UNSPECIFIED</code> will also do!
 	 */
 	private final IFormula<FeatureAssignment> featureCondition;
@@ -50,21 +49,16 @@ public class SlotRequirements implements Comparable<SlotRequirements> {
 		return cache.findOrInsert(new SlotRequirements(grammarSymbolName));
 	}
 
-	public static SlotRequirements of(
-			final String grammarSymbolName,
+	public static SlotRequirements of(final String grammarSymbolName,
 			final IFormula<FeatureAssignment> featureCondition) {
-		return cache.findOrInsert(new SlotRequirements(grammarSymbolName,
-				featureCondition));
+		return cache.findOrInsert(new SlotRequirements(grammarSymbolName, featureCondition));
 	}
 
 	private SlotRequirements(final String grammarSymbolName) {
-		this(grammarSymbolName, BooleanConstantTrue
-				.<FeatureAssignment> getInstance());
+		this(grammarSymbolName, BooleanConstantTrue.<FeatureAssignment>getInstance());
 	}
 
-	private SlotRequirements(
-			final String grammarSymbolName,
-			final IFormula<FeatureAssignment> featureCondition) {
+	private SlotRequirements(final String grammarSymbolName, final IFormula<FeatureAssignment> featureCondition) {
 		super();
 		this.grammarSymbolName = grammarSymbolName;
 		this.featureCondition = featureCondition;
@@ -74,47 +68,43 @@ public class SlotRequirements implements Comparable<SlotRequirements> {
 	/**
 	 * Whether these requirements are fulfilled.
 	 *
-	 * @param toBeChecked
-	 *            the element that shall be checked, whether the slot
-	 *            requirements are fulfilled
+	 * @param toBeChecked the element that shall be checked, whether the slot
+	 *                    requirements are fulfilled
 	 */
-	protected boolean match(
-			final IHomogeneousConstituentAlternatives toBeChecked) {
-		if (!toBeChecked.getGrammarSymbol().equals(
-				grammarSymbolName)) {
+	protected boolean match(final IHomogeneousConstituentAlternatives toBeChecked) {
+		if (!toBeChecked.getGrammarSymbol().equals(grammarSymbolName)) {
 			return false;
 		}
 
+		FeatureStructure featuresToBeChecked = toBeChecked.getFeatures();
+
 		try {
-			final FeatureAssignment variableAssignment =
-					FeatureAssignment
-							.of(
-							ImmutableList.<IHomogeneousConstituentAlternatives> of(),
-							toBeChecked.getFeatures());
+			return match(featuresToBeChecked);
+		} catch (final UnassignedVariableException e) {
+			throw new IllegalStateException("Feature missing in parse " + toBeChecked + "?", e);
+		}
+	}
+
+	public boolean match(FeatureStructure featuresToBeChecked) throws UnassignedVariableException {
+		try {
+			final FeatureAssignment variableAssignment = FeatureAssignment
+					.of(ImmutableList.<IHomogeneousConstituentAlternatives>of(), featuresToBeChecked);
 
 			if (!featureCondition.evaluate(variableAssignment)) {
 				return false;
 			}
 
 			return true;
-    } catch (final YieldsNoResultException e) {
-      return false;
-		} catch (final UnassignedVariableException e) {
-			throw new IllegalStateException("Feature missing in parse "
-					+ toBeChecked + "?",
-					e);
+		} catch (final YieldsNoResultException e) {
+			return false;
 		}
 	}
 
 	private int calcHash() {
 		final int prime = 31;
 		int result = 1;
-		result = prime
-				* result
-				+ featureCondition.hashCode();
-		result = prime
-				* result
-				+ grammarSymbolName.hashCode();
+		result = prime * result + featureCondition.hashCode();
+		result = prime * result + grammarSymbolName.hashCode();
 		return result;
 	}
 
@@ -151,15 +141,12 @@ public class SlotRequirements implements Comparable<SlotRequirements> {
 	@Override
 	public int compareTo(final SlotRequirements other) {
 		// In case, other where a subclass!
-		final int classNameCompared =
-				this.getClass().getCanonicalName().compareTo(
-						other.getClass().getCanonicalName());
+		final int classNameCompared = this.getClass().getCanonicalName().compareTo(other.getClass().getCanonicalName());
 		if (classNameCompared != 0) {
 			return classNameCompared;
 		}
 
-		final int symbolNamesCompared =
-				grammarSymbolName.compareTo(other.grammarSymbolName);
+		final int symbolNamesCompared = grammarSymbolName.compareTo(other.grammarSymbolName);
 		if (symbolNamesCompared != 0) {
 			return symbolNamesCompared;
 		}
@@ -173,8 +160,7 @@ public class SlotRequirements implements Comparable<SlotRequirements> {
 		res.append(grammarSymbolName);
 
 		if (!(featureCondition instanceof BooleanConstantTrue)) {
-			final String conditionString =
-					formulaCommaSepString(featureCondition);
+			final String conditionString = formulaCommaSepString(featureCondition);
 
 			if (!conditionString.isEmpty()) {
 				res.append("(");
@@ -186,14 +172,11 @@ public class SlotRequirements implements Comparable<SlotRequirements> {
 		return res.toString();
 	}
 
-	private String formulaCommaSepString(
-			final IFormula<FeatureAssignment> formula) {
+	private String formulaCommaSepString(final IFormula<FeatureAssignment> formula) {
 		if (formula instanceof AndFormula) {
-			final AndFormula<FeatureAssignment> andFormula =
-					(AndFormula<FeatureAssignment>) formula;
-			return formulaCommaSepString(andFormula.getFirstFormula()) +
-					", " +
-					formulaCommaSepString(andFormula.getSecondFormula());
+			final AndFormula<FeatureAssignment> andFormula = (AndFormula<FeatureAssignment>) formula;
+			return formulaCommaSepString(andFormula.getFirstFormula()) + ", "
+					+ formulaCommaSepString(andFormula.getSecondFormula());
 		}
 
 		return formula.toString();

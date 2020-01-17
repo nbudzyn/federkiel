@@ -19,18 +19,16 @@ import de.nb.federkiel.plurivallogic.Plurival;
  * @author nbudzyn 2009
  */
 public class RoleFrameCollectionMergeTerm extends
-BinaryCompoundPlurivalTerm<RoleFrameCollection,
-RoleFrameCollection, RoleFrameCollection, FeatureAssignment> {
+		BinaryCompoundPlurivalTerm<RoleFrameSlot, RoleFrameSlot, RoleFrameSlot, FeatureAssignment> {
 
 	public RoleFrameCollectionMergeTerm(
-			final IPlurivalTerm<RoleFrameCollection, FeatureAssignment> firstSubTerm,
-			final IPlurivalTerm<RoleFrameCollection, FeatureAssignment> secondSubTerm) {
+			final IPlurivalTerm<RoleFrameSlot, FeatureAssignment> firstSubTerm,
+			final IPlurivalTerm<RoleFrameSlot, FeatureAssignment> secondSubTerm) {
 		super(firstSubTerm, secondSubTerm);
 	}
 
 	@Override
-	public Plurival<RoleFrameCollection> calculate(
-			final RoleFrameCollection first, final RoleFrameCollection second) {
+	public Plurival<RoleFrameSlot> calculate(final RoleFrameSlot first, final RoleFrameSlot second) {
 
 		return first.mergeWithoutSemantics(second);
 	}

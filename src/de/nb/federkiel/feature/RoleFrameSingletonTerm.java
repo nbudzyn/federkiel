@@ -1,5 +1,7 @@
 package de.nb.federkiel.feature;
 
+import com.google.common.collect.ImmutableSet;
+
 import de.nb.federkiel.logic.ITerm;
 import de.nb.federkiel.logic.UnaryCompoundTerm;
 import de.nb.federkiel.logic.UnassignedVariableException;
@@ -13,7 +15,7 @@ import de.nb.federkiel.logic.YieldsNoResultException;
  * @author nbudzyn 2009
  */
 public final class RoleFrameSingletonTerm
-		extends UnaryCompoundTerm<RoleFrameCollection, FeatureStructure, FeatureAssignment> {
+		extends UnaryCompoundTerm<RoleFrameSlot, FeatureStructure, FeatureAssignment> {
 
 	/**
 	 * This class is currently not used.
@@ -25,12 +27,12 @@ public final class RoleFrameSingletonTerm
 	}
 
 	@Override
-	public RoleFrameCollection evaluate(final FeatureAssignment variableAssignment)
+	public RoleFrameSlot evaluate(final FeatureAssignment variableAssignment)
 			throws UnassignedVariableException, YieldsNoResultException {
 		final FeatureStructure roleFrame = getSubTerm().evaluate(variableAssignment); // UnassignedVariableException,
 																																						// YieldsNoResultException
 
-		return RoleFrameCollection.of(roleFrame);
+		return RoleFrameSlot.of(0, -1, ImmutableSet.of(roleFrame));
 	}
 
 	@Override

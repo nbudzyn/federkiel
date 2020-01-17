@@ -518,7 +518,12 @@ public class FeatureStructure implements IFeatureValue {
 	 */
 	private static IFeatureValue addFillingIfAccepted(String name, IFeatureValue feature,
 			final IHomogeneousConstituentAlternatives freeFilling, final IFillingUsageRestrictor fillingUsageRestrictor) {
-		return feature.addFillingIfAccepted(freeFilling, fillingUsageRestrictor.keepPlaceFreeForHowManyFillings(name));
+		if (!(feature instanceof RoleFrameSlot)) {
+			return feature;
+		}
+
+		return ((RoleFrameSlot) feature).addFillingIfAccepted(freeFilling,
+				fillingUsageRestrictor.keepPlaceFreeForHowManyFillings(name));
 	}
 
 	/**
@@ -561,7 +566,11 @@ public class FeatureStructure implements IFeatureValue {
 			return true;
 		}
 
-		return feature.howManyFillingsAreMissingUntilCompletion() <= howManyAdditionalFillingsAllowed;
+		if (feature instanceof RoleFrameSlot) {
+			return ((RoleFrameSlot) feature).howManyFillingsAreMissingUntilCompletion() <= howManyAdditionalFillingsAllowed;
+		}
+		
+		return true;
 	}
 
 	/**
@@ -932,17 +941,6 @@ public class FeatureStructure implements IFeatureValue {
 		return freeFillings.size();
 	}
 
-	@Override
-	public int howManyFillingsAreMissingUntilCompletion() {
-		int res = 0;
-
-		for (final IFeatureValue value : features.values()) {
-			res += value.howManyFillingsAreMissingUntilCompletion();
-		}
-
-		return res;
-	}
-
 	public int howManyFillingsAreMissingUntilCompletion(final String name) {
 		final IFeatureValue feature = features.get(name);
 
@@ -950,11 +948,10 @@ public class FeatureStructure implements IFeatureValue {
 			return 0;
 		}
 
-		return feature.howManyFillingsAreMissingUntilCompletion();
-	}
+		if (feature instanceof RoleFrameSlot) {
+			return ((RoleFrameSlot) feature).howManyFillingsAreMissingUntilCompletion();
+		}
 
-	@Override
-	public int howManyAdditionalFillingsAreAllowed() {
 		return 0;
 	}
 
@@ -968,23 +965,24 @@ public class FeatureStructure implements IFeatureValue {
 		if (feature == null) {
 			return -1;
 		}
+		
+		if (feature instanceof RoleFrameSlot) {
+			return ((RoleFrameSlot) feature).howManyAdditionalFillingsAreAllowed();
+		}
 
-		return feature.howManyAdditionalFillingsAreAllowed();
+		return -1;
 	}
 
-	/**
-	 * Whether this feature value is completed. In this case, all features of this
-	 * feature structure have to be completed.
-	 */
-	@Override
-	public boolean isCompleted() {
+	public boolean noFreeFillingsAndAllSlotsHaveEnoughFillings() {
 		if (!freeFillings.isEmpty()) {
 			return false;
 		}
 
 		for (final IFeatureValue value : features.values()) {
-			if (!value.isCompleted()) {
+			if (value instanceof RoleFrameSlot) {
+				if (!((RoleFrameSlot) value).hasEnoughFillings()) {
 				return false;
+			}
 			}
 		}
 
@@ -1003,35 +1001,33 @@ public class FeatureStructure implements IFeatureValue {
 		ISemantics semantics = NothingInParticularSemantics.INSTANCE;
 
 		for (Entry<String, IFeatureValue> entry : features.entrySet()) {
-			final Collection<FeatureStructure> slotFillings = entry.getValue().getFillings();
-			if (slotFillings.size() > 1) {
-				return null;
-			}
+			if (entry.getValue() instanceof RoleFrameSlot) {
+				RoleFrameSlot slot = (RoleFrameSlot) entry.getValue();
+				final Collection<FeatureStructure> slotFillings = slot.getFillings();
+				if (slotFillings.size() > 1) {
+					return null;
+				}
 
-			if (!slotFillings.isEmpty()) {
-				final FeatureStructure slotFilling = slotFillings.iterator().next();
+				if (!slotFillings.isEmpty()) {
+					final FeatureStructure slotFilling = slotFillings.iterator().next();
 
-				resSurfacePart = SurfacePart.join(resSurfacePart, slotFilling.getSurfacePart());
+					resSurfacePart = SurfacePart.join(resSurfacePart, slotFilling.getSurfacePart());
 
-				resFeatures.put(entry.getKey(), slotFilling);
+					resFeatures.put(entry.getKey(), slotFilling);
 
-				if (!semanticsAmbivalent) {
-					if (semantics == null) {
-						semantics = slotFilling.getSemantics();
-					} else if (slotFilling.getSemantics() != null && !slotFilling.getSemantics().equals(semantics)) {
-						semantics = NothingInParticularSemantics.INSTANCE;
-						semanticsAmbivalent = true;
+					if (!semanticsAmbivalent) {
+						if (semantics == null) {
+							semantics = slotFilling.getSemantics();
+						} else if (slotFilling.getSemantics() != null && !slotFilling.getSemantics().equals(semantics)) {
+							semantics = NothingInParticularSemantics.INSTANCE;
+							semanticsAmbivalent = true;
+						}
 					}
 				}
 			}
 		}
 
 		return FeatureStructure.fromValues(resSurfacePart, resFeatures.build(), semantics);
-	}
-
-	@Override
-	public Collection<FeatureStructure> getFillings() {
-		return ImmutableList.of();
 	}
 
 	@Override
@@ -1367,12 +1363,6 @@ public class FeatureStructure implements IFeatureValue {
 			return first;
 		}
 
-		return null;
-	}
-
-	@Override
-	public IFeatureValue addFillingIfAccepted(IHomogeneousConstituentAlternatives freeFilling,
-			int keepPlaceFreeForHowManyFillings) {
 		return null;
 	}
 

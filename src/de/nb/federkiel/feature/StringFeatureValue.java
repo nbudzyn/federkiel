@@ -57,31 +57,6 @@ public class StringFeatureValue implements IFeatureValue {
 		return null;
 	}
 
-	@Override
-	public IFeatureValue addFillingIfAccepted(IHomogeneousConstituentAlternatives freeFilling,
-			int keepPlaceFreeForHowManyFillings) {
-		return null;
-	}
-
-	@Override
-	public int howManyFillingsAreMissingUntilCompletion() {
-		return 0;
-	}
-
-	@Override
-	public int howManyAdditionalFillingsAreAllowed() {
-		return 0;
-	}
-
-  /**
-   * @return <code>true</code>, iff all slots are satisfied and there are no free fillings. String
-   *         features are always completed (even if there value were empty!)
-   */
-  @Override
-  public boolean isCompleted() {
-    return true;
-  }
-
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -104,11 +79,6 @@ public class StringFeatureValue implements IFeatureValue {
    *
    * return null; }
    */
-
-	@Override
-	public Collection<FeatureStructure> getFillings() {
-		return ImmutableList.of();
-	}
 
   public String getString() {
     return string;

@@ -102,7 +102,7 @@ public class Lexeme implements ILexeme {
 	}
 
 	public boolean areAllFeaturesCompleted() {
-		return features.isCompleted();
+		return features.noFreeFillingsAndAllSlotsHaveEnoughFillings();
 	}
 
 	@Override

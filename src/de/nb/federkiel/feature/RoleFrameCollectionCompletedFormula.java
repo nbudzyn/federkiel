@@ -16,17 +16,15 @@ import de.nb.federkiel.logic.YieldsNoResultException;
  */
 @Immutable
 @ThreadSafe
-public class RoleFrameCollectionCompletedFormula
-    extends UnaryPredicateFormula<RoleFrameCollection, FeatureAssignment> {
-  public RoleFrameCollectionCompletedFormula(
-      final ITerm<RoleFrameCollection, FeatureAssignment> term) {
+public class RoleFrameCollectionCompletedFormula extends UnaryPredicateFormula<RoleFrameSlot, FeatureAssignment> {
+	public RoleFrameCollectionCompletedFormula(final ITerm<RoleFrameSlot, FeatureAssignment> term) {
     super(term);
   }
 
   @Override
   public boolean evaluate(final FeatureAssignment variableAssignment)
       throws UnassignedVariableException, YieldsNoResultException {
-    return getTerm().evaluate(variableAssignment).isCompleted(); // UnassignedVariableException,
+		return getTerm().evaluate(variableAssignment).noFreeFillingsAndAllSlotsHaveEnoughFillings(); // UnassignedVariableException,
                                                                  // YieldsNoResultException
   }
 

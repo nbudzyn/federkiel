@@ -213,7 +213,7 @@ public class Wortform implements IWordForm {
 	}
 
 	public boolean areAllFeaturesCompleted() {
-		return features.isCompleted();
+		return features.noFreeFillingsAndAllSlotsHaveEnoughFillings();
 	}
 
 	@Override

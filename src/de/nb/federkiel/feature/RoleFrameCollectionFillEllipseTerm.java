@@ -21,18 +21,17 @@ import de.nb.federkiel.plurivallogic.Plurival;
  * @author nbudzyn 2009
  */
 public class RoleFrameCollectionFillEllipseTerm extends
-BinaryCompoundPlurivalTerm<RoleFrameCollection,
-RoleFrameCollection, RoleFrameCollection, FeatureAssignment> {
+		BinaryCompoundPlurivalTerm<RoleFrameSlot,
+				RoleFrameSlot, RoleFrameSlot, FeatureAssignment> {
 
 	public RoleFrameCollectionFillEllipseTerm(
-			final IPlurivalTerm<RoleFrameCollection, FeatureAssignment> firstSubTerm,
-			final IPlurivalTerm<RoleFrameCollection, FeatureAssignment> secondSubTerm) {
+			final IPlurivalTerm<RoleFrameSlot, FeatureAssignment> firstSubTerm,
+			final IPlurivalTerm<RoleFrameSlot, FeatureAssignment> secondSubTerm) {
 		super(firstSubTerm, secondSubTerm);
 	}
 
 	@Override
-	public Plurival<RoleFrameCollection> calculate(
-			final RoleFrameCollection base, final RoleFrameCollection ellipse) {
+	public Plurival<RoleFrameSlot> calculate(final RoleFrameSlot base, final RoleFrameSlot ellipse) {
 		/* FIXME Test
 		if (!ellipse.isEmpty()) {
 			System.out.println("Test");
