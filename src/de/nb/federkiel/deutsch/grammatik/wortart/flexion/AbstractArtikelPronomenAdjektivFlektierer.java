@@ -37,7 +37,7 @@ import de.nb.federkiel.deutsch.grammatik.kategorie.VorgabeFuerNachfolgendesAdjek
 import de.nb.federkiel.deutsch.grammatik.valenz.Valenz;
 import de.nb.federkiel.feature.FeatureStructure;
 import de.nb.federkiel.feature.LexiconFeatureStructureUtil;
-import de.nb.federkiel.feature.RoleFrameSlot;
+import de.nb.federkiel.feature.RestrictedFSSet;
 import de.nb.federkiel.feature.StringFeatureLogicUtil;
 import de.nb.federkiel.feature.StringFeatureValue;
 import de.nb.federkiel.interfaces.IFeatureType;
@@ -231,7 +231,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
 			final String staerke, final FeatureStructure ergaenzungenUndAngabenSlots) {
 
 		return ImmutableMap.<String, IFeatureValue>of(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
-				RoleFrameSlot.of(0, -1, ImmutableSet.of(ergaenzungenUndAngabenSlots)), KOMPARATION_KEY,
+				RestrictedFSSet.of(0, -1, ImmutableSet.of(ergaenzungenUndAngabenSlots)), KOMPARATION_KEY,
 				StringFeatureValue.of(komparation), STAERKE_KEY,
 				StringFeatureValue.of(staerke));
 	}
@@ -248,11 +248,11 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
 
 		if (staerke == null) {
 			return ImmutableMap.<String, IFeatureValue>of(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
-					RoleFrameSlot.of(0, -1, ImmutableSet.of(ergaenzungenUndAngabenSlots)));
+					RestrictedFSSet.of(0, -1, ImmutableSet.of(ergaenzungenUndAngabenSlots)));
 		}
 
 		return ImmutableMap.<String, IFeatureValue>of(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
-				RoleFrameSlot.of(0, -1, ImmutableSet.of(ergaenzungenUndAngabenSlots)), STAERKE_KEY,
+				RestrictedFSSet.of(0, -1, ImmutableSet.of(ergaenzungenUndAngabenSlots)), STAERKE_KEY,
 				StringFeatureValue.of(staerke));
 	}
 
@@ -279,7 +279,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
 	protected final static ImmutableMap<String, IFeatureValue> buildFeatureMap(
 			final FeatureStructure ergaenzungenUndAngabenSlots) {
 		return ImmutableMap.<String, IFeatureValue>of(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
-				RoleFrameSlot.of(0, -1, ImmutableSet.of(ergaenzungenUndAngabenSlots)));
+				RestrictedFSSet.of(0, -1, ImmutableSet.of(ergaenzungenUndAngabenSlots)));
 	}
 
 	/**
@@ -654,7 +654,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
 			final Valenz valenzBeiImplizitemSubjekt, final ImmutableMap<String, IFeatureValue> additionalFeaturesSg,
 			final ImmutableMap<String, IFeatureType> additionalFeatureTypesSg, final Kasus kasus) {
 
-		final RoleFrameSlot verbRoleFrameSlot = buildVerbRoleFrameP3(valenzBeiImplizitemSubjekt, NEUTRUM,
+		final RestrictedFSSet verbRoleFrameSlot = buildVerbRoleFrameP3(valenzBeiImplizitemSubjekt, NEUTRUM,
 				SINGULAR);
 
 		final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame = ImmutableMap
@@ -753,7 +753,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
 			final String stammInKomparation, final boolean eTilgungImSuffixEnUndEmErlaubt,
 			final Valenz valenzBeiImplizitemSubjekt, final ImmutableMap<String, IFeatureValue> additionalFeaturesSg,
 			final ImmutableMap<String, IFeatureType> additionalFeatureTypesSg, final Kasus kasus) {
-		final RoleFrameSlot verbRoleFrameSlot = buildVerbRoleFrameP3(valenzBeiImplizitemSubjekt, FEMININUM,
+		final RestrictedFSSet verbRoleFrameSlot = buildVerbRoleFrameP3(valenzBeiImplizitemSubjekt, FEMININUM,
 				SINGULAR);
 
 		final ImmutableMap<String, IFeatureValue> additionalFeaturesSgMitVerbFrame = ImmutableMap
@@ -854,7 +854,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
 			final String stammInKomparation, final boolean eTilgungImSuffixEnUndEmErlaubt,
 			final Valenz valenzBeiImplizitemSubjekt, final ImmutableMap<String, IFeatureValue> additionalFeaturesSg,
 			final ImmutableMap<String, IFeatureType> additionalFeatureTypesSg, final Kasus kasus) {
-		final RoleFrameSlot verbRoleFrameSlot = buildVerbRoleFrameP3(valenzBeiImplizitemSubjekt, MASKULINUM, // der
+		final RestrictedFSSet verbRoleFrameSlot = buildVerbRoleFrameP3(valenzBeiImplizitemSubjekt, MASKULINUM, // der
 				// SEINER
 				// selbst
 				// gedenkende
@@ -959,7 +959,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
 		return res.build();
 	}
 
-	protected RoleFrameSlot buildVerbRoleFrameP3(final Valenz valenzBeiImplizitemSubjekt,
+	protected RestrictedFSSet buildVerbRoleFrameP3(final Valenz valenzBeiImplizitemSubjekt,
 			final Genus genusDesBezugsworts, final Numerus numerusDesBezugsworts) {
 		final FeatureStructure ergaenzungenUndAngabenSlots = valenzBeiImplizitemSubjekt
 				.buildErgaenzungenUndAngabenSlots("3", // Person
@@ -969,7 +969,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
 						numerusDesBezugsworts, StringFeatureLogicUtil.FALSE, // die ihrer
 																																	// selbst
 						true);
-		return RoleFrameSlot.of(0, -1, ImmutableSet.of(ergaenzungenUndAngabenSlots));
+		return RestrictedFSSet.of(0, -1, ImmutableSet.of(ergaenzungenUndAngabenSlots));
 	}
 
 	/*
@@ -1144,7 +1144,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
 			final Kasus kasus) {
 		final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
-		final RoleFrameSlot verbRoleFrameSlot = buildVerbRoleFrameP3(valenzBeiImplizitemSubjekt, NEUTRUM, // ein
+		final RestrictedFSSet verbRoleFrameSlot = buildVerbRoleFrameP3(valenzBeiImplizitemSubjekt, NEUTRUM, // ein
 				// SEINER
 				// selbst
 				// gedenkender
@@ -1252,7 +1252,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
 			final VorgabeFuerNachfolgendesAdjektiv vorgabeFuerNachfolgendesAdjektivBeiFormenMitEndung,
 			final Valenz valenzBeiImplizitemSubjekt, final ImmutableMap<String, IFeatureValue> additionalFeatures,
 			final ImmutableMap<String, IFeatureType> additionalFeatureTypes, final Kasus kasus) {
-		final RoleFrameSlot verbRoleFrameSlot = buildVerbRoleFrameP3(valenzBeiImplizitemSubjekt, FEMININUM,
+		final RestrictedFSSet verbRoleFrameSlot = buildVerbRoleFrameP3(valenzBeiImplizitemSubjekt, FEMININUM,
 				SINGULAR);
 
 		final ImmutableMap<String, IFeatureValue> additionalFeaturesMitVerbFrame = ImmutableMap
@@ -1313,7 +1313,7 @@ public class AbstractArtikelPronomenAdjektivFlektierer implements IFlektierer {
 			final Kasus kasus) {
 		final ImmutableList.Builder<IWordForm> res = ImmutableList.builder();
 
-		final RoleFrameSlot verbRoleFrameSlot = buildVerbRoleFrameP3(valenzBeiImplizitemSubjekt, MASKULINUM, // ein
+		final RestrictedFSSet verbRoleFrameSlot = buildVerbRoleFrameP3(valenzBeiImplizitemSubjekt, MASKULINUM, // ein
 				// SEINER
 				// selbst
 				// gedenkender

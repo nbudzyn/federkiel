@@ -15,7 +15,7 @@ import com.google.common.collect.ImmutableMap;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Genus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.feature.FeatureStructure;
-import de.nb.federkiel.feature.RoleFrameSlot;
+import de.nb.federkiel.feature.RestrictedFSSet;
 import de.nb.federkiel.interfaces.IFeatureValue;
 import de.nb.federkiel.reflection.ReflectionUtil;
 import de.nb.federkiel.semantik.NothingInParticularSemantics;
@@ -345,7 +345,7 @@ public final class Valenz {
 	}
 
 	/**
-	 * Erzeugt {@link RoleFrameSlot}s, für die Ergänzungen und Angaben entsprechend
+	 * Erzeugt {@link RestrictedFSSet}s, für die Ergänzungen und Angaben entsprechend
 	 * dieser Valenz
 	 *
 	 * @param personDesSubjekts

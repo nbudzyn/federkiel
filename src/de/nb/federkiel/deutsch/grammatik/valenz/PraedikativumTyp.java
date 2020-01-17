@@ -9,7 +9,7 @@ import de.nb.federkiel.deutsch.grammatik.kategorie.Genus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil;
 import de.nb.federkiel.feature.FeatureAssignment;
-import de.nb.federkiel.feature.RoleFrameSlot;
+import de.nb.federkiel.feature.RestrictedFSSet;
 import de.nb.federkiel.feature.SlotRequirements;
 import de.nb.federkiel.feature.StringFeatureLogicUtil;
 import de.nb.federkiel.feature.ThreeStateFeatureEqualityFormula;
@@ -28,7 +28,7 @@ final class PraedikativumTyp extends AbstractErgaenzungsOderAngabenTyp {
 
 	public static final PraedikativumTyp INSTANCE = new PraedikativumTyp();
 
-	private static final RoleFrameSlot RESTRICTION_SLOT = RoleFrameSlot.of(
+	private static final RestrictedFSSet RESTRICTION_SLOT = RestrictedFSSet.of(
       SlotRequirements.of("N_PRONOMEN_PHR_REIHUNG", buildPraedikatsnomenFeatureCondition(null)), // "ein
                                                                                                  // Esel"
       SlotRequirements.of("ADJEKTIV_PHR_UNFLEKT_REIHUNG",
@@ -44,9 +44,9 @@ final class PraedikativumTyp extends AbstractErgaenzungsOderAngabenTyp {
    *        eingeschränkt werden soll.
    */
   @Override
-  public RoleFrameSlot buildSlot(final String person, final Genus genusDesSubjekts,
+  public RestrictedFSSet buildSlot(final String person, final Genus genusDesSubjekts,
       final @Nullable Numerus numerusDesSubjekts, final String hoeflichkeitsformDesSubjekts) {
-		return RoleFrameSlot.of(
+		return RestrictedFSSet.of(
         SlotRequirements.of("N_PRONOMEN_PHR_REIHUNG",
             buildPraedikatsnomenFeatureCondition(numerusDesSubjekts)), // "ein Esel"
         SlotRequirements.of("ADJEKTIV_PHR_UNFLEKT_REIHUNG",
@@ -56,7 +56,7 @@ final class PraedikativumTyp extends AbstractErgaenzungsOderAngabenTyp {
   }
 
   @Override
-  public RoleFrameSlot buildRestrictionSlot() {
+  public RestrictedFSSet buildRestrictionSlot() {
     return RESTRICTION_SLOT;
   }
 

@@ -24,7 +24,7 @@ import de.nb.federkiel.plurivallogic.Plurival;
  */
 @Immutable
 @ThreadSafe
-public class RoleFrameSlotTerm implements IPlurivalTerm<RoleFrameSlot, FeatureAssignment> {
+public class RoleFrameSlotTerm implements IPlurivalTerm<RestrictedFSSet, FeatureAssignment> {
 	/**
 	 * The name of the slot. (Shall be unique within the role frame.)
 	 */
@@ -135,21 +135,21 @@ public class RoleFrameSlotTerm implements IPlurivalTerm<RoleFrameSlot, FeatureAs
 	 * fillingTerms.
 	 */
 	@Override
-	public Plurival<RoleFrameSlot> evaluate(final FeatureAssignment variableAssignment)
+	public Plurival<RestrictedFSSet> evaluate(final FeatureAssignment variableAssignment)
 			throws UnassignedVariableException {
 		// apply the evaluate() function to the fillingTerm
 		if (fillingTerm == null) {
-			return Plurival.of(RoleFrameSlot.of(alternativeRequirements, ImmutableSet.of(), minFillings, maxFillings));
+			return Plurival.of(RestrictedFSSet.of(alternativeRequirements, ImmutableSet.of(), minFillings, maxFillings));
 		}
 
 		final Plurival<FeatureStructure> fillingPlurival = fillingTerm.evaluate(variableAssignment);
 		// UnassignedVariableException
 
-		final ImmutableSet.Builder<RoleFrameSlot> roleFrameSlotAlternatives = ImmutableSet.builder();
+		final ImmutableSet.Builder<RestrictedFSSet> roleFrameSlotAlternatives = ImmutableSet.builder();
 
 		for (final FeatureStructure filling : fillingPlurival) {
 			roleFrameSlotAlternatives
-					.add(RoleFrameSlot.of(alternativeRequirements, ImmutableSet.of(filling), minFillings, maxFillings));
+					.add(RestrictedFSSet.of(alternativeRequirements, ImmutableSet.of(filling), minFillings, maxFillings));
 		}
 
 		return Plurival.of(roleFrameSlotAlternatives.build());

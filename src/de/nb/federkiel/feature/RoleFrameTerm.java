@@ -96,14 +96,14 @@ public class RoleFrameTerm implements IPlurivalTerm<FeatureStructure, FeatureAss
 
 		for (final Map.Entry<String, RoleFrameSlotTerm> slotMapEntry : slotTerms.entrySet()) {
 			final String key = slotMapEntry.getKey();
-			final Plurival<RoleFrameSlot> roleFrameSlotAlternatives = slotMapEntry.getValue().evaluate(variableAssignment);
+			final Plurival<RestrictedFSSet> roleFrameSlotAlternatives = slotMapEntry.getValue().evaluate(variableAssignment);
 			// UnassignedVariableException
 
 			final ImmutableSet.Builder<ImmutableMap<String, IFeatureValue>> newMapEntryAlternatives = ImmutableSet.builder();
 			for (final Map<String, IFeatureValue> oldMap : slotMapEntryAlternatives) {
 				final ImmutableMap.Builder<String, IFeatureValue> newMap = ImmutableMap.builder();
 				newMap.putAll(oldMap);
-				for (final RoleFrameSlot roleFrameSlot : roleFrameSlotAlternatives) {
+				for (final RestrictedFSSet roleFrameSlot : roleFrameSlotAlternatives) {
 					newMap.put(key, roleFrameSlot);
 				}
 

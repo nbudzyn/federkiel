@@ -518,11 +518,11 @@ public class FeatureStructure implements IFeatureValue {
 	 */
 	private static IFeatureValue addFillingIfAccepted(String name, IFeatureValue feature,
 			final IHomogeneousConstituentAlternatives freeFilling, final IFillingUsageRestrictor fillingUsageRestrictor) {
-		if (!(feature instanceof RoleFrameSlot)) {
+		if (!(feature instanceof RestrictedFSSet)) {
 			return feature;
 		}
 
-		return ((RoleFrameSlot) feature).addFillingIfAccepted(freeFilling,
+		return ((RestrictedFSSet) feature).addFillingIfAccepted(freeFilling,
 				fillingUsageRestrictor.keepPlaceFreeForHowManyFillings(name));
 	}
 
@@ -566,8 +566,8 @@ public class FeatureStructure implements IFeatureValue {
 			return true;
 		}
 
-		if (feature instanceof RoleFrameSlot) {
-			return ((RoleFrameSlot) feature).howManyFillingsAreMissingUntilCompletion() <= howManyAdditionalFillingsAllowed;
+		if (feature instanceof RestrictedFSSet) {
+			return ((RestrictedFSSet) feature).howManyFillingsAreMissingUntilCompletion() <= howManyAdditionalFillingsAllowed;
 		}
 		
 		return true;
@@ -644,12 +644,12 @@ public class FeatureStructure implements IFeatureValue {
 
 	public boolean containsARoleFrameSlotWithAFillingAlsoContainedIn(FeatureStructure other) {
 		for (final IFeatureValue myFeature : features.values()) {
-			if (myFeature instanceof RoleFrameSlot) {
-				RoleFrameSlot mySlot = (RoleFrameSlot) myFeature;
+			if (myFeature instanceof RestrictedFSSet) {
+				RestrictedFSSet mySlot = (RestrictedFSSet) myFeature;
 
 				for (IFeatureValue othersFeature : other.features.values()) {
-					if (othersFeature instanceof RoleFrameSlot) {
-						RoleFrameSlot otherSlot = (RoleFrameSlot) othersFeature;
+					if (othersFeature instanceof RestrictedFSSet) {
+						RestrictedFSSet otherSlot = (RestrictedFSSet) othersFeature;
 
 						if (mySlot.containsAFillingAlsoContainedIn(otherSlot)) {
 							// this.features and other.features contain
@@ -841,15 +841,15 @@ public class FeatureStructure implements IFeatureValue {
 
 	protected boolean containsTheSameRoleFrameSlotFillingInADifferentFeature(final FeatureStructure other) {
 		for (final Entry<String, IFeatureValue> myEntry : features.entrySet()) {
-			if (myEntry.getValue() instanceof RoleFrameSlot) {
+			if (myEntry.getValue() instanceof RestrictedFSSet) {
 				for (final Entry<String, IFeatureValue> othersEntry : other.features.entrySet()) {
-					if (othersEntry.getValue() instanceof RoleFrameSlot) {
+					if (othersEntry.getValue() instanceof RestrictedFSSet) {
 						if (myEntry.getKey().equals(othersEntry.getKey())) { // NOPMD by nbudzyn on 29.06.10 21:37
 							// all fine!
 						} else {
 							// feature names are different!
-							RoleFrameSlot mySlot = (RoleFrameSlot) myEntry.getValue();
-							RoleFrameSlot othersSlot = (RoleFrameSlot) othersEntry.getValue();
+							RestrictedFSSet mySlot = (RestrictedFSSet) myEntry.getValue();
+							RestrictedFSSet othersSlot = (RestrictedFSSet) othersEntry.getValue();
 							if (mySlot.containsAFillingAlsoContainedIn(othersSlot)) {
 								return true;
 							}
@@ -869,8 +869,8 @@ public class FeatureStructure implements IFeatureValue {
 	 */
 	protected String findFeatureNameContaining(final FeatureStructure filling) {
 		for (final Entry<String, IFeatureValue> entry : features.entrySet()) {
-			if (entry.getValue() instanceof RoleFrameSlot) {
-				RoleFrameSlot slot = (RoleFrameSlot) entry.getValue();
+			if (entry.getValue() instanceof RestrictedFSSet) {
+				RestrictedFSSet slot = (RestrictedFSSet) entry.getValue();
 				if (slot.containsFilling(filling)) {
 				return entry.getKey();
 			}
@@ -948,8 +948,8 @@ public class FeatureStructure implements IFeatureValue {
 			return 0;
 		}
 
-		if (feature instanceof RoleFrameSlot) {
-			return ((RoleFrameSlot) feature).howManyFillingsAreMissingUntilCompletion();
+		if (feature instanceof RestrictedFSSet) {
+			return ((RestrictedFSSet) feature).howManyFillingsAreMissingUntilCompletion();
 		}
 
 		return 0;
@@ -966,8 +966,8 @@ public class FeatureStructure implements IFeatureValue {
 			return -1;
 		}
 		
-		if (feature instanceof RoleFrameSlot) {
-			return ((RoleFrameSlot) feature).howManyAdditionalFillingsAreAllowed();
+		if (feature instanceof RestrictedFSSet) {
+			return ((RestrictedFSSet) feature).howManyAdditionalFillingsAreAllowed();
 		}
 
 		return -1;
@@ -979,8 +979,8 @@ public class FeatureStructure implements IFeatureValue {
 		}
 
 		for (final IFeatureValue value : features.values()) {
-			if (value instanceof RoleFrameSlot) {
-				if (!((RoleFrameSlot) value).hasEnoughFillings()) {
+			if (value instanceof RestrictedFSSet) {
+				if (!((RestrictedFSSet) value).hasEnoughFillings()) {
 				return false;
 			}
 			}
@@ -1001,8 +1001,8 @@ public class FeatureStructure implements IFeatureValue {
 		ISemantics semantics = NothingInParticularSemantics.INSTANCE;
 
 		for (Entry<String, IFeatureValue> entry : features.entrySet()) {
-			if (entry.getValue() instanceof RoleFrameSlot) {
-				RoleFrameSlot slot = (RoleFrameSlot) entry.getValue();
+			if (entry.getValue() instanceof RestrictedFSSet) {
+				RestrictedFSSet slot = (RestrictedFSSet) entry.getValue();
 				final Collection<FeatureStructure> slotFillings = slot.getFillings();
 				if (slotFillings.size() > 1) {
 					return null;

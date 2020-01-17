@@ -10,7 +10,7 @@ import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.deutsch.grammatik.wortart.flexion.FeatureStringConverter;
 import de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil;
 import de.nb.federkiel.feature.FeatureAssignment;
-import de.nb.federkiel.feature.RoleFrameSlot;
+import de.nb.federkiel.feature.RestrictedFSSet;
 import de.nb.federkiel.feature.SlotRequirements;
 import de.nb.federkiel.feature.StringFeatureLogicUtil;
 import de.nb.federkiel.feature.ThreeStateFeatureEqualityFormula;
@@ -44,7 +44,7 @@ final class SubjektTyp extends AbstractErgaenzungsOderAngabenTyp {
   /**
    * Gecachet.
    */
-  private final RoleFrameSlot restrictionSlot;
+  private final RestrictedFSSet restrictionSlot;
 
   public SubjektTyp(final String slotName, final int minFillings, final boolean pseudoaktantEs) {
     super();
@@ -56,19 +56,19 @@ final class SubjektTyp extends AbstractErgaenzungsOderAngabenTyp {
   }
 
   @Override
-  public RoleFrameSlot buildSlot(final String person, final Genus genusDesSubjekts,
+  public RestrictedFSSet buildSlot(final String person, final Genus genusDesSubjekts,
       final Numerus numerusDesSubjekts, final String hoeflichkeitsformDesSubjekts) {
     final SlotRequirements reqsAlternative = SlotRequirements.of("N_PRONOMEN_PHR_REIHUNG",
         buildFeatureConditionForN_PRONOMEN_PHR_REIHUNG(person, genusDesSubjekts,
             numerusDesSubjekts, hoeflichkeitsformDesSubjekts));
 
-		return RoleFrameSlot.of(minFillings, // minFillings
+		return RestrictedFSSet.of(minFillings, // minFillings
         1, // max fillings
         reqsAlternative);
   }
 
   @Override
-  public RoleFrameSlot buildRestrictionSlot() {
+  public RestrictedFSSet buildRestrictionSlot() {
     return restrictionSlot;
   }
 

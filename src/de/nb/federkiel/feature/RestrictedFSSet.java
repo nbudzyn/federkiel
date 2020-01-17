@@ -20,22 +20,22 @@ import de.nb.federkiel.logic.UnassignedVariableException;
 import de.nb.federkiel.plurivallogic.Plurival;
 
 /**
- * An slot in a <code>RoleFrame</code> - e.g. the slot for the <i>subject</i> in
- * the role frame of a verb. Can be empty or filled.
+ * A set of feature structures. Only a certain number of feature structures is
+ * allowed, and they might have to confirm to restrictions.
  *
  * @author nbudzyn 2009
  */
 @Immutable
 @ThreadSafe
-public final class RoleFrameSlot implements IFeatureValue, Iterable<FeatureStructure>, IFillingUsageRestrictor {
+public final class RestrictedFSSet implements IFeatureValue, Iterable<FeatureStructure>, IFillingUsageRestrictor {
 	/**
 	 * All generated values shall be cached - to minimize memory use. The cache
 	 * consists of weak references, so it will be cleared automatically, when a
 	 * value is no longer (strongly) referenced.
 	 */
-	final private static WeakCache<RoleFrameSlot> cache = new WeakCache<>();
+	final private static WeakCache<RestrictedFSSet> cache = new WeakCache<>();
 
-	public static final RoleFrameSlot EMPTY_WITHOUT_REQUIREMENTS = of();
+	public static final RestrictedFSSet EMPTY_WITHOUT_REQUIREMENTS = of();
 
 	final private static int MIN_NUM_FREE_FILLINGS_FOR_RESTRICTION_CHECK = 2; // "Daumenwert"
 
@@ -69,48 +69,48 @@ public final class RoleFrameSlot implements IFeatureValue, Iterable<FeatureStruc
 	 */
 	private final int hashCode;
 
-	public static RoleFrameSlot of(final boolean optional, final boolean multiple,
+	public static RestrictedFSSet of(final boolean optional, final boolean multiple,
 			final SlotRequirements... requirementAlternatives) {
-		return cache.findOrInsert(new RoleFrameSlot(optional, multiple, requirementAlternatives));
+		return cache.findOrInsert(new RestrictedFSSet(optional, multiple, requirementAlternatives));
 	}
 
-	public static RoleFrameSlot of(final int minFillings, final int maxFillings,
+	public static RestrictedFSSet of(final int minFillings, final int maxFillings,
 			final SlotRequirements... requirementAlternatives) {
-		return cache.findOrInsert(new RoleFrameSlot(minFillings, maxFillings, requirementAlternatives));
+		return cache.findOrInsert(new RestrictedFSSet(minFillings, maxFillings, requirementAlternatives));
 	}
 
 	/**
 	 * Creates a mandatory frame slot, that only accepts one filling.
 	 */
-	public static RoleFrameSlot of(final SlotRequirements... requirementAlternatives) {
-		return cache.findOrInsert(new RoleFrameSlot(requirementAlternatives));
+	public static RestrictedFSSet of(final SlotRequirements... requirementAlternatives) {
+		return cache.findOrInsert(new RestrictedFSSet(requirementAlternatives));
 	}
 
 	/**
 	 * Creates a frame slot with these fillings.
 	 */
-	public static RoleFrameSlot of(final int minFillings, final int maxFillings, final FeatureStructure... fillings) {
+	public static RestrictedFSSet of(final int minFillings, final int maxFillings, final FeatureStructure... fillings) {
 		return of(minFillings, maxFillings, ImmutableSet.copyOf(fillings));
 	}
 
 	/**
 	 * Creates a frame slot with these fillings.
 	 */
-	public static RoleFrameSlot of(final int minFillings, final int maxFillings,
+	public static RestrictedFSSet of(final int minFillings, final int maxFillings,
 			final ImmutableSet<FeatureStructure> fillings) {
-		return cache.findOrInsert(new RoleFrameSlot(ImmutableList.<SlotRequirements>of(), ImmutableSet.copyOf(fillings),
+		return cache.findOrInsert(new RestrictedFSSet(ImmutableList.<SlotRequirements>of(), ImmutableSet.copyOf(fillings),
 				minFillings, maxFillings));
 	}
 
-	public static RoleFrameSlot of(final ImmutableCollection<SlotRequirements> alternativeRequirements,
+	public static RestrictedFSSet of(final ImmutableCollection<SlotRequirements> alternativeRequirements,
 			final ImmutableSet<FeatureStructure> fillings, final int minFillings, final int maxFillings) {
-		return cache.findOrInsert(new RoleFrameSlot(alternativeRequirements, fillings, minFillings, maxFillings));
+		return cache.findOrInsert(new RestrictedFSSet(alternativeRequirements, fillings, minFillings, maxFillings));
 	}
 
 	/**
 	 * Creates a frame slot with one filling, that only accepts one filling.
 	 */
-	private RoleFrameSlot(final FeatureStructure filling, final SlotRequirements... requirementAlternatives) {
+	private RestrictedFSSet(final FeatureStructure filling, final SlotRequirements... requirementAlternatives) {
 		this(ImmutableList.<SlotRequirements>copyOf(requirementAlternatives), ImmutableSet.<FeatureStructure>of(filling), 1,
 				1);
 	}
@@ -118,7 +118,7 @@ public final class RoleFrameSlot implements IFeatureValue, Iterable<FeatureStruc
 	/**
 	 * Creates a mandatory frame slot, that only accepts one filling.
 	 */
-	private RoleFrameSlot(final SlotRequirements... requirementAlternatives) {
+	private RestrictedFSSet(final SlotRequirements... requirementAlternatives) {
 		this(ImmutableList.<SlotRequirements>copyOf(requirementAlternatives), ImmutableSet.<FeatureStructure>of(), 1, 1);
 	}
 
@@ -128,7 +128,7 @@ public final class RoleFrameSlot implements IFeatureValue, Iterable<FeatureStruc
 	 * @param optional whether the slot is optional
 	 * @param multiple whether the slot accepts more than one filling
 	 */
-	private RoleFrameSlot(final boolean optional, final boolean multiple,
+	private RestrictedFSSet(final boolean optional, final boolean multiple,
 			final SlotRequirements... requirementAlternatives) {
 		this(optional ? 0 : 1, // min
 				multiple ? -1 : 1, // max
@@ -138,13 +138,13 @@ public final class RoleFrameSlot implements IFeatureValue, Iterable<FeatureStruc
 	/**
 	 * Creates a role frame slot.
 	 */
-	private RoleFrameSlot(final int minFillings, final int maxFillings,
+	private RestrictedFSSet(final int minFillings, final int maxFillings,
 			final SlotRequirements... requirementAlternatives) {
 		this(ImmutableList.<SlotRequirements>copyOf(requirementAlternatives), ImmutableSet.<FeatureStructure>of(),
 				minFillings, maxFillings);
 	}
 
-	private RoleFrameSlot(final ImmutableCollection<SlotRequirements> alternativeRequirements,
+	private RestrictedFSSet(final ImmutableCollection<SlotRequirements> alternativeRequirements,
 			final ImmutableSet<FeatureStructure> fillings, final int minFillings, final int maxFillings) {
 		this.alternativeRequirements = alternativeRequirements;
 		this.fillings = fillings;
@@ -156,7 +156,7 @@ public final class RoleFrameSlot implements IFeatureValue, Iterable<FeatureStruc
 	/**
 	 * @return an copy of this which is empty (does not have any fillings)
 	 */
-	public RoleFrameSlot emptyCopy() {
+	public RestrictedFSSet emptyCopy() {
 		return of(alternativeRequirements, ImmutableSet.<FeatureStructure>of(), minFillings, maxFillings);
 	}
 
@@ -166,8 +166,8 @@ public final class RoleFrameSlot implements IFeatureValue, Iterable<FeatureStruc
 	 * Merging two <i>feature structures</i> means adding slots and filling slots
 	 * with free fillings.
 	 */
-	protected Plurival<RoleFrameSlot> mergeWithoutSemantics(final RoleFrameSlot other) {
-		Collection<RoleFrameSlot> resAlternatives = new LinkedList<>();
+	protected Plurival<RestrictedFSSet> mergeWithoutSemantics(final RestrictedFSSet other) {
+		Collection<RestrictedFSSet> resAlternatives = new LinkedList<>();
 		resAlternatives.add(of(ImmutableSet.of(), ImmutableSet.of(), 0, -1));
 		// one result: empty role frame slot
 		// (for a start)
@@ -194,10 +194,10 @@ public final class RoleFrameSlot implements IFeatureValue, Iterable<FeatureStruc
 				// (And condition must hold for each result alternative!)
 				// So we iterate over all alternatives, that have already been found.
 
-				final Collection<RoleFrameSlot> oldResAlternatives = resAlternatives;
+				final Collection<RestrictedFSSet> oldResAlternatives = resAlternatives;
 
 				resAlternatives = new LinkedList<>();
-				for (final RoleFrameSlot oldResAlternative : oldResAlternatives) {
+				for (final RestrictedFSSet oldResAlternative : oldResAlternatives) {
 					// we take the alternative we already have and
 					// add the new possible merge result(s) to the alternative!
 					final Plurival<FeatureStructure> possibleMerges = myFeatures.mergeWithoutSemantics(othersFeatures,
@@ -232,8 +232,8 @@ public final class RoleFrameSlot implements IFeatureValue, Iterable<FeatureStruc
 	 * base and filling other slots (taken from the base) with free filling from the
 	 * ellipse.
 	 */
-	protected Plurival<RoleFrameSlot> fillEllipseWithoutSemantics(final RoleFrameSlot ellipse) {
-		Collection<RoleFrameSlot> resAlternatives = new LinkedList<>();
+	protected Plurival<RestrictedFSSet> fillEllipseWithoutSemantics(final RestrictedFSSet ellipse) {
+		Collection<RestrictedFSSet> resAlternatives = new LinkedList<>();
 		resAlternatives.add(of(ImmutableSet.of(), ImmutableSet.of(), 0, -1));
 		// one result: empty role frame slot
 		// (for a start)
@@ -246,10 +246,10 @@ public final class RoleFrameSlot implements IFeatureValue, Iterable<FeatureStruc
 
 		for (final FeatureStructure basefeatureStructure : fillings) {
 			for (final FeatureStructure ellipseFeatureStructure : ellipse.fillings) {
-				final Collection<RoleFrameSlot> oldResAlternatives = resAlternatives;
+				final Collection<RestrictedFSSet> oldResAlternatives = resAlternatives;
 
 				resAlternatives = new LinkedList<>();
-				for (final RoleFrameSlot oldRoleFrameSlotResAlternative : oldResAlternatives) {
+				for (final RestrictedFSSet oldRoleFrameSlotResAlternative : oldResAlternatives) {
 
 					final Plurival<FeatureStructure> possibleEllipseFillings = basefeatureStructure
 							.fillEllipseWithoutSemantics(ellipseFeatureStructure, oldRoleFrameSlotResAlternative);
@@ -306,7 +306,7 @@ public final class RoleFrameSlot implements IFeatureValue, Iterable<FeatureStruc
 	public boolean hasNoFreeFillingsAtAllOrHasFreeFillingsThatConfirmTo(final FeatureStructure restriction) {
 		// This procedure is very much like merge().
 
-		Collection<RoleFrameSlot> mergeAlternatives = new LinkedList<>();
+		Collection<RestrictedFSSet> mergeAlternatives = new LinkedList<>();
 
 		mergeAlternatives.add(of(ImmutableSet.of(), ImmutableSet.of(), 0, -1));
 		// empty role frame Collection (for a start)
@@ -336,10 +336,10 @@ public final class RoleFrameSlot implements IFeatureValue, Iterable<FeatureStruc
 				// So we iterate over all alternatives, that have already been
 				// found.
 
-				final Collection<RoleFrameSlot> oldMergeAlternatives = mergeAlternatives;
+				final Collection<RestrictedFSSet> oldMergeAlternatives = mergeAlternatives;
 
 				mergeAlternatives = new LinkedList<>();
-				for (final RoleFrameSlot oldMergeAlternative : oldMergeAlternatives) {
+				for (final RestrictedFSSet oldMergeAlternative : oldMergeAlternatives) {
 					// we take the alternative we already have and
 					// add the new possible merge result(s) to the alternative!
 
@@ -425,7 +425,7 @@ public final class RoleFrameSlot implements IFeatureValue, Iterable<FeatureStruc
 	 * <li>other's feature structures do no match my requirements
 	 * <li>the overall number exceeds the maximum number of fillings
 	 */
-	protected RoleFrameSlot addFillingsIfAccepted(final RoleFrameSlot other) {
+	protected RestrictedFSSet addFillingsIfAccepted(final RestrictedFSSet other) {
 		for (final FeatureStructure oneFeatureStructure : fillings) {
 			for (final FeatureStructure otherFeatureStructure : other.fillings) {
 				if (oneFeatureStructure.containsTheSameRoleFrameSlotFillingInADifferentFeature(otherFeatureStructure)) {
@@ -455,7 +455,7 @@ public final class RoleFrameSlot implements IFeatureValue, Iterable<FeatureStruc
 	 * If the filling would be acceptable, the methode returns a copy of this slot
 	 * with this filling added. Otherwise, the method returns <code>null</code>.
 	 */
-	public RoleFrameSlot addFillingIfAccepted(final IHomogeneousConstituentAlternatives freeFilling,
+	public RestrictedFSSet addFillingIfAccepted(final IHomogeneousConstituentAlternatives freeFilling,
 			int keepPlaceFreeForHowManyFillings) {
 		if (maxFillings != -1 && fillings.size() + 1 + keepPlaceFreeForHowManyFillings > maxFillings) {
 			return null;
@@ -470,7 +470,7 @@ public final class RoleFrameSlot implements IFeatureValue, Iterable<FeatureStruc
 	 * a copy of this slot with this feature structure added. Otherwise, the method
 	 * returns <code>null</code>.
 	 */
-	public RoleFrameSlot addFillingIfAccepted(final FeatureStructure featureStructure) {
+	public RestrictedFSSet addFillingIfAccepted(final FeatureStructure featureStructure) {
 		if (maxFillings != -1 && fillings.size() + 1 > maxFillings) {
 			return null;
 		}
@@ -484,7 +484,7 @@ public final class RoleFrameSlot implements IFeatureValue, Iterable<FeatureStruc
 	 * the methode returns a copy of this slot with this filling added. Otherwise,
 	 * the method returns <code>null</code>.
 	 */
-	private RoleFrameSlot addFillingIfMatchesRequirements(final IHomogeneousConstituentAlternatives freeFilling) {
+	private RestrictedFSSet addFillingIfMatchesRequirements(final IHomogeneousConstituentAlternatives freeFilling) {
 		if (!matchesRequirements(freeFilling)) {
 			return null;
 		}
@@ -499,7 +499,7 @@ public final class RoleFrameSlot implements IFeatureValue, Iterable<FeatureStruc
 	 * mathches the requirements, the methode returns a copy of this slot with this
 	 * filling added. Otherwise, the method returns <code>null</code>.
 	 */
-	private RoleFrameSlot addFillingIfMatchesRequirements(final FeatureStructure featureStructure) {
+	private RestrictedFSSet addFillingIfMatchesRequirements(final FeatureStructure featureStructure) {
 		if (!matchesRequirements(featureStructure)) {
 			return null;
 		}
@@ -511,7 +511,7 @@ public final class RoleFrameSlot implements IFeatureValue, Iterable<FeatureStruc
 	/**
 	 * @return a copy of this slot with this filling added (nothing is checked!)
 	 */
-	private RoleFrameSlot addFilling(final FeatureStructure filling) {
+	private RestrictedFSSet addFilling(final FeatureStructure filling) {
 		final ImmutableSet.Builder<FeatureStructure> resFillingsBuilder = ImmutableSet.<FeatureStructure>builder();
 		resFillingsBuilder.addAll(fillings);
 		resFillingsBuilder.add(filling);
@@ -601,7 +601,7 @@ public final class RoleFrameSlot implements IFeatureValue, Iterable<FeatureStruc
 	}
 
 
-	public boolean containsAFillingAlsoContainedIn(final RoleFrameSlot other) {
+	public boolean containsAFillingAlsoContainedIn(final RestrictedFSSet other) {
 		for (final FeatureStructure myFilling : fillings) {
 			for (FeatureStructure othersFilling : other.fillings) {
 				if (myFilling.equals(othersFilling)) {
@@ -659,7 +659,7 @@ public final class RoleFrameSlot implements IFeatureValue, Iterable<FeatureStruc
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final RoleFrameSlot other = (RoleFrameSlot) obj;
+		final RestrictedFSSet other = (RestrictedFSSet) obj;
 
 		if (hashCode != other.hashCode) {
 			return false;
@@ -687,7 +687,7 @@ public final class RoleFrameSlot implements IFeatureValue, Iterable<FeatureStruc
 			return classNameCompared;
 		}
 
-		final RoleFrameSlot other = (RoleFrameSlot) o;
+		final RestrictedFSSet other = (RestrictedFSSet) o;
 
 		final int reqsCompared = CollectionUtil.compareCollections(alternativeRequirements, other.alternativeRequirements);
 		if (reqsCompared != 0) {

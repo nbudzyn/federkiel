@@ -6,7 +6,7 @@ import de.nb.federkiel.plurivallogic.Plurival;
 import de.nb.federkiel.plurivallogic.UnaryCompoundPlurivalTerm;
 
 /**
- * Takes a {@link RoleFrameSlot} or an {@link IFillingInSlot} and guesses all
+ * Takes a {@link RestrictedFSSet} or an {@link IFillingInSlot} and guesses all
  * information that is needed when used as a slot filling.
  *
  * @author nbudzyn 2019
@@ -25,7 +25,7 @@ public class GuessImpliedInformationForFillingInSlotPlurivalTerm
 			return Plurival.of((FeatureStructure) input);
 		}
 
-		final RoleFrameSlot roleFrameCollection = (RoleFrameSlot) input;
+		final RestrictedFSSet roleFrameCollection = (RestrictedFSSet) input;
 
 		return roleFrameCollection.toFillingInSlot();
 	}

@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Genus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.feature.FeatureAssignment;
-import de.nb.federkiel.feature.RoleFrameSlot;
+import de.nb.federkiel.feature.RestrictedFSSet;
 import de.nb.federkiel.feature.SlotRequirements;
 import de.nb.federkiel.logic.BooleanConstantTrue;
 import de.nb.federkiel.logic.IFormula;
@@ -26,7 +26,7 @@ public class ReinerInfinitivTyp extends AbstractErgaenzungsOderAngabenTyp {
 	 *          <code>null</code> erlaubt, wenn es kein Subjekt gibt.
 	 */
 	@Override
-	public RoleFrameSlot buildSlot(final String person, final Genus genusDesSubjekts,
+	public RestrictedFSSet buildSlot(final String person, final Genus genusDesSubjekts,
 			final @Nullable Numerus numerusDesSubjekts, final String hoeflichkeitsformDesSubjekts) {
 		// Eine reiner Infinitiv wäre etwas wie "gehen", "seine Mutter sehen",
 		// "einen Yeti gesehen haben wollen" oder
@@ -75,7 +75,7 @@ public class ReinerInfinitivTyp extends AbstractErgaenzungsOderAngabenTyp {
 		// Letztlich braucht man ja eine ganze "potenziell diskontinuierlich Phrase"
 		// MIT VERB.
 
-		return RoleFrameSlot.of(SlotRequirements.of(
+		return RestrictedFSSet.of(SlotRequirements.of(
 				// TODO richtige Bedingungen
 				"VERBALKOMPLEXRESTENDE", BooleanConstantTrue.getInstance()));
 
@@ -107,9 +107,9 @@ public class ReinerInfinitivTyp extends AbstractErgaenzungsOderAngabenTyp {
 	}
 
 	@Override
-	public RoleFrameSlot buildRestrictionSlot() {
+	public RestrictedFSSet buildRestrictionSlot() {
 		// FIXME richtige Bedingung
-		return RoleFrameSlot.of(SlotRequirements.of(
+		return RestrictedFSSet.of(SlotRequirements.of(
 				// TODO richtige Bedingungen
 				"VERBALKOMPLEXREST", BooleanConstantTrue.getInstance()));
 	}

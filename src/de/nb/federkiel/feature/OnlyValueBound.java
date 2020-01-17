@@ -121,10 +121,10 @@ ITermBounds {
 			return false;
 			 */
 		}
-		if (this.onlyValue instanceof RoleFrameSlot) {
+		if (this.onlyValue instanceof RestrictedFSSet) {
 			// ...
 		}
-		if (this.onlyValue instanceof RoleFrameSlot) {
+		if (this.onlyValue instanceof RestrictedFSSet) {
 			/*
 			 * FIXME (zurzeit nicht verwendet) if (((RoleFrameSlot) this.onlyValue)
 			 * .meetsRestrictions(roleFrameBounds)) { return true; } return false;

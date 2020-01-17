@@ -20,7 +20,7 @@ import de.nb.federkiel.plurivallogic.Plurival;
  */
 @Immutable
 @ThreadSafe
-public class RoleFrameCollectionTerm implements IPlurivalTerm<RoleFrameSlot, FeatureAssignment> {
+public class RoleFrameCollectionTerm implements IPlurivalTerm<RestrictedFSSet, FeatureAssignment> {
 	/**
 	 * All generated values shall be cached - to minimize memory use. The cache
 	 * consists of weak references, so it will be cleared automatically, when a
@@ -71,7 +71,7 @@ public class RoleFrameCollectionTerm implements IPlurivalTerm<RoleFrameSlot, Fea
 	 * @return The result is a role frame collection {@link Plurival}
 	 */
 	@Override
-	public Plurival<RoleFrameSlot> evaluate(final FeatureAssignment variableAssignment)
+	public Plurival<RestrictedFSSet> evaluate(final FeatureAssignment variableAssignment)
 			throws UnassignedVariableException {
 		ImmutableSet<ImmutableSet<FeatureStructure>> alternatives = ImmutableSet.of(ImmutableSet.<FeatureStructure>of());
 
@@ -93,9 +93,9 @@ public class RoleFrameCollectionTerm implements IPlurivalTerm<RoleFrameSlot, Fea
 			alternatives = newAlternatives.build();
 		}
 
-		final ImmutableSet.Builder<RoleFrameSlot> res = ImmutableSet.builder();
+		final ImmutableSet.Builder<RestrictedFSSet> res = ImmutableSet.builder();
 		for (final ImmutableSet<FeatureStructure> alternative : alternatives) {
-			res.add(RoleFrameSlot.of(0, -1, alternative));
+			res.add(RestrictedFSSet.of(0, -1, alternative));
 		}
 
 		return Plurival.of(res.build());

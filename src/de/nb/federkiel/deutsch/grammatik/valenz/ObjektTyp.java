@@ -12,7 +12,7 @@ import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.deutsch.grammatik.wortart.flexion.FeatureStringConverter;
 import de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil;
 import de.nb.federkiel.feature.FeatureAssignment;
-import de.nb.federkiel.feature.RoleFrameSlot;
+import de.nb.federkiel.feature.RestrictedFSSet;
 import de.nb.federkiel.feature.SlotRequirements;
 import de.nb.federkiel.feature.StringFeatureLogicUtil;
 import de.nb.federkiel.feature.ThreeStateFeatureEqualityFormula;
@@ -58,7 +58,7 @@ final class ObjektTyp extends AbstractErgaenzungsOderAngabenTyp {
   /**
    * Gecachet.
    */
-  private final RoleFrameSlot restrictionSlot;
+  private final RestrictedFSSet restrictionSlot;
 
   /**
    * Slot für ein "normales" Objekt (nicht ausschließlich reflexiv, kein Pseudoaktant, genau ein
@@ -96,7 +96,7 @@ final class ObjektTyp extends AbstractErgaenzungsOderAngabenTyp {
   }
 
   @Override
-  public RoleFrameSlot buildSlot(final @Nullable String person,
+  public RestrictedFSSet buildSlot(final @Nullable String person,
       final @Nullable Genus genusDesSubjekts, final @Nullable Numerus numerusDesSubjekts,
       final @Nullable String hoeflichkeitsformDesSubjekts) {
     // Das Objekte könnte irreflexiv sein (Ich dusche das Kind)
@@ -112,7 +112,7 @@ final class ObjektTyp extends AbstractErgaenzungsOderAngabenTyp {
               buildFeatureConditionForN_PRONOMEN_PHR_REIHUNGEinzelnesReflexivGebrauchtesPronomen(
                   person, genusDesSubjekts, numerusDesSubjekts, hoeflichkeitsformDesSubjekts));
 
-			return RoleFrameSlot.of(1, // minFillings
+			return RestrictedFSSet.of(1, // minFillings
           maxFillings, // maxFillings
           reqsAlternativeReinReflexiv);
 
@@ -155,13 +155,13 @@ final class ObjektTyp extends AbstractErgaenzungsOderAngabenTyp {
         SlotRequirements.of("N_PRONOMEN_PHR_REIHUNG",
             buildFeatureConditionForN_PRONOMEN_PHR_REIHUNGNichtReinReflexiv(person,
                 genusDesSubjekts, numerusDesSubjekts, hoeflichkeitsformDesSubjekts));
-		return RoleFrameSlot.of(1, // minFillings
+		return RestrictedFSSet.of(1, // minFillings
         maxFillings, // maxFillings
         reqsAlternativeNichtReinReflexiv);
   }
 
   @Override
-  public RoleFrameSlot buildRestrictionSlot() {
+  public RestrictedFSSet buildRestrictionSlot() {
     return restrictionSlot;
   }
 

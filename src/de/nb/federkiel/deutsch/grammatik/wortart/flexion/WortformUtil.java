@@ -13,7 +13,7 @@ import com.google.common.collect.Streams;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.feature.FeatureStructure;
 import de.nb.federkiel.feature.LexiconFeatureStructureUtil;
-import de.nb.federkiel.feature.RoleFrameSlot;
+import de.nb.federkiel.feature.RestrictedFSSet;
 import de.nb.federkiel.feature.StringFeatureValue;
 import de.nb.federkiel.interfaces.IWordForm;
 import de.nb.federkiel.lexikon.Lexeme;
@@ -38,7 +38,7 @@ public final class WortformUtil {
 	public static Wortform buildVerbFormFin(final Lexeme lexeme, final String pos, final String tempus,
 			final String modus, final String string, FeatureStructure slots) {
 		final FeatureStructure features = LexiconFeatureStructureUtil.fromValues(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
-				RoleFrameSlot.of(0, -1, ImmutableSet.of(slots)), GermanUtil.TEMPUS, StringFeatureValue.of(tempus),
+				RestrictedFSSet.of(0, -1, ImmutableSet.of(slots)), GermanUtil.TEMPUS, StringFeatureValue.of(tempus),
 				GermanUtil.MODUS_KEY,
 				StringFeatureValue.of(modus));
 
@@ -52,7 +52,7 @@ public final class WortformUtil {
 	public static Wortform buildVerbFormImp(final Lexeme lexeme, final String pos, final Numerus numerus,
 			final String string, final FeatureStructure slots) {
 		final FeatureStructure features = LexiconFeatureStructureUtil.fromValues(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
-				RoleFrameSlot.of(0, -1, ImmutableSet.of(slots)), GermanUtil.NUMERUS_KEY,
+				RestrictedFSSet.of(0, -1, ImmutableSet.of(slots)), GermanUtil.NUMERUS_KEY,
 				StringFeatureValue.of(FeatureStringConverter.toFeatureString(numerus)));
 
 		return new Wortform(lexeme, pos, string, features);
@@ -64,7 +64,7 @@ public final class WortformUtil {
 	 */
 	public static Wortform buildVerbFormInf(final Lexeme lexeme, final String pos, final FeatureStructure slots) {
 		final FeatureStructure features = LexiconFeatureStructureUtil.fromValues(GermanUtil.ROLE_FRAME_COLLECTION_NAME_VERB,
-				RoleFrameSlot.of(0, 1, ImmutableSet.of(slots)));
+				RestrictedFSSet.of(0, 1, ImmutableSet.of(slots)));
 
 		return new Wortform(lexeme, pos, lexeme.getCanonicalizedForm(), features);
 	}

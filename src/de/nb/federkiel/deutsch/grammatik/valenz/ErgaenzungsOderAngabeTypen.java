@@ -9,7 +9,7 @@ import java.util.Collection;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Genus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.feature.FeatureStructure;
-import de.nb.federkiel.feature.RoleFrameSlot;
+import de.nb.federkiel.feature.RestrictedFSSet;
 import de.nb.federkiel.reflection.ReflectionUtil;
 
 /**
@@ -120,7 +120,7 @@ public final class ErgaenzungsOderAngabeTypen {
 	}
 
 	/**
-	 * Erzeugt die {@link RoleFrameSlot}s, die angeben, welche Angaben (unabhängig
+	 * Erzeugt die {@link RestrictedFSSet}s, die angeben, welche Angaben (unabhängig
 	 * von Person und Numerus des Subjekts) möglich sind.
 	 */
 	public static FeatureStructure buildAngabenRestrictionSlots() {

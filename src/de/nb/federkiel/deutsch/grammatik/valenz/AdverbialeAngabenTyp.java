@@ -10,7 +10,7 @@ import de.nb.federkiel.deutsch.grammatik.kategorie.Genus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil;
 import de.nb.federkiel.feature.FeatureAssignment;
-import de.nb.federkiel.feature.RoleFrameSlot;
+import de.nb.federkiel.feature.RestrictedFSSet;
 import de.nb.federkiel.feature.SlotRequirements;
 import de.nb.federkiel.feature.StringFeatureLogicUtil;
 import de.nb.federkiel.feature.ThreeStateFeatureEqualityFormula;
@@ -37,7 +37,7 @@ final class AdverbialeAngabenTyp extends AbstractErgaenzungsOderAngabenTyp {
   /**
    * Gecachet.
    */
-  private final RoleFrameSlot restrictionSlot;
+  private final RestrictedFSSet restrictionSlot;
 
 
   /**
@@ -59,7 +59,7 @@ final class AdverbialeAngabenTyp extends AbstractErgaenzungsOderAngabenTyp {
   }
   
   @Override
-  public RoleFrameSlot buildSlot(final @Nullable String personDesSubjekts,
+  public RestrictedFSSet buildSlot(final @Nullable String personDesSubjekts,
       final @Nullable Genus genusDesSubjekts, final @Nullable Numerus numerusDesSubjekts,
       final @Nullable String hoeflichkeitsformDesSubjekts) {
     // adverbiale Präpositionalphrase ("vor zwei Tagen")
@@ -85,7 +85,7 @@ final class AdverbialeAngabenTyp extends AbstractErgaenzungsOderAngabenTyp {
     final SlotRequirements[] reqAlternatives = new SlotRequirements[] {praepositionalPhrReqs,
         adverbPhrReqs, adjektivPhrReqs, genitivePhrReqs, accusativePhrReqs};
 
-		return RoleFrameSlot.of(true, // optional
+		return RestrictedFSSet.of(true, // optional
         true, // multiple
         reqAlternatives);
   }
@@ -147,7 +147,7 @@ final class AdverbialeAngabenTyp extends AbstractErgaenzungsOderAngabenTyp {
   }
 
   @Override
-  public RoleFrameSlot buildRestrictionSlot() {
+  public RestrictedFSSet buildRestrictionSlot() {
     return restrictionSlot;
   }
 

@@ -9,7 +9,7 @@ import de.nb.federkiel.deutsch.grammatik.kategorie.Genus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.deutsch.grammatik.wortart.flexion.FeatureStringConverter;
 import de.nb.federkiel.feature.FeatureAssignment;
-import de.nb.federkiel.feature.RoleFrameSlot;
+import de.nb.federkiel.feature.RestrictedFSSet;
 import de.nb.federkiel.feature.StringFeatureLogicUtil;
 import de.nb.federkiel.feature.ThreeStateFeatureEqualityFormula;
 import de.nb.federkiel.feature.UnspecifiedFeatureValue;
@@ -35,19 +35,19 @@ abstract public class AbstractErgaenzungsOderAngabenTyp {
    *          kann <code>null</code> sein, wenn es sich <i>nicht</i> um einen
    *          {@link SubjektTyp} handelt
    */
-  public abstract RoleFrameSlot buildSlot(final String person,
+  public abstract RestrictedFSSet buildSlot(final String person,
       Genus genusDesSubjekts, @Nullable final Numerus numerusDesSubjekts,
       String hoeflichkeitsformDesSubjekts);
 
   /**
-   * Erzeugt einen {@link RoleFrameSlot}, der angibt, was diese Ergänzung oder
+   * Erzeugt einen {@link RestrictedFSSet}, der angibt, was diese Ergänzung oder
    * Angabe (unabhängig von Person und Numerus des Subjekts) fordert. Diese
    * Angaben kann verwendet werden, um beim Parsen rechtzeitig abzubrechen.
    * <p>
    * Beispiel: Ein IM ENGEREN SINNE TRANSITIVES Verb steht mit einem Subjekt und
    * einem Akkusativobjekt, ein Dativobjekt wäre verboten.
    */
-  public abstract RoleFrameSlot buildRestrictionSlot();
+  public abstract RestrictedFSSet buildRestrictionSlot();
 
   static IFormula<FeatureAssignment> buildPraedikativeOderAdverbialeAdjektivphraseFeatureCondition(
       final String person, final Genus genusDesSubjekts,

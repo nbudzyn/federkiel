@@ -13,11 +13,11 @@ import de.nb.federkiel.plurivallogic.Plurival;
  * @author nbudzyn 2009
  */
 public class RoleFrameCollectionUnionTerm extends
-		BinaryCompoundPlurivalTerm<RoleFrameSlot, RoleFrameSlot, RoleFrameSlot, FeatureAssignment> {
+		BinaryCompoundPlurivalTerm<RestrictedFSSet, RestrictedFSSet, RestrictedFSSet, FeatureAssignment> {
 
 	public RoleFrameCollectionUnionTerm(
-			final IPlurivalTerm<RoleFrameSlot, FeatureAssignment> firstSubTerm,
-			final IPlurivalTerm<RoleFrameSlot, FeatureAssignment> secondSubTerm) {
+			final IPlurivalTerm<RestrictedFSSet, FeatureAssignment> firstSubTerm,
+			final IPlurivalTerm<RestrictedFSSet, FeatureAssignment> secondSubTerm) {
 		super(firstSubTerm, secondSubTerm);
 	}
 
@@ -41,8 +41,8 @@ public class RoleFrameCollectionUnionTerm extends
 	 */
 
 	@Override
-	public Plurival<RoleFrameSlot> calculate(final RoleFrameSlot first, final RoleFrameSlot second) {
-		final RoleFrameSlot union = first.addFillingsIfAccepted(second);
+	public Plurival<RestrictedFSSet> calculate(final RestrictedFSSet first, final RestrictedFSSet second) {
+		final RestrictedFSSet union = first.addFillingsIfAccepted(second);
 		if (union == null) {
 			// union was not possible (the same filling in both role frames, but in different slots, e.g.)
 			return Plurival.empty(); // ==>

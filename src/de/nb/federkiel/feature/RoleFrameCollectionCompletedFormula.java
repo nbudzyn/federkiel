@@ -16,8 +16,8 @@ import de.nb.federkiel.logic.YieldsNoResultException;
  */
 @Immutable
 @ThreadSafe
-public class RoleFrameCollectionCompletedFormula extends UnaryPredicateFormula<RoleFrameSlot, FeatureAssignment> {
-	public RoleFrameCollectionCompletedFormula(final ITerm<RoleFrameSlot, FeatureAssignment> term) {
+public class RoleFrameCollectionCompletedFormula extends UnaryPredicateFormula<RestrictedFSSet, FeatureAssignment> {
+	public RoleFrameCollectionCompletedFormula(final ITerm<RestrictedFSSet, FeatureAssignment> term) {
     super(term);
   }
 
