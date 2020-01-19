@@ -20,18 +20,13 @@ import de.nb.federkiel.logic.YieldsNoResultException;
  */
 @Immutable
 @ThreadSafe
-public class SlotRequirements implements Comparable<SlotRequirements> {
+public final class SlotRequirements implements Comparable<SlotRequirements> {
 	/**
 	 * All generated values shall be cached - to minimize memory use. The cache
 	 * consists of weak references, so it will be cleared automatically, when a
 	 * value is no longer (strongly) referenced.
 	 */
 	final private static WeakCache<SlotRequirements> cache = new WeakCache<>();
-
-	/**
-	 * The required grammar symbol name (NP, or art, e.g.).
-	 */
-	private final String grammarSymbolName;
 
 	/**
 	 * Requirements to features of the element, that is supposed to fill the slot.
@@ -45,22 +40,12 @@ public class SlotRequirements implements Comparable<SlotRequirements> {
 	 */
 	private final int hashCode;
 
-	public static SlotRequirements of(final String grammarSymbolName) {
-		return cache.findOrInsert(new SlotRequirements(grammarSymbolName));
+	public static SlotRequirements of(final IFormula<FeatureAssignment> featureCondition) {
+		return cache.findOrInsert(new SlotRequirements(featureCondition));
 	}
 
-	public static SlotRequirements of(final String grammarSymbolName,
-			final IFormula<FeatureAssignment> featureCondition) {
-		return cache.findOrInsert(new SlotRequirements(grammarSymbolName, featureCondition));
-	}
-
-	private SlotRequirements(final String grammarSymbolName) {
-		this(grammarSymbolName, BooleanConstantTrue.<FeatureAssignment>getInstance());
-	}
-
-	private SlotRequirements(final String grammarSymbolName, final IFormula<FeatureAssignment> featureCondition) {
+	private SlotRequirements(final IFormula<FeatureAssignment> featureCondition) {
 		super();
-		this.grammarSymbolName = grammarSymbolName;
 		this.featureCondition = featureCondition;
 		hashCode = calcHash();
 	}
@@ -72,10 +57,6 @@ public class SlotRequirements implements Comparable<SlotRequirements> {
 	 *                    requirements are fulfilled
 	 */
 	protected boolean match(final IHomogeneousConstituentAlternatives toBeChecked) {
-		if (!toBeChecked.getGrammarSymbol().equals(grammarSymbolName)) {
-			return false;
-		}
-
 		FeatureStructure featuresToBeChecked = toBeChecked.getFeatures();
 
 		try {
@@ -104,7 +85,6 @@ public class SlotRequirements implements Comparable<SlotRequirements> {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + featureCondition.hashCode();
-		result = prime * result + grammarSymbolName.hashCode();
 		return result;
 	}
 
@@ -132,9 +112,6 @@ public class SlotRequirements implements Comparable<SlotRequirements> {
 		if (!featureCondition.equals(other.featureCondition)) {
 			return false;
 		}
-		if (!grammarSymbolName.equals(other.grammarSymbolName)) {
-			return false;
-		}
 		return true;
 	}
 
@@ -146,19 +123,12 @@ public class SlotRequirements implements Comparable<SlotRequirements> {
 			return classNameCompared;
 		}
 
-		final int symbolNamesCompared = grammarSymbolName.compareTo(other.grammarSymbolName);
-		if (symbolNamesCompared != 0) {
-			return symbolNamesCompared;
-		}
-
 		return featureCondition.compareTo(other.featureCondition);
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder res = new StringBuilder();
-		res.append(grammarSymbolName);
-
 		if (!(featureCondition instanceof BooleanConstantTrue)) {
 			final String conditionString = formulaCommaSepString(featureCondition);
 

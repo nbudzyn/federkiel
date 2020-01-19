@@ -19,6 +19,10 @@ public class GrammarFSUtil {
 	 */
 	public static final String GRAMMAR_SYMBOL_NAME = "_SYMBOL";
 
+	public static String getGrammarSymbol(FeatureStructure features) {
+		return ((StringFeatureValue) features.getFeatureValue(GRAMMAR_SYMBOL_NAME)).getString();
+	}
+
 	public static FeatureStructure addGrammarSymbol(FeatureStructure features, String grammarSymbol) {
 		return features.disjunctUnionWithoutFreeFillings(FeatureStructure.fromValues(features.getSurfacePart(),
 				GRAMMAR_SYMBOL_NAME, StringFeatureValue.of(grammarSymbol)), features.getSemantics());
@@ -30,13 +34,13 @@ public class GrammarFSUtil {
 		final IFormula<FeatureAssignment> slotFormula = new AndFormula<FeatureAssignment>(
 				grammarSymbolFormula, featureCondition);
 
-		return SlotRequirements.of(expectedGrammarSymbol, slotFormula);
+		return SlotRequirements.of(slotFormula);
 	}
 
 	public static SlotRequirements buildSlotRequirements(String expectedGrammarSymbol) {
 		final IFormula<FeatureAssignment> slotFormula = grammarSymbolFormula(expectedGrammarSymbol);
 
-		return SlotRequirements.of(expectedGrammarSymbol, slotFormula);
+		return SlotRequirements.of(slotFormula);
 	}
 	
 	private static ThreeStateFeatureEqualityFormula grammarSymbolFormula(String expectedGrammarSymbol) {
