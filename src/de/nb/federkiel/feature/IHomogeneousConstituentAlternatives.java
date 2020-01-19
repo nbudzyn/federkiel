@@ -20,7 +20,4 @@ import javax.annotation.concurrent.ThreadSafe;
 @ThreadSafe
 public interface IHomogeneousConstituentAlternatives extends IConstituentAlternatives, IFeatureStructure {
 	FeatureStructure getFeatures();
-
-	FeatureStructure toFillingInSlot();
-
 }

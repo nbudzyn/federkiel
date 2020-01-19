@@ -23,7 +23,7 @@ public class ToFillingInSlotTerm
 		final IHomogeneousConstituentAlternatives subValue = getSubTerm().evaluate(variableAssignment);
 		// UnassignedVariableException, YieldsNoResultException
 
-		return subValue.toFillingInSlot();
+		return subValue.getFeatures();
 	}
 
 	@Override

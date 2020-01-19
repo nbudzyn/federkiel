@@ -16,7 +16,6 @@ import com.google.common.collect.ImmutableSet;
 import de.nb.federkiel.cache.WeakCache;
 import de.nb.federkiel.collection.CollectionUtil;
 import de.nb.federkiel.interfaces.IFeatureValue;
-import de.nb.federkiel.logic.UnassignedVariableException;
 import de.nb.federkiel.plurivallogic.Plurival;
 
 /**
@@ -402,7 +401,7 @@ public final class RestrictedFSSet implements IFeatureValue, Iterable<FeatureStr
 	 */
 	@Override
 	public String getRestrictedNameFor(final IHomogeneousConstituentAlternatives homogeneousFilling) {
-		final FeatureStructure lookedFor = homogeneousFilling.toFillingInSlot();
+		final FeatureStructure lookedFor = homogeneousFilling.getFeatures();
 
 		for (final FeatureStructure featureStructure : fillings) {
 			final String featureName = featureStructure.findFeatureNameContaining(lookedFor);
@@ -461,7 +460,7 @@ public final class RestrictedFSSet implements IFeatureValue, Iterable<FeatureStr
 			return null;
 		}
 
-		return addFillingIfMatchesRequirements(freeFilling);
+		return addFillingIfMatchesRequirements(freeFilling.getFeatures());
 	}
 
 	/**
@@ -476,21 +475,6 @@ public final class RestrictedFSSet implements IFeatureValue, Iterable<FeatureStr
 		}
 
 		return addFillingIfMatchesRequirements(featureStructure);
-	}
-
-	/**
-	 * Checks whether this (additional) filling matches the requirements for this
-	 * slot (maxFillings is NOT checked!). If the filling mathches the requirements,
-	 * the methode returns a copy of this slot with this filling added. Otherwise,
-	 * the method returns <code>null</code>.
-	 */
-	private RestrictedFSSet addFillingIfMatchesRequirements(final IHomogeneousConstituentAlternatives freeFilling) {
-		if (!matchesRequirements(freeFilling)) {
-			return null;
-		}
-
-		// accept filling and return new Role Frame Slot
-		return addFilling(freeFilling.toFillingInSlot());
 	}
 
 	/**
@@ -520,29 +504,12 @@ public final class RestrictedFSSet implements IFeatureValue, Iterable<FeatureStr
 	}
 
 	/**
-	 * @return wether the free filling matches the slot requirements
-	 */
-	private boolean matchesRequirements(final IHomogeneousConstituentAlternatives freeFilling) {
-		for (final SlotRequirements slotRequirementsAlternative : alternativeRequirements) {
-			if (slotRequirementsAlternative.match(freeFilling)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
 	 * @return wether the feature structure matches the slot requirements
 	 */
 	private boolean matchesRequirements(final FeatureStructure featureStructure) {
 		for (final SlotRequirements slotRequirementsAlternative : alternativeRequirements) {
-			try {
-				if (slotRequirementsAlternative.match(featureStructure)) {
-					return true;
-				}
-			} catch (final UnassignedVariableException e) {
-				throw new IllegalStateException("Feature missing in feature structure " + featureStructure + "?", e);
+			if (slotRequirementsAlternative.match(featureStructure)) {
+				return true;
 			}
 		}
 
@@ -599,7 +566,6 @@ public final class RestrictedFSSet implements IFeatureValue, Iterable<FeatureStr
 
 		return true;
 	}
-
 
 	public boolean containsAFillingAlsoContainedIn(final RestrictedFSSet other) {
 		for (final FeatureStructure myFilling : fillings) {
@@ -838,7 +804,6 @@ public final class RestrictedFSSet implements IFeatureValue, Iterable<FeatureStr
 
 		return res;
 	}
-
 
 	@Override
 	public SurfacePart getSurfacePart() {

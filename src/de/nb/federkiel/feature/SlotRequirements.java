@@ -50,23 +50,7 @@ public final class SlotRequirements implements Comparable<SlotRequirements> {
 		hashCode = calcHash();
 	}
 
-	/**
-	 * Whether these requirements are fulfilled.
-	 *
-	 * @param toBeChecked the element that shall be checked, whether the slot
-	 *                    requirements are fulfilled
-	 */
-	protected boolean match(final IHomogeneousConstituentAlternatives toBeChecked) {
-		FeatureStructure featuresToBeChecked = toBeChecked.getFeatures();
-
-		try {
-			return match(featuresToBeChecked);
-		} catch (final UnassignedVariableException e) {
-			throw new IllegalStateException("Feature missing in parse " + toBeChecked + "?", e);
-		}
-	}
-
-	public boolean match(FeatureStructure featuresToBeChecked) throws UnassignedVariableException {
+	public boolean match(FeatureStructure featuresToBeChecked) {
 		try {
 			final FeatureAssignment variableAssignment = FeatureAssignment
 					.of(ImmutableList.<IHomogeneousConstituentAlternatives>of(), featuresToBeChecked);
@@ -78,6 +62,8 @@ public final class SlotRequirements implements Comparable<SlotRequirements> {
 			return true;
 		} catch (final YieldsNoResultException e) {
 			return false;
+		} catch (final UnassignedVariableException e) {
+			throw new IllegalStateException("Feature missing in " + featuresToBeChecked + "?", e);
 		}
 	}
 
