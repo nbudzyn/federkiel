@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.concurrent.Immutable;
 
+import de.nb.federkiel.deutsch.grammatik.featurestructure.GrammarFSUtil;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Genus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.deutsch.grammatik.wortart.flexion.FeatureStringConverter;
@@ -58,7 +59,7 @@ final class SubjektTyp extends AbstractErgaenzungsOderAngabenTyp {
   @Override
   public RestrictedFSSet buildSlot(final String person, final Genus genusDesSubjekts,
       final Numerus numerusDesSubjekts, final String hoeflichkeitsformDesSubjekts) {
-    final SlotRequirements reqsAlternative = SlotRequirements.of("N_PRONOMEN_PHR_REIHUNG",
+		final SlotRequirements reqsAlternative = GrammarFSUtil.buildSlotRequirements("N_PRONOMEN_PHR_REIHUNG",
         buildFeatureConditionForN_PRONOMEN_PHR_REIHUNG(person, genusDesSubjekts,
             numerusDesSubjekts, hoeflichkeitsformDesSubjekts));
 

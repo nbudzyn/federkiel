@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import de.nb.federkiel.deutsch.grammatik.featurestructure.GrammarFSUtil;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Genus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Kasus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
@@ -108,7 +109,7 @@ final class ObjektTyp extends AbstractErgaenzungsOderAngabenTyp {
       // Ich dusche mich, aber nicht *Ich dusche sich.
       // Auch nicht *Ich befinde sogar mich in Paris.
       final SlotRequirements reqsAlternativeReinReflexiv =
-          SlotRequirements.of("N_PRONOMEN_PHR_REIHUNG",
+					GrammarFSUtil.buildSlotRequirements("N_PRONOMEN_PHR_REIHUNG",
               buildFeatureConditionForN_PRONOMEN_PHR_REIHUNGEinzelnesReflexivGebrauchtesPronomen(
                   person, genusDesSubjekts, numerusDesSubjekts, hoeflichkeitsformDesSubjekts));
 
@@ -152,7 +153,7 @@ final class ObjektTyp extends AbstractErgaenzungsOderAngabenTyp {
     // genusDesReflexivenPronomens - sofern sie gesetzt sind! -
     // gleich person / numerus und genus des Subjekts sind.
     final SlotRequirements reqsAlternativeNichtReinReflexiv =
-        SlotRequirements.of("N_PRONOMEN_PHR_REIHUNG",
+				GrammarFSUtil.buildSlotRequirements("N_PRONOMEN_PHR_REIHUNG",
             buildFeatureConditionForN_PRONOMEN_PHR_REIHUNGNichtReinReflexiv(person,
                 genusDesSubjekts, numerusDesSubjekts, hoeflichkeitsformDesSubjekts));
 		return RestrictedFSSet.of(1, // minFillings

@@ -2,11 +2,11 @@ package de.nb.federkiel.deutsch.grammatik.valenz;
 
 import javax.annotation.Nullable;
 
+import de.nb.federkiel.deutsch.grammatik.featurestructure.GrammarFSUtil;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Genus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.feature.FeatureAssignment;
 import de.nb.federkiel.feature.RestrictedFSSet;
-import de.nb.federkiel.feature.SlotRequirements;
 import de.nb.federkiel.logic.BooleanConstantTrue;
 import de.nb.federkiel.logic.IFormula;
 
@@ -22,8 +22,8 @@ public class ReinerInfinitivTyp extends AbstractErgaenzungsOderAngabenTyp {
 	public static final ReinerInfinitivTyp INSTANCE = new ReinerInfinitivTyp();
 
 	/**
-	 * @param numerusDesSubjekts
-	 *          <code>null</code> erlaubt, wenn es kein Subjekt gibt.
+	 * @param numerusDesSubjekts <code>null</code> erlaubt, wenn es kein Subjekt
+	 *                           gibt.
 	 */
 	@Override
 	public RestrictedFSSet buildSlot(final String person, final Genus genusDesSubjekts,
@@ -75,7 +75,7 @@ public class ReinerInfinitivTyp extends AbstractErgaenzungsOderAngabenTyp {
 		// Letztlich braucht man ja eine ganze "potenziell diskontinuierlich Phrase"
 		// MIT VERB.
 
-		return RestrictedFSSet.of(SlotRequirements.of(
+		return RestrictedFSSet.of(GrammarFSUtil.buildSlotRequirements(
 				// TODO richtige Bedingungen
 				"VERBALKOMPLEXRESTENDE", BooleanConstantTrue.getInstance()));
 
@@ -100,7 +100,7 @@ public class ReinerInfinitivTyp extends AbstractErgaenzungsOderAngabenTyp {
 		// eine Feature "verb" gibt, das
 
 	}
-	
+
 	@Override
 	public String getName() {
 		return SLOT_NAME;
@@ -109,8 +109,8 @@ public class ReinerInfinitivTyp extends AbstractErgaenzungsOderAngabenTyp {
 	@Override
 	public RestrictedFSSet buildRestrictionSlot() {
 		// FIXME richtige Bedingung
-		return RestrictedFSSet.of(SlotRequirements.of(
+		return RestrictedFSSet.of(GrammarFSUtil.buildSlotRequirements(
 				// TODO richtige Bedingungen
-				"VERBALKOMPLEXREST", BooleanConstantTrue.getInstance()));
+				"VERBALKOMPLEXREST"));
 	}
 }

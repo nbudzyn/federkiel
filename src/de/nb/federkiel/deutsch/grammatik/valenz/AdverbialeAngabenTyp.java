@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import de.nb.federkiel.deutsch.grammatik.featurestructure.GrammarFSUtil;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Genus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil;
@@ -66,20 +67,21 @@ final class AdverbialeAngabenTyp extends AbstractErgaenzungsOderAngabenTyp {
     final SlotRequirements praepositionalPhrReqs = buildPRAEPOSITIONAL_PHRSlot(personDesSubjekts,
         numerusDesSubjekts, hoeflichkeitsformDesSubjekts);
     // adverbiale Adverbphrase ("immer")
-    final SlotRequirements adverbPhrReqs = SlotRequirements.of("ADVERB_PHR_REIHUNG");
+		final SlotRequirements adverbPhrReqs = GrammarFSUtil.buildSlotRequirements("ADVERB_PHR_REIHUNG");
     // adverbiale Adjektivphrase ("sorgfältig") - Duden 1288
     // Beachte "Er singt seiner selbst gewiss." - Aber
     // "*Er singt ihrer selbst gewiss."!
-    final SlotRequirements adjektivPhrReqs = SlotRequirements.of("ADJEKTIV_PHR_UNFLEKT_REIHUNG",
-        buildPraedikativeOderAdverbialeAdjektivphraseFeatureCondition(personDesSubjekts,
+    final SlotRequirements adjektivPhrReqs = GrammarFSUtil.buildSlotRequirements(
+    		"ADJEKTIV_PHR_UNFLEKT_REIHUNG",
+				buildPraedikativeOderAdverbialeAdjektivphraseFeatureCondition(personDesSubjekts,
             genusDesSubjekts, numerusDesSubjekts, hoeflichkeitsformDesSubjekts));
     // adverbialer Genitiv ("eines schönen Tages")
     final SlotRequirements genitivePhrReqs =
-        SlotRequirements.of("N_PRONOMEN_PHR_REIHUNG", buildAdvGenitiveOrAccusativeFeatureCondition(
+    		GrammarFSUtil.buildSlotRequirements("N_PRONOMEN_PHR_REIHUNG", buildAdvGenitiveOrAccusativeFeatureCondition(
             "gen", personDesSubjekts, numerusDesSubjekts, hoeflichkeitsformDesSubjekts));
     // adverbialer Akkusativ ("jeden Morgen")
     final SlotRequirements accusativePhrReqs =
-        SlotRequirements.of("N_PRONOMEN_PHR_REIHUNG", buildAdvGenitiveOrAccusativeFeatureCondition(
+    		GrammarFSUtil.buildSlotRequirements("N_PRONOMEN_PHR_REIHUNG", buildAdvGenitiveOrAccusativeFeatureCondition(
             "akk", personDesSubjekts, numerusDesSubjekts, hoeflichkeitsformDesSubjekts));
 
     final SlotRequirements[] reqAlternatives = new SlotRequirements[] {praepositionalPhrReqs,
@@ -134,16 +136,16 @@ final class AdverbialeAngabenTyp extends AbstractErgaenzungsOderAngabenTyp {
     // enthalten (nicht im Objekt (egal ob rein reflexiv oder nicht), nicht
     // im Adverbial)
 
-    final ThreeStateFeatureEqualityFormula featureConditionExcludingIrreflexivePersonalPronoun =
+    final IFormula<FeatureAssignment> featureConditionExcludingIrreflexivePersonalPronoun =
         buildFeatureConditionExcludingIrrreflPersonalPronounIfAppropriate(personDesSubjekts,
             numerusDesSubjekts, hoeflichkeitsformDesSubjekts);
 
     if (featureConditionExcludingIrreflexivePersonalPronoun == null) {
-      return SlotRequirements.of("PRAEPOSITIONAL_PHR");
+			return GrammarFSUtil.buildSlotRequirements("PRAEPOSITIONAL_PHR");
     }
-
-    return SlotRequirements.of("PRAEPOSITIONAL_PHR",
-        featureConditionExcludingIrreflexivePersonalPronoun);
+    
+		return GrammarFSUtil.buildSlotRequirements("PRAEPOSITIONAL_PHR",
+						featureConditionExcludingIrreflexivePersonalPronoun);
   }
 
   @Override

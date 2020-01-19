@@ -5,12 +5,12 @@ import java.util.Arrays;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import de.nb.federkiel.deutsch.grammatik.featurestructure.GrammarFSUtil;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Genus;
 import de.nb.federkiel.deutsch.grammatik.kategorie.Numerus;
 import de.nb.federkiel.deutsch.grammatik.wortart.flexion.GermanUtil;
 import de.nb.federkiel.feature.FeatureAssignment;
 import de.nb.federkiel.feature.RestrictedFSSet;
-import de.nb.federkiel.feature.SlotRequirements;
 import de.nb.federkiel.feature.StringFeatureLogicUtil;
 import de.nb.federkiel.feature.ThreeStateFeatureEqualityFormula;
 import de.nb.federkiel.logic.FormulaUtil;
@@ -29,9 +29,9 @@ final class PraedikativumTyp extends AbstractErgaenzungsOderAngabenTyp {
 	public static final PraedikativumTyp INSTANCE = new PraedikativumTyp();
 
 	private static final RestrictedFSSet RESTRICTION_SLOT = RestrictedFSSet.of(
-      SlotRequirements.of("N_PRONOMEN_PHR_REIHUNG", buildPraedikatsnomenFeatureCondition(null)), // "ein
+			GrammarFSUtil.buildSlotRequirements("N_PRONOMEN_PHR_REIHUNG", buildPraedikatsnomenFeatureCondition(null)), // "ein
                                                                                                  // Esel"
-      SlotRequirements.of("ADJEKTIV_PHR_UNFLEKT_REIHUNG",
+			GrammarFSUtil.buildSlotRequirements("ADJEKTIV_PHR_UNFLEKT_REIHUNG",
           buildPraedikativeOderAdverbialeAdjektivphraseFeatureCondition(null, null, null, null))); // klug
 
   private PraedikativumTyp() {
@@ -47,9 +47,9 @@ final class PraedikativumTyp extends AbstractErgaenzungsOderAngabenTyp {
   public RestrictedFSSet buildSlot(final String person, final Genus genusDesSubjekts,
       final @Nullable Numerus numerusDesSubjekts, final String hoeflichkeitsformDesSubjekts) {
 		return RestrictedFSSet.of(
-        SlotRequirements.of("N_PRONOMEN_PHR_REIHUNG",
+				GrammarFSUtil.buildSlotRequirements("N_PRONOMEN_PHR_REIHUNG",
             buildPraedikatsnomenFeatureCondition(numerusDesSubjekts)), // "ein Esel"
-        SlotRequirements.of("ADJEKTIV_PHR_UNFLEKT_REIHUNG",
+				GrammarFSUtil.buildSlotRequirements("ADJEKTIV_PHR_UNFLEKT_REIHUNG",
             buildPraedikativeOderAdverbialeAdjektivphraseFeatureCondition(person, genusDesSubjekts,
                 numerusDesSubjekts, hoeflichkeitsformDesSubjekts))); // "klug",
     // "Ihrer selbst überdrüssig"
