@@ -84,7 +84,7 @@ def pomConfig = {
 
 task sourcesJar(type: Jar) {
     from sourceSets.main.allJava
-    classifier "sources-0.0.1"
+    classifier "sources"
 }
 
 // Erzeugt viele nervige Warnungen.
