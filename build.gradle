@@ -6,11 +6,25 @@
  * User Manual available at https://docs.gradle.org/6.6.1/userguide/java_library_plugin.html
  */
 
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
+    }
+}
+
+
 plugins {
     // Apply the java-library plugin to add support for Java Library
     id 'java-library'
     id 'eclipse'
 }
+
+//apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
 
 eclipse {
     project {
@@ -19,7 +33,7 @@ eclipse {
 }
 
 jar {
-    baseName = 'de.nb.federkiel'
+    baseName = 'federkiel'
     version = '0.0.1'
     // version = '0.0.2-SNAPSHOT'
 }
@@ -34,7 +48,7 @@ repositories {
 
 dependencies {
     // This dependency is exported to consumers, that is to say found on their compile classpath.
-    api 'org.apache.commons:commons-math3:3.6.1'
+    // api 'org.apache.commons:commons-math3:3.6.1'
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation 'com.google.guava:guava:29.0-jre'
@@ -45,3 +59,83 @@ dependencies {
     // Use JUnit test framework
     testImplementation 'junit:junit:4.13'
 }
+
+// Create the pom configuration:
+def pomConfig = {
+    licenses {
+        license {
+            name "The Apache Software License, Version 2.0"
+            url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            distribution "repo"
+        }
+    }
+    developers {
+//        developer {
+//            id "developer-id"
+//            name "developer-name"
+//            email "email"
+//        }
+    }
+    
+    scm {
+       url "https://github.com/nbudzyn/federkiel"
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier "sources"
+}
+
+// Erzeugt viele nervige Warnungen.
+//task javadocJar(type: Jar, dependsOn: javadoc) {
+//    from javadoc.destinationDir
+//    classifier = 'javadoc'
+//}
+
+// Create the publication with the pom configuration:
+publishing {
+    publications {
+         MyPublication(MavenPublication) {
+            from components.java
+			artifact sourcesJar
+        	// artifact javadocJar
+            groupId 'de.nb.holdbold'
+            artifactId 'federkiel'
+            version '0.0.1'
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'Federkiel beherrscht die deutsche Grammatik und erzeugt Saetze in deutscher Sprache')
+                root.appendNode('name', 'federkiel')
+                root.appendNode('url', 'https://github.com/nbudzyn/federkiel')
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
+
+// Deployment nach Bintray (https://bintray.com/holdbold/maven):
+// ./gradlew clean build -PBINTRAY_USER=unfuguser -PBINTRAY_API_KEY=undfugsfd bintrayUpload
+// Danach manuelle Freigabe für JCenter!
+bintray {
+    user = property('BINTRAY_USER')
+    key = property('BINTRAY_API_KEY')
+    dryRun = true
+    
+    publications = ['MyPublication'] 
+    
+    pkg {
+        repo = 'maven'
+        name = 'federkiel'
+        userOrg = 'holdbold'
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/nbudzyn/federkiel.git'
+        publicDownloadNumbers = true
+        
+        version {
+	        name = '0.0.1'
+	        released  = new Date()
+    	}
+    }
+}
+
