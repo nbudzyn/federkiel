@@ -5,12 +5,14 @@ import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.FeatureStringCon
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.nb.federkiel.feature.EnumStringFeatureType;
 import de.nb.federkiel.feature.FeatureTypeDictionary;
 import de.nb.federkiel.feature.RoleFrameCollectionFeatureType;
 import de.nb.federkiel.string.StringUtil;
+
 
 /**
  * Utility methods for the German language.
@@ -25,7 +27,7 @@ public final class GermanUtil {
 	private static final String[] TYPISCHE_VERSCHRIFTUNGEN_LANGER_VOKALE = new String[] { "aa", "ah", "ää", "ää", "ee",
 			"eh", "ii", "ie", "ih", "ieh", "oo", "oh", "oe", // Itzehoe
 			"öö", "öh", "uu", "uh", "üü", "üh", "yy", "yh" };
-	private static final Logger log = Logger.getLogger(GermanUtil.class); // NOPMD
+	private static final Logger log = LogManager.getLogger(GermanUtil.class); // NOPMD
 
 	public static final String DEFINIT_KEY = "definit";
 

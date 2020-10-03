@@ -16,8 +16,6 @@ import java.util.Collection;
 
 import javax.annotation.Nullable;
 
-import org.apache.log4j.Logger;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -41,12 +39,6 @@ import de.nb.federkiel.lexikon.Lexeme;
  * @author nbudzyn 2010
  */
 public class AdjektivFlektierer extends AbstractArtikelPronomenAdjektivFlektierer {
-
-  @SuppressWarnings("unused")
-  private static final Logger log = Logger.getLogger(AdjektivFlektierer.class); // NOPMD
-                                                                                // by
-                                                                                // nbudzyn
-
   public static final String TYP = "Adjektiv";
 
   public AdjektivFlektierer() {

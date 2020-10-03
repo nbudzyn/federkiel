@@ -24,7 +24,8 @@ import java.util.LinkedList;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
@@ -98,7 +99,7 @@ public class SubstantivFlektierer implements IFlektierer {
 			"ot", // Idiot -> Iditoten
 			"nom" }; // Agronom -> Agronomen
 
-	private static final Logger log = Logger.getLogger(SubstantivFlektierer.class); // NOPMD by
+	private static final Logger log = LogManager.getLogger(SubstantivFlektierer.class); // NOPMD by
 																																									// nbudzyn on
 	// 29.06.10 19:50
 

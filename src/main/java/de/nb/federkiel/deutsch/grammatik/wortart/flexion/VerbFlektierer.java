@@ -17,7 +17,8 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
@@ -332,7 +333,7 @@ public final class VerbFlektierer implements IFlektierer {
 
   @SuppressWarnings("unused")
   private static final Logger log = // NOPMD by nbudzyn on 29.06.10 19:50
-      Logger.getLogger(VerbFlektierer.class);
+			LogManager.getLogger(VerbFlektierer.class);
 
   public VerbFlektierer() {
     super();
