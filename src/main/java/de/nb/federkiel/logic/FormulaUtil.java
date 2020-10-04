@@ -5,6 +5,8 @@ import java.util.List;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
+import com.google.common.collect.ImmutableList;
+
 /**
  * Utility methods for building and dealing with
  * first-order logic formulae.
@@ -16,6 +18,12 @@ import javax.annotation.concurrent.ThreadSafe;
 public final class FormulaUtil {
 	private FormulaUtil() {
 		super();
+	}
+
+	@SafeVarargs
+	public static <A extends IAssignment> IFormula<A> and(
+			IFormula<A>... formulae) {
+		return and(ImmutableList.copyOf(formulae));
 	}
 
 	public static <A extends IAssignment> IFormula<A> and(
@@ -32,6 +40,11 @@ public final class FormulaUtil {
 
 		// numFormulae == 0
 		return BooleanConstantTrue.<A>getInstance();
+	}
+
+	@SafeVarargs
+	public static <A extends IAssignment> IFormula<A> or(IFormula<A>... formulae) {
+		return or(ImmutableList.copyOf(formulae));
 	}
 
 	public static <A extends IAssignment> IFormula<A> or(
