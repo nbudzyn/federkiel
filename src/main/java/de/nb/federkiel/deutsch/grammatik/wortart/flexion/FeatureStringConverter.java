@@ -38,7 +38,7 @@ public class FeatureStringConverter {
 
   private FeatureStringConverter() {}
 
-  public static @Nullable String toFeatureString(final Kasus kasus) {
+	public static String toFeatureString(@Nullable final Kasus kasus) {
     if (kasus == null) {
       return UnspecifiedFeatureValue.UNSPECIFIED_STRING;
     }
@@ -57,7 +57,7 @@ public class FeatureStringConverter {
     }
   }
 
-  public static @Nullable String toFeatureString(final Numerus numerus) {
+	public static String toFeatureString(@Nullable final Numerus numerus) {
     if (numerus == null) {
       return UnspecifiedFeatureValue.UNSPECIFIED_STRING;
     }
@@ -72,7 +72,7 @@ public class FeatureStringConverter {
     }
   }
 
-  public static @Nullable String toFeatureString(final @Nullable Genus genus) {
+	public static String toFeatureString(final @Nullable Genus genus) {
     if (genus == null) {
       return UnspecifiedFeatureValue.UNSPECIFIED_STRING;
     }

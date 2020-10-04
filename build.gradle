@@ -34,8 +34,8 @@ eclipse {
 
 jar {
     baseName = 'federkiel'
-    version = '0.0.2'
-    // version = '0.0.3-SNAPSHOT'
+    // version = '0.0.3'
+    version = '0.0.3-SNAPSHOT'
 }
 
 sourceCompatibility = 1.8
@@ -102,7 +102,7 @@ publishing {
         	// artifact javadocJar
             groupId 'de.nb.holdbold'
             artifactId 'federkiel'
-            version '0.0.2'
+            version '0.0.3'
             pom.withXml {
                 def root = asNode()
                 root.appendNode('description', 'Federkiel beherrscht die deutsche Grammatik und erzeugt Saetze in deutscher Sprache')
@@ -120,7 +120,7 @@ publishing {
 bintray {
     user = property('BINTRAY_USER')
     key = property('BINTRAY_API_KEY')
-    // dryRun = true
+    dryRun = true
     
     publications = ['MyPublication'] 
     
@@ -133,7 +133,7 @@ bintray {
         publicDownloadNumbers = true
         
         version {
-	        name = '0.0.2'
+	        name = '0.0.3'
 	        released  = new Date()
     	}
     }
