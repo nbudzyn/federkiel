@@ -24,9 +24,6 @@ import java.util.LinkedList;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -98,10 +95,6 @@ public class SubstantivFlektierer implements IFlektierer {
 			"it", // Bandit -> Banditen
 			"ot", // Idiot -> Iditoten
 			"nom" }; // Agronom -> Agronomen
-
-	private static final Logger log = LogManager.getLogger(SubstantivFlektierer.class); // NOPMD by
-																																									// nbudzyn on
-	// 29.06.10 19:50
 
 	static {
 		AUSNAHMEENDEN_MIT_ALTERNATIVEN_PLURAL = new ImmutableSet.Builder<Pair<String, String[]>>()
@@ -506,8 +499,7 @@ public class SubstantivFlektierer implements IFlektierer {
 		if (singular.endsWith("lein") && singular.length() >= 6) { // nicht
 			// Olein :-)
 			if (singular.endsWith("klein")) {
-				// Gänseklein
-				log.warn("Unsichere Pluralbildung (Endung auf -klein):" + singular);
+				// Das Gänseklein -> Die Gänsekleins
 			} else {
 				return ImmutableList.<String>of(singular);
 			}
@@ -531,9 +523,10 @@ public class SubstantivFlektierer implements IFlektierer {
 						singular.length());
 
 				final String umgelauteteBasis = GermanUtil.ggfUmlauten(basisFuerUmlautung, fremdwortTyp);
-				if (!basisFuerUmlautung.equals(umgelauteteBasis)) {
-					log.warn("Unsichere Pluralbildung (Maskulium endungslos / Umlaut):" + umgelauteteBasis + stammRest);
-				}
+				// TODO
+				// if (!basisFuerUmlautung.equals(umgelauteteBasis)) {
+				// Unsichere Pluralbildung (Maskulium endungslos / Umlaut)!
+				// }
 				return ImmutableList.<String>of(umgelauteteBasis + stammRest);
 			}
 
@@ -547,9 +540,9 @@ public class SubstantivFlektierer implements IFlektierer {
 			}
 
 			final String umgelautet = GermanUtil.ggfUmlauten(singular, fremdwortTyp);
-			if (!singular.equals(umgelautet)) {
-				log.warn("Unsichere Pluralbildung (Maskulium mit -e / Umlaut):" + umgelautet + "e");
-			}
+			// if (!singular.equals(umgelautet)) {
+			// TODO Unsichere Pluralbildung (Maskulium mit -e / Umlaut)
+			// }
 			return ImmutableList.<String>of(umgelautet + "e");
 		}
 

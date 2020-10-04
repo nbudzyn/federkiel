@@ -34,8 +34,8 @@ eclipse {
 
 jar {
     baseName = 'federkiel'
-    version = '0.0.3'
-    // version = '0.0.3-SNAPSHOT'
+    version = '0.0.4'
+    // version = '0.0.4-SNAPSHOT'
 }
 
 sourceCompatibility = 1.8
@@ -52,9 +52,6 @@ dependencies {
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation 'com.google.guava:guava:29.0-jre'
-
-	implementation 'org.apache.logging.log4j:log4j-api:2.13.3'
-  	implementation 'org.apache.logging.log4j:log4j-core:2.13.3'    
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.13'
@@ -102,7 +99,7 @@ publishing {
         	// artifact javadocJar
             groupId 'de.nb.holdbold'
             artifactId 'federkiel'
-            version '0.0.3'
+            version '0.0.4'
             pom.withXml {
                 def root = asNode()
                 root.appendNode('description', 'Federkiel beherrscht die deutsche Grammatik und erzeugt Saetze in deutscher Sprache')
@@ -115,11 +112,13 @@ publishing {
 }
 
 // Deployment nach Bintray (https://bintray.com/holdbold/maven):
-// ./gradlew clean build -PBINTRAY_USER=unfuguser -PBINTRAY_API_KEY=undfugsfd bintrayUpload
-// Danach manuelle Freigabe für JCenter!
+//  ./gradlew clean build -PBINTRAY_USER=holdbold -PBINTRAY_API_KEY=<API-Key gemäß BinTray User-Details> bintrayUpload
+// Danach manuelle Freigabe unter https://bintray.com/beta/#/holdbold/maven/federkiel?tab=overview .
 bintray {
     user = property('BINTRAY_USER')
     key = property('BINTRAY_API_KEY')
+    // dryRun = Lauf ohne deployment nach bintray
+    dryRun = true
     
     publications = ['MyPublication'] 
     
@@ -132,7 +131,7 @@ bintray {
         publicDownloadNumbers = true
         
         version {
-	        name = '0.0.3'
+	        name = '0.0.4'
 	        released  = new Date()
     	}
     }

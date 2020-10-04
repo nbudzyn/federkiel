@@ -5,9 +5,6 @@ import static de.nb.federkiel.deutsch.grammatik.wortart.flexion.FeatureStringCon
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import de.nb.federkiel.feature.EnumStringFeatureType;
 import de.nb.federkiel.feature.FeatureTypeDictionary;
 import de.nb.federkiel.feature.RoleFrameCollectionFeatureType;
@@ -27,7 +24,6 @@ public final class GermanUtil {
 	private static final String[] TYPISCHE_VERSCHRIFTUNGEN_LANGER_VOKALE = new String[] { "aa", "ah", "ää", "ää", "ee",
 			"eh", "ii", "ie", "ih", "ieh", "oo", "oh", "oe", // Itzehoe
 			"öö", "öh", "uu", "uh", "üü", "üh", "yy", "yh" };
-	private static final Logger log = LogManager.getLogger(GermanUtil.class); // NOPMD
 
 	public static final String DEFINIT_KEY = "definit";
 
@@ -300,10 +296,12 @@ public final class GermanUtil {
 			return true;
 		}
 
-		// TODO Vermutung: Diphtonge zwar Vollvokale, und meist auch
-		// betont, aber Nackedei, angeblich Kotau
+		// Ausnahme: Nackedei
+		if (StringUtil.endsWith(wortform, "Nackedei", "nackedei")) {
+			return false;
+		}
+
 		if (StringUtil.endsWith(wortform, DIPHTHONGE)) {
-			log.warn("Wortbildung unsicher (betonter Diphtong am Ende?): " + wortform);
 			return true;
 		}
 
@@ -320,8 +318,6 @@ public final class GermanUtil {
 
 		// OK, es sieht irgedwie alles so aus, als endete dieses Wort mit
 		// einem *unbetonten Vollvokal*
-
-		log.warn("Wortbildung unsicher (unbetonter Vollvokal am Ende?): " + wortform);
 
 		return false; // IDEA: Daumen drücken!
 	}
@@ -400,10 +396,12 @@ public final class GermanUtil {
 			return false;
 		}
 
-		// TODO Vermutung: Diphtonge zwar Vollvokale, aber wohl meist auch
-		// betont, aber Nackedei, angeblich Kotau
+		// Ausnahme: Nackedei
+		if (StringUtil.endsWith(wortform, "Nackedei", "nackedei")) {
+			return true;
+		}
+
 		if (StringUtil.endsWith(wortform, DIPHTHONGE)) {
-			log.warn("Wortbildung unsicher (betonter Diphtong am Ende?): " + wortform);
 			return false;
 		}
 
@@ -420,9 +418,6 @@ public final class GermanUtil {
 
 		// OK, es sieht irgedwie alles so aus, als endete dieses Wort mit
 		// einem *unbetonten Vollvokal*
-
-		log.warn("Wortbildung unsicher (unbetonter Vollvokal am Ende?): " + wortform);
-
 		return true; // IDEA: Daumen drücken!
 	}
 
